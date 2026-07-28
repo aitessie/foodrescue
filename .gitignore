@@ -1,0 +1,46 @@
+# Gradle
+.gradle/
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# VS Code
+.vscode/
+
+# Kotlin
+.kotlin/
+
+# Operating systems
+.DS_Store
+Thumbs.db
+
+# Environment variables and secrets
+.env
+.env.local
+*.secret
+*.jks
+*.p12
+*.pem
+secrets/
+
+# Logs
+*.log
+logs/
+
+# Docker local overrides
+compose.override.yaml
+docker-compose.override.yml
+
+# Testcontainers
+.testcontainers.properties
+
+# Temporary files
+tmp/
+temp/
+*.tmp
