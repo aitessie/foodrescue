@@ -1,0 +1,51 @@
+package com.example.foodrescue.partner.configuration.security
+
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.web.SecurityFilterChain
+
+@Configuration
+@EnableMethodSecurity
+class SecurityConfiguration(private val keycloakRealmRoleConverter: KeycloakRealmRoleConverter) {
+
+    @Bean
+    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+        http
+            .csrf { csrf ->
+                csrf.disable()
+            }
+            .sessionManagement { session ->
+                session.sessionCreationPolicy(
+                    SessionCreationPolicy.STATELESS,
+                )
+            }
+            .authorizeHttpRequests { authorization ->
+                authorization
+                    .requestMatchers(
+                        "/actuator/health", "/actuator/health/**",
+                    )
+                    .permitAll()
+                authorization
+                    .requestMatchers(
+                        "/api/v1/system/secure-ping",
+                    )
+                    .hasAnyRole("STORE_MANAGER", "ADMIN")
+
+                authorization
+                    .anyRequest()
+                    .authenticated()
+            }
+            .oauth2ResourceServer { resourceServer ->
+                resourceServer.jwt { jwt ->
+                    jwt.jwtAuthenticationConverter(
+                        keycloakRealmRoleConverter,
+                    )
+                }
+            }
+
+        return http.build()
+    }
+}

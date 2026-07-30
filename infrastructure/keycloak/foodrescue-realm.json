@@ -1,0 +1,79 @@
+{
+  "realm": "foodrescue",
+  "enabled": true,
+  "displayName": "FoodRescue",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "roles": {
+    "realm": [
+      {
+        "name": "CUSTOMER",
+        "description": "FoodRescue customer"
+      },
+      {
+        "name": "STORE_EMPLOYEE",
+        "description": "Store employee"
+      },
+      {
+        "name": "STORE_MANAGER",
+        "description": "Store manager"
+      },
+      {
+        "name": "ADMIN",
+        "description": "Platform administrator"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "foodrescue-local",
+      "name": "FoodRescue local development client",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false
+    }
+  ],
+  "users": [
+    {
+      "username": "customer.demo",
+      "email": "customer.demo@foodrescue.local",
+      "firstName": "Demo",
+      "lastName": "Customer",
+      "enabled": true,
+      "emailVerified": true,
+      "realmRoles": [
+        "CUSTOMER"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${CUSTOMER_DEMO_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "manager.demo",
+      "email": "manager.demo@foodrescue.local",
+      "firstName": "Demo",
+      "lastName": "Manager",
+      "enabled": true,
+      "emailVerified": true,
+      "realmRoles": [
+        "STORE_MANAGER"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${MANAGER_DEMO_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    }
+  ]
+}
