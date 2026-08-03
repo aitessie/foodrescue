@@ -1,6 +1,5 @@
 plugins {
 	base
-//    id("org.jlleitschuh.gradle.ktlint") version "12.3.0" apply false
 }
 
 group = "com.example.foodrescue"
@@ -11,10 +10,6 @@ subprojects {
 
 	group = rootProject.group
 	version = rootProject.version
-
-//    pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
-//        apply(plugin = "org.jlleitschuh.gradle.ktlint")
-//    }
 
 	tasks.withType<Test>().configureEach {
 		useJUnitPlatform()
