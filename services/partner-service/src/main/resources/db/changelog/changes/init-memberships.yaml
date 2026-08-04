@@ -1,0 +1,65 @@
+databaseChangeLog:
+  - changeSet:
+      id: init-memberships
+      author: food-rescue
+      changes:
+        - createTable:
+            tableName: store_staff
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_store_staff
+                    nullable: false
+
+              - column:
+                  name: user_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: store_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: store_staff
+            columnNames: user_id, store_id
+            constraintName: uk_store_staff_user_store
+
+        - addForeignKeyConstraint:
+            constraintName: fk_store_staff_store
+            baseTableName: store_staff
+            baseColumnNames: store_id
+            referencedTableName: stores
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - createIndex:
+            tableName: store_staff
+            indexName: idx_store_staff_user_id
+            columns:
+              - column:
+                  name: user_id
+
+        - createIndex:
+            tableName: store_staff
+            indexName: idx_store_staff_store_id
+            columns:
+              - column:
+                  name: store_id
+
+      rollback:
+        - dropTable:
+            tableName: store_staff
