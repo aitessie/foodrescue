@@ -5,11 +5,11 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import java.util.UUID
-import kotlin.time.Instant
+import java.time.Instant
 
 class PartnerDto(
     @field:NotNull
-    val id: UUID?,
+    val id: UUID,
 
     @field:NotBlank
     val managerId: String,
@@ -19,13 +19,13 @@ class PartnerDto(
     val name: String,
 
     @field:NotNull
-    val status: PartnerStatus?,
+    val status: PartnerStatus,
 
     @field:NotNull
-    val createdAt: Instant?,
+    val createdAt: Instant,
 
     @field:NotNull
-    val updatedAt: Instant?,
+    val updatedAt: Instant,
 ) {
 
 }

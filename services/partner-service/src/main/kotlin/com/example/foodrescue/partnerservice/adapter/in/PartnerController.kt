@@ -1,12 +1,11 @@
 package com.example.foodrescue.partnerservice.adapter.`in`
 
 import com.example.foodrescue.partnerservice.adapter.`in`.dtos.PartnerDto
+import com.example.foodrescue.partnerservice.adapter.`in`.mapper.PartnerRestMapper
 import com.example.foodrescue.partnerservice.application.usecases.GetPartnerUseCase
 import com.example.foodrescue.partnerservice.application.usecases.CreateOrUpdatePartnerUseCase
-import com.example.foodrescue.partnerservice.domain.entity.Partner
 import com.example.foodrescue.partnerservice.domain.entity.PartnerId
 import jakarta.validation.Valid
-import org.modelmapper.ModelMapper
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
@@ -20,18 +19,20 @@ import java.util.UUID
 class PartnerController(
     private val getPartnerUseCase: GetPartnerUseCase,
     private val createOrUpdatePartnerUseCase: CreateOrUpdatePartnerUseCase,
-    private val modelMapper: ModelMapper
+    private val partnerRestMapper: PartnerRestMapper,
 ) {
 
     @GetMapping("/{partnerId}")
-    fun getPartner(@PathVariable partnerId: UUID): Partner {
-        return getPartnerUseCase.getPartner(PartnerId(partnerId))
+    fun getPartner(@PathVariable partnerId: UUID): PartnerDto {
+        val partner = getPartnerUseCase.getPartner(PartnerId(partnerId))
+
+        return partnerRestMapper.toDto(partner)
     }
 
-    @PutMapping()
-    fun createOrUpdatePartner(@Valid @RequestBody partner: PartnerDto):Partner {
-        return createOrUpdatePartnerUseCase.createOrUpdatePartner(
-            modelMapper.map(partner, Partner::class.java)
-        )
+    @PutMapping
+    fun createOrUpdatePartner(@Valid @RequestBody partnerDto: PartnerDto): PartnerDto {
+        val partner = partnerRestMapper.toDomain(partnerDto)
+
+        return partnerRestMapper.toDto(createOrUpdatePartnerUseCase.createOrUpdatePartner(partner))
     }
 }

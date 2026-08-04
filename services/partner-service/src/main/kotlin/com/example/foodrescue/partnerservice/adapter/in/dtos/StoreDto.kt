@@ -1,24 +1,21 @@
 package com.example.foodrescue.partnerservice.adapter.`in`.dtos
 
-import com.example.foodrescue.partnerservice.domain.entity.Address
-import com.example.foodrescue.partnerservice.domain.entity.PartnerId
-import com.example.foodrescue.partnerservice.domain.entity.StoreId
-import com.example.foodrescue.partnerservice.domain.entity.WorkingHours
 import com.example.foodrescue.partnerservice.domain.enum.StoreStatus
-import kotlin.time.Instant
+import java.time.Instant
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import java.util.UUID
 
 class StoreDto(
 
     @field:NotNull
-    val id: StoreId,
+    val id: UUID,
 
     @field:NotNull
-    val partnerId: PartnerId,
+    val partnerId: UUID,
 
     @field:NotBlank
     @field:Size(max = 255)
@@ -29,11 +26,11 @@ class StoreDto(
 
     @field:NotEmpty
     @field:Valid
-    val workingHours: List<WorkingHours>,
+    val workingHours: List<WorkingHoursDto>,
 
     @field:NotNull
     @field:Valid
-    val address: Address,
+    val address: AddressDto,
 
     @field:NotNull
     val createdAt: Instant,
