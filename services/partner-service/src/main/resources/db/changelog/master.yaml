@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/init-partners.yaml
+
+  - include:
+      file: db/changelog/init-stores.yaml
+
+  - include:
+      file: db/changelog/init-memberships.yaml
+
+  - include:
+      file: db/changelog/init-outbox.yaml
