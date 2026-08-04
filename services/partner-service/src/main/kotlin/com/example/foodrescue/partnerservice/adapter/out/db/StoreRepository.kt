@@ -1,0 +1,38 @@
+package com.example.foodrescue.partnerservice.adapter.out.db
+
+import com.example.foodrescue.partnerservice.adapter.out.db.mapper.StoreJpaMapper
+import com.example.foodrescue.partnerservice.adapter.out.db.persistence.StoreJpaRepository
+import com.example.foodrescue.partnerservice.application.exception.StoreNotFoundException
+import com.example.foodrescue.partnerservice.application.ports.StoreDBPort
+import com.example.foodrescue.partnerservice.domain.entity.PartnerId
+import com.example.foodrescue.partnerservice.domain.entity.Store
+import com.example.foodrescue.partnerservice.domain.entity.StoreId
+import org.springframework.stereotype.Repository
+
+@Repository
+class StoreRepository(
+    private val jpaRepository: StoreJpaRepository,
+    private val mapper: StoreJpaMapper,
+) : StoreDBPort {
+    override fun save(store: Store): Store {
+        val entity = mapper.toEntity(store)
+        val savedEntity = jpaRepository.save(entity)
+
+        return mapper.toDomain(savedEntity)
+    }
+
+    override fun findById(storeId: StoreId): Store {
+        return jpaRepository.findById(storeId.value)
+            .map(mapper::toDomain)
+            .orElseThrow {
+                StoreNotFoundException(storeId)
+            }
+    }
+
+    override fun findAllByPartnerId(
+        partnerId: PartnerId
+    ): List<Store> {
+        return jpaRepository.findAllByPartnerId(partnerId.value)
+            .map(mapper::toDomain)
+    }
+}

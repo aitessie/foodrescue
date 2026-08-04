@@ -1,4 +1,4 @@
-package com.example.foodrescue.partner.configuration.security
+package com.example.foodrescue.partnerservice.configuration.security
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue

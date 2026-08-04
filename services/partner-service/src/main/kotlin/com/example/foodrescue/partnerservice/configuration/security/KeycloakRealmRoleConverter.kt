@@ -1,4 +1,4 @@
-package com.example.foodrescue.partner.configuration.security
+package com.example.foodrescue.partnerservice.configuration.security
 
 import org.springframework.core.convert.converter.Converter
 import org.springframework.security.authentication.AbstractAuthenticationToken

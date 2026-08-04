@@ -1,4 +1,4 @@
-package com.example.foodrescue.partner.domain.entity
+package com.example.foodrescue.partnerservice.domain.entity
 
 class Address(
     val city: String,

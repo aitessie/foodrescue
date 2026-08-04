@@ -1,0 +1,154 @@
+databaseChangeLog:
+  - changeSet:
+      id: init-stores
+      author: food-rescue
+      changes:
+        - createTable:
+            tableName: stores
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_stores
+                    nullable: false
+
+              - column:
+                  name: partner_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: address_city
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: address_street
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: address_building
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: address_postal_code
+                  type: VARCHAR(30)
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            constraintName: fk_stores_partner
+            baseTableName: stores
+            baseColumnNames: partner_id
+            referencedTableName: partners
+            referencedColumnNames: id
+            onDelete: RESTRICT
+
+        - createIndex:
+            tableName: stores
+            indexName: idx_stores_partner_id
+            columns:
+              - column:
+                  name: partner_id
+
+        - createIndex:
+            tableName: stores
+            indexName: idx_stores_status
+            columns:
+              - column:
+                  name: status
+
+        - createTable:
+            tableName: store_working_hours
+            columns:
+              - column:
+                  name: store_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: position
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: day_of_week
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: opens_at
+                  type: TIME WITHOUT TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: closes_at
+                  type: TIME WITHOUT TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            tableName: store_working_hours
+            columnNames: store_id, day_of_week
+            constraintName: pk_store_working_hours
+
+        - addUniqueConstraint:
+            tableName: store_working_hours
+            columnNames: store_id, position
+            constraintName: uk_store_working_hours_position
+
+        - addForeignKeyConstraint:
+            constraintName: fk_store_working_hours_store
+            baseTableName: store_working_hours
+            baseColumnNames: store_id
+            referencedTableName: stores
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - createIndex:
+            tableName: store_working_hours
+            indexName: idx_store_working_hours_store_id
+            columns:
+              - column:
+                  name: store_id
+
+      rollback:
+        - dropTable:
+            tableName: store_working_hours
+
+        - dropTable:
+            tableName: stores

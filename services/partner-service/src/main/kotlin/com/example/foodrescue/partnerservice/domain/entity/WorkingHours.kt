@@ -1,4 +1,4 @@
-package com.example.foodrescue.partner.domain.entity
+package com.example.foodrescue.partnerservice.domain.entity
 
 import java.time.DayOfWeek
 import java.time.LocalTime

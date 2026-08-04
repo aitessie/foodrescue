@@ -1,8 +1,7 @@
-package com.example.foodrescue.partner.domain.entity
+package com.example.foodrescue.partnerservice.domain.entity
 
-import com.example.foodrescue.partner.domain.enum.StoreStatus
-import kotlin.time.Clock
-import kotlin.time.Instant
+import com.example.foodrescue.partnerservice.domain.enum.StoreStatus
+import java.time.Instant
 
 class Store (
     val id: StoreId,
@@ -14,7 +13,11 @@ class Store (
     val createdAt: Instant,
     updatedAt: Instant,
 ){
-    var name: String = name
+    var name: String = name.trim().also {
+        require(it.isNotBlank()) {
+            "Store name must not be blank"
+        }
+    }
         private set
 
     var address: Address = address
@@ -26,18 +29,29 @@ class Store (
     var workingHours: List<WorkingHours> = workingHours.toList()
         private set
 
-    var updatedAt: Instant = updatedAt
+    var updatedAt: Instant = updatedAt.also {
+        require(!it.isBefore(createdAt)) {
+            "Partner updatedAt must not be before createdAt"
+        }
+    }
         private set
 
-    fun updateFrom(source: Store) {
+    fun updateFrom(
+        source: Store,
+        updatedAt: Instant,
+    ) {
         require(source.name.isNotBlank()) {
             "Store name must not be blank"
+        }
+
+        require(!updatedAt.isBefore(this.updatedAt)) {
+            "New updatedAt must not be before current updatedAt"
         }
 
         name = source.name.trim()
         address = source.address
         status = source.status
         workingHours = source.workingHours.toList()
-        updatedAt = Clock.System.now()
+        this.updatedAt = updatedAt
     }
 }
