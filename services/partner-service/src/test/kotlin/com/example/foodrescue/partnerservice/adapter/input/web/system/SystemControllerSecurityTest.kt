@@ -1,4 +1,4 @@
-package com.example.foodrescue.partner.adapter.input.web.system
+package com.example.foodrescue.partnerservice.adapter.input.web.system
 
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication

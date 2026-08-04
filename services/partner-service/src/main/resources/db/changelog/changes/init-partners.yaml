@@ -1,0 +1,63 @@
+databaseChangeLog:
+  - changeSet:
+      id: init-partners
+      author: food-rescue
+      changes:
+        - createTable:
+            tableName: partners
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_partners
+                    nullable: false
+
+              - column:
+                  name: manager_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            tableName: partners
+            indexName: idx_partners_manager_id
+            columns:
+              - column:
+                  name: manager_id
+
+        - createIndex:
+            tableName: partners
+            indexName: idx_partners_status
+            columns:
+              - column:
+                  name: status
+
+      rollback:
+        - dropTable:
+            tableName: partners
