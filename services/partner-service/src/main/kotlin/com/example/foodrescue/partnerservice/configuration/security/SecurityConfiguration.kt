@@ -1,7 +1,9 @@
-package com.example.foodrescue.partner.configuration.security
+package com.example.foodrescue.partnerservice.configuration.security
 
+import com.example.foodrescue.partnerservice.domain.enum.ApplicationRole
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -28,11 +30,37 @@ class SecurityConfiguration(private val keycloakRealmRoleConverter: KeycloakReal
                         "/actuator/health", "/actuator/health/**",
                     )
                     .permitAll()
+
+                authorization
+                    .requestMatchers(
+                        HttpMethod.GET,
+                        "/api/v1/stores/**",
+                    )
+                    .hasAnyRole(
+                        ApplicationRole.STAFF.code,
+                        ApplicationRole.MANAGER.code,
+                        ApplicationRole.ADMIN.code,
+                    )
+
+                authorization
+                    .requestMatchers(
+                        HttpMethod.PUT,
+                        "/api/v1/stores",
+                        "/api/v1/stores/**",
+                    )
+                    .hasAnyRole(
+                        ApplicationRole.MANAGER.code,
+                        ApplicationRole.ADMIN.code,
+                    )
+
                 authorization
                     .requestMatchers(
                         "/api/v1/system/secure-ping",
                     )
-                    .hasAnyRole("STORE_MANAGER", "ADMIN")
+                    .hasAnyRole(
+                        ApplicationRole.MANAGER.code,
+                        ApplicationRole.ADMIN.code,
+                    )
 
                 authorization
                     .anyRequest()

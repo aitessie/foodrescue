@@ -1,4 +1,4 @@
-package com.example.foodrescue.partner.domain.enum
+package com.example.foodrescue.partnerservice.domain.enum
 
 enum class PartnerStatus(
     val code: String,

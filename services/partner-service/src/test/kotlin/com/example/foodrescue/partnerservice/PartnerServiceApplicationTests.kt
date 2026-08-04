@@ -1,4 +1,4 @@
-package com.example.foodrescue.partner
+package com.example.foodrescue.partnerservice
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
