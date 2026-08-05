@@ -16,6 +16,7 @@ class PartnerJpaMapper {
             status = partner.status,
             createdAt = partner.createdAt,
             updatedAt = partner.updatedAt,
+            version = partner.version,
         )
     }
 
@@ -27,6 +28,7 @@ class PartnerJpaMapper {
             status = entity.status,
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt,
+            version = entity.version,
         )
     }
 }

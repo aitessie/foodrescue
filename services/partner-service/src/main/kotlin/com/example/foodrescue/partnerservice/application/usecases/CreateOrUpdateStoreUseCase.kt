@@ -1,6 +1,7 @@
 package com.example.foodrescue.partnerservice.application.usecases
 
 import com.example.foodrescue.partnerservice.application.access.StoreAccessPolicy
+import com.example.foodrescue.partnerservice.application.exception.EntityVersionConflictException
 import com.example.foodrescue.partnerservice.application.exception.StoreNotFoundException
 import com.example.foodrescue.partnerservice.application.ports.StoreDBPort
 import com.example.foodrescue.partnerservice.domain.entity.Store
@@ -33,6 +34,7 @@ class CreateOrUpdateStoreUseCase(
         return if (existingStore == null) {
             storeDBPort.save(source)
         } else {
+            checkVersion(existingStore, source)
             existingStore.updateFrom(
                 source,
                 updatedAt = Instant.now(clock),
@@ -40,4 +42,19 @@ class CreateOrUpdateStoreUseCase(
             storeDBPort.save(existingStore)
         }
     }
+
+    fun checkVersion(
+        source: Store,
+        existingStore: Store
+    ) {
+        if (source.version != existingStore.version) {
+            throw EntityVersionConflictException(
+                entityType = Store::class.simpleName!!,
+                entityId = existingStore.id.value.toString(),
+                expectedVersion = source.version,
+                actualVersion = existingStore.version,
+            )
+        }
+    }
+
 }

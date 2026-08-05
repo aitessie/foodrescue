@@ -7,6 +7,7 @@ import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import jakarta.persistence.Version
 import java.util.UUID
 import java.time.Instant
 
@@ -33,4 +34,8 @@ class PartnerJpaEntity(
 
     @Column(name = "updated_at", nullable = false)
     var updatedAt: Instant,
+
+    @Version
+    @Column(name = "version", nullable = false)
+    var version: Long = 0,
 )

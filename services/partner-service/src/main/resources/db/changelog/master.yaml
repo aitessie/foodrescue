@@ -10,3 +10,6 @@ databaseChangeLog:
 
   - include:
       file: db/changelog/init-outbox.yaml
+
+  - include:
+      file: db/changelog/db-updates.yaml

@@ -10,6 +10,7 @@ class Partner(
     status: PartnerStatus,
     val createdAt: Instant,
     updatedAt: Instant,
+    val version: Long = 0,
 ) {
 
     val managerId: String = managerId.also {

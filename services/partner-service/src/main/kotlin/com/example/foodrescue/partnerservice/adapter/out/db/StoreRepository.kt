@@ -16,7 +16,7 @@ class StoreRepository(
 ) : StoreDBPort {
     override fun save(store: Store): Store {
         val entity = mapper.toEntity(store)
-        val savedEntity = jpaRepository.save(entity)
+        val savedEntity = jpaRepository.saveAndFlush(entity)
 
         return mapper.toDomain(savedEntity)
     }

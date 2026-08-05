@@ -12,6 +12,7 @@ class Store (
     address: Address,
     val createdAt: Instant,
     updatedAt: Instant,
+    val version: Long = 0,
 ){
     var name: String = name.trim().also {
         require(it.isNotBlank()) {

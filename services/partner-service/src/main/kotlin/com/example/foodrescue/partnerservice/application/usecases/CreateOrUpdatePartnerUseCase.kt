@@ -1,6 +1,7 @@
 package com.example.foodrescue.partnerservice.application.usecases
 
 import com.example.foodrescue.partnerservice.application.access.PartnerAccessPolicy
+import com.example.foodrescue.partnerservice.application.exception.EntityVersionConflictException
 import com.example.foodrescue.partnerservice.application.exception.PartnerNotFoundException
 import com.example.foodrescue.partnerservice.application.ports.PartnerDBPort
 import com.example.foodrescue.partnerservice.domain.entity.Partner
@@ -33,6 +34,7 @@ class CreateOrUpdatePartnerUseCase(
         return if (existingPartner == null) {
             partnerDBPort.save(source)
         } else {
+            checkVersion(source, existingPartner)
             existingPartner.updateFrom(
                 source,
                 updatedAt = Instant.now(clock),
@@ -40,4 +42,19 @@ class CreateOrUpdatePartnerUseCase(
             partnerDBPort.save(existingPartner)
         }
     }
+
+    fun checkVersion(
+        source: Partner,
+        existingPartner: Partner
+    ) {
+        if (source.version != existingPartner.version) {
+            throw EntityVersionConflictException(
+                entityType = Partner::class.simpleName!!,
+                entityId = existingPartner.id.value.toString(),
+                expectedVersion = source.version,
+                actualVersion = existingPartner.version,
+            )
+        }
+    }
+
 }

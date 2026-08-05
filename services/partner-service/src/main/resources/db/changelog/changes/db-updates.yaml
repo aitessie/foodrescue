@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-optimistic-locking
+      author: food-rescue
+      changes:
+        - addColumn:
+            tableName: partners
+            columns:
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: "0"
+                  constraints:
+                    nullable: false
+
+        - addColumn:
+            tableName: stores
+            columns:
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: "0"
+                  constraints:
+                    nullable: false
+
+      rollback:
+        - dropColumn:
+            tableName: stores
+            columnName: version
+
+        - dropColumn:
+            tableName: partners
+            columnName: version

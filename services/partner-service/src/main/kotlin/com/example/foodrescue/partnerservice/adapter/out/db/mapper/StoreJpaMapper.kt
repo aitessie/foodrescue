@@ -36,6 +36,7 @@ class StoreJpaMapper {
                 .toMutableList(),
             createdAt = store.createdAt,
             updatedAt = store.updatedAt,
+            version = store.version,
         )
     }
 
@@ -60,6 +61,7 @@ class StoreJpaMapper {
             },
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt,
+            version = entity.version,
         )
     }
 }

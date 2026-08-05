@@ -15,7 +15,7 @@ class PartnerRepository(
 ) : PartnerDBPort {
     override fun save(partner: Partner): Partner {
         val entity = mapper.toEntity(partner)
-        val savedEntity = jpaRepository.save(entity)
+        val savedEntity = jpaRepository.saveAndFlush(entity)
 
         return mapper.toDomain(savedEntity)
     }
