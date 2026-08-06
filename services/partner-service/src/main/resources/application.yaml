@@ -10,6 +10,11 @@ spring:
     username: ${PARTNER_DB_USER:partner}
     password: ${PARTNER_DB_PASSWORD:partner-local-password}
 
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/master.yaml
+    default-schema: public
+
   jpa:
     open-in-view: false
     hibernate:

@@ -34,7 +34,7 @@ class CreateOrUpdateStoreUseCase(
         return if (existingStore == null) {
             storeDBPort.save(source)
         } else {
-            checkVersion(existingStore, source)
+            checkVersion(source, existingStore)
             existingStore.updateFrom(
                 source,
                 updatedAt = Instant.now(clock),
@@ -43,7 +43,7 @@ class CreateOrUpdateStoreUseCase(
         }
     }
 
-    fun checkVersion(
+    private fun checkVersion(
         source: Store,
         existingStore: Store
     ) {

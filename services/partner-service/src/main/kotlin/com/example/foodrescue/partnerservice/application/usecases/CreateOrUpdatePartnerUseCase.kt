@@ -43,7 +43,7 @@ class CreateOrUpdatePartnerUseCase(
         }
     }
 
-    fun checkVersion(
+    private fun checkVersion(
         source: Partner,
         existingPartner: Partner
     ) {
