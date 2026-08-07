@@ -3,14 +3,12 @@ package com.example.foodrescue.partnerservice.adapter.`in`.mapper
 import com.example.foodrescue.partnerservice.adapter.`in`.dtos.PartnerDto
 import com.example.foodrescue.partnerservice.domain.entity.Partner
 import com.example.foodrescue.partnerservice.domain.entity.PartnerId
-import org.springframework.stereotype.Component
 import java.time.Clock
 import java.time.Instant
+import org.springframework.stereotype.Component
 
 @Component
-class PartnerRestMapper(
-    private val clock: Clock,
-) {
+class PartnerRestMapper(private val clock: Clock) {
 
     fun toDomain(
         dto: PartnerDto,
@@ -37,5 +35,4 @@ class PartnerRestMapper(
             version = partner.version,
         )
     }
-
 }

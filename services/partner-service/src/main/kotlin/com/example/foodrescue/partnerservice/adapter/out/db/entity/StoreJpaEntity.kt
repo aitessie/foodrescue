@@ -14,45 +14,27 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.OrderColumn
 import jakarta.persistence.Table
 import jakarta.persistence.Version
-import java.util.UUID
 import java.time.Instant
+import java.util.UUID
 
 @Entity
 @Table(name = "stores")
 class StoreJpaEntity(
-
-    @Id
-    @Column(name = "id", nullable = false)
-    var id: UUID,
-
-    @Column(name = "partner_id", nullable = false)
-    var partnerId: UUID,
-
-    @Column(name = "name", nullable = false, length = 200)
-    var name: String,
-
+    @Id @Column(name = "id", nullable = false) var id: UUID,
+    @Column(name = "partner_id", nullable = false) var partnerId: UUID,
+    @Column(name = "name", nullable = false, length = 200) var name: String,
     @Column(name = "status", nullable = false, length = 30)
     @Enumerated(EnumType.STRING)
     var status: StoreStatus,
-
-    @Embedded
-    var address: AddressJpaEmbeddable,
-
+    @Embedded var address: AddressJpaEmbeddable,
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
         name = "store_working_hours",
-        joinColumns = [JoinColumn(name = "store_id")]
+        joinColumns = [JoinColumn(name = "store_id")],
     )
     @OrderColumn(name = "position")
     var workingHours: MutableList<WorkingHoursJpaEmbeddable>,
-
-    @Column(name = "created_at", nullable = false)
-    var createdAt: Instant,
-
-    @Column(name = "updated_at", nullable = false)
-    var updatedAt: Instant,
-
-    @Version
-    @Column(name = "version", nullable = false)
-    var version: Long = 0,
+    @Column(name = "created_at", nullable = false) var createdAt: Instant,
+    @Column(name = "updated_at", nullable = false) var updatedAt: Instant,
+    @Version @Column(name = "version", nullable = false) var version: Long = 0,
 )

@@ -9,22 +9,9 @@ import jakarta.validation.constraints.PositiveOrZero
 import jakarta.validation.constraints.Size
 
 class StoreDto(
-
-    @field:NotBlank
-    @field:Size(max = 255)
-    val name: String,
-
-    @field:NotNull
-    val status: StoreStatus,
-
-    @field:NotEmpty
-    @field:Valid
-    val workingHours: List<WorkingHoursDto>,
-
-    @field:NotNull
-    @field:Valid
-    val address: AddressDto,
-
-    @field:PositiveOrZero
-    val version: Long = 0,
+    @field:NotBlank @field:Size(max = 255) val name: String,
+    @field:NotNull val status: StoreStatus,
+    @field:NotEmpty @field:Valid val workingHours: List<WorkingHoursDto>,
+    @field:NotNull @field:Valid val address: AddressDto,
+    @field:PositiveOrZero val version: Long = 0,
 )

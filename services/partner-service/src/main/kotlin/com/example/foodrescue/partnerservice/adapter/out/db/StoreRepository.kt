@@ -20,16 +20,9 @@ class StoreRepository(
         return mapper.toDomain(savedEntity)
     }
 
-    override fun findById(storeId: StoreId): Store? {
-        return jpaRepository.findById(storeId.value)
-            .map(mapper::toDomain)
-            .orElse(null)
-    }
+    override fun findById(storeId: StoreId): Store? =
+        jpaRepository.findById(storeId.value).map(mapper::toDomain).orElse(null)
 
-    override fun findAllByPartnerId(
-        partnerId: PartnerId
-    ): List<Store> {
-        return jpaRepository.findAllByPartnerId(partnerId.value)
-            .map(mapper::toDomain)
-    }
+    override fun findAllByPartnerId(partnerId: PartnerId): List<Store> =
+        jpaRepository.findAllByPartnerId(partnerId.value).map(mapper::toDomain)
 }

@@ -1,13 +1,16 @@
 package com.example.foodrescue.partnerservice.adapter.out.db.persistence
 
 import com.example.foodrescue.partnerservice.adapter.out.db.entity.StoreStaffJpaEntity
+import java.util.UUID
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
-import java.util.UUID
 
 interface StoreStaffJpaRepository : JpaRepository<StoreStaffJpaEntity, UUID> {
-    fun existsByUserIdAndStoreId(userId: String, storeId: UUID): Boolean
+    fun existsByUserIdAndStoreId(
+        userId: String,
+        storeId: UUID,
+    ): Boolean
 
     @Query(
         """

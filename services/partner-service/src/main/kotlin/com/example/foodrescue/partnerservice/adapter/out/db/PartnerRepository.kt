@@ -19,14 +19,9 @@ class PartnerRepository(
         return mapper.toDomain(savedEntity)
     }
 
-    override fun findById(partnerId: PartnerId): Partner? {
-        return jpaRepository.findById(partnerId.value)
-            .map(mapper::toDomain)
-            .orElse(null)
-    }
+    override fun findById(partnerId: PartnerId): Partner? =
+        jpaRepository.findById(partnerId.value).map(mapper::toDomain).orElse(null)
 
-    override fun findAllByManagerId(managerId: String): List<Partner> {
-        return jpaRepository.findAllByManagerId(managerId)
-            .map(mapper::toDomain)
-    }
+    override fun findAllByManagerId(managerId: String): List<Partner> =
+        jpaRepository.findAllByManagerId(managerId).map(mapper::toDomain)
 }

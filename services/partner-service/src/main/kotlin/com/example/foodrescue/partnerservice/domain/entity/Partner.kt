@@ -12,18 +12,18 @@ class Partner(
     updatedAt: Instant,
     val version: Long = 0,
 ) {
-
     val managerId: String = managerId.also {
         require(it.isNotBlank()) {
             "Partner managerId must not be blank"
         }
     }
 
-    var name: String = name.trim().also {
-        require(it.isNotBlank()) {
-            "Partner name must not be blank"
+    var name: String =
+        name.trim().also {
+            require(it.isNotBlank()) {
+                "Partner name must not be blank"
+            }
         }
-    }
         private set
 
     var status: PartnerStatus = status

@@ -12,7 +12,6 @@ import org.springframework.security.web.SecurityFilterChain
 @Configuration
 @EnableMethodSecurity
 class SecurityConfiguration(private val keycloakRealmRoleConverter: KeycloakRealmRoleConverter) {
-
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
@@ -20,14 +19,13 @@ class SecurityConfiguration(private val keycloakRealmRoleConverter: KeycloakReal
                 csrf.disable()
             }
             .sessionManagement { session ->
-                session.sessionCreationPolicy(
-                    SessionCreationPolicy.STATELESS,
-                )
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
             .authorizeHttpRequests { authorization ->
                 authorization
                     .requestMatchers(
-                        "/actuator/health", "/actuator/health/**",
+                        "/actuator/health",
+                        "/actuator/health/**",
                     )
                     .permitAll()
 
@@ -54,23 +52,17 @@ class SecurityConfiguration(private val keycloakRealmRoleConverter: KeycloakReal
                     )
 
                 authorization
-                    .requestMatchers(
-                        "/api/v1/system/secure-ping",
-                    )
+                    .requestMatchers("/api/v1/system/secure-ping")
                     .hasAnyRole(
                         ApplicationRole.MANAGER.code,
                         ApplicationRole.ADMIN.code,
                     )
 
-                authorization
-                    .anyRequest()
-                    .authenticated()
+                authorization.anyRequest().authenticated()
             }
             .oauth2ResourceServer { resourceServer ->
                 resourceServer.jwt { jwt ->
-                    jwt.jwtAuthenticationConverter(
-                        keycloakRealmRoleConverter,
-                    )
+                    jwt.jwtAuthenticationConverter(keycloakRealmRoleConverter)
                 }
             }
 

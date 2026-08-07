@@ -5,7 +5,8 @@ class EntityVersionConflictException(
     val entityId: String,
     val expectedVersion: Long,
     val actualVersion: Long,
-) : RuntimeException(
-    "$entityType $entityId version conflict: " +
-        "expected=$expectedVersion, actual=$actualVersion"
-)
+) :
+    RuntimeException(
+        "$entityType $entityId version conflict: " +
+            "expected=$expectedVersion, actual=$actualVersion"
+    )

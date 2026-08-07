@@ -7,27 +7,22 @@ import com.example.foodrescue.partnerservice.domain.entity.StoreId
 import org.springframework.stereotype.Repository
 
 @Repository
-class StoreStaffRepository(
-    private val jpaRepository: StoreStaffJpaRepository,
-) : StoreStaffDBPort {
-
+class StoreStaffRepository(private val jpaRepository: StoreStaffJpaRepository) : StoreStaffDBPort {
     override fun isStaffAssignedToStore(
         userId: String,
         storeId: StoreId,
-    ): Boolean {
-        return jpaRepository.existsByUserIdAndStoreId(
+    ): Boolean =
+        jpaRepository.existsByUserIdAndStoreId(
             userId = userId,
             storeId = storeId.value,
         )
-    }
 
     override fun isStaffAssignedToAnyStoreOfPartner(
         userId: String,
-        partnerId: PartnerId
-    ): Boolean {
-        return jpaRepository.existsByUserIdAndPartnerId(
+        partnerId: PartnerId,
+    ): Boolean =
+        jpaRepository.existsByUserIdAndPartnerId(
             userId = userId,
             partnerId = partnerId.value,
         )
-    }
 }

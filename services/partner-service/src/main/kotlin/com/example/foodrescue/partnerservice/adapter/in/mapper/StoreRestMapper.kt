@@ -8,14 +8,12 @@ import com.example.foodrescue.partnerservice.domain.entity.PartnerId
 import com.example.foodrescue.partnerservice.domain.entity.Store
 import com.example.foodrescue.partnerservice.domain.entity.StoreId
 import com.example.foodrescue.partnerservice.domain.entity.WorkingHours
-import org.springframework.stereotype.Component
 import java.time.Clock
 import java.time.Instant
+import org.springframework.stereotype.Component
 
 @Component
-class StoreRestMapper(
-    private val clock: Clock,
-) {
+class StoreRestMapper(private val clock: Clock) {
 
     fun toDomain(
         dto: StoreDto,

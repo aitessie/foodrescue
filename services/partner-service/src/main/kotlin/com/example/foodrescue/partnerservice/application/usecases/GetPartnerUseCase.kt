@@ -15,8 +15,7 @@ class GetPartnerUseCase(
 ) {
 
     fun getPartner(partnerId: PartnerId): Partner {
-        val partner = partnerDBPort.findById(partnerId)
-            ?: throw PartnerNotFoundException(partnerId)
+        val partner = partnerDBPort.findById(partnerId) ?: throw PartnerNotFoundException(partnerId)
 
         partnerAccessPolicy.checkAccess(
             action = AccessAction.READ,

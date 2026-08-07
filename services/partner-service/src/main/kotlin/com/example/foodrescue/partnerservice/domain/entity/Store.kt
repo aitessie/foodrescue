@@ -3,7 +3,7 @@ package com.example.foodrescue.partnerservice.domain.entity
 import com.example.foodrescue.partnerservice.domain.enum.StoreStatus
 import java.time.Instant
 
-class Store (
+class Store(
     val id: StoreId,
     val partnerId: PartnerId,
     name: String,
@@ -13,12 +13,13 @@ class Store (
     var createdAt: Instant,
     updatedAt: Instant,
     val version: Long = 0,
-){
-    var name: String = name.trim().also {
-        require(it.isNotBlank()) {
-            "Store name must not be blank"
+) {
+    var name: String =
+        name.trim().also {
+            require(it.isNotBlank()) {
+                "Store name must not be blank"
+            }
         }
-    }
         private set
 
     var address: Address = address

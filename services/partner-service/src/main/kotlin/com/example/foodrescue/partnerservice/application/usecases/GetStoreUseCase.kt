@@ -14,13 +14,11 @@ class GetStoreUseCase(
     private val storeDBPort: StoreDBPort,
     private val storeAccessPolicy: StoreAccessPolicy,
 ) {
-
     fun getStore(
         partnerId: PartnerId,
         storeId: StoreId,
     ): Store {
-        val store = storeDBPort.findById(storeId)
-            ?: throw StoreNotFoundException(storeId)
+        val store = storeDBPort.findById(storeId) ?: throw StoreNotFoundException(storeId)
 
         if (store.partnerId != partnerId) {
             throw StoreNotFoundException(storeId)

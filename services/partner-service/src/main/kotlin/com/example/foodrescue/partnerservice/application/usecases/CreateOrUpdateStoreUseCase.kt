@@ -6,10 +6,10 @@ import com.example.foodrescue.partnerservice.application.exception.StoreNotFound
 import com.example.foodrescue.partnerservice.application.ports.StoreDBPort
 import com.example.foodrescue.partnerservice.domain.entity.Store
 import com.example.foodrescue.partnerservice.domain.enum.AccessAction
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.time.Instant
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class CreateOrUpdateStoreUseCase(
@@ -17,7 +17,6 @@ class CreateOrUpdateStoreUseCase(
     private val storeAccessPolicy: StoreAccessPolicy,
     private val clock: Clock,
 ) {
-
     @Transactional
     fun createOrUpdateStore(source: Store): Store {
         val existingStore = storeDBPort.findById(source.id)
@@ -69,7 +68,7 @@ class CreateOrUpdateStoreUseCase(
 
     private fun checkVersion(
         source: Store,
-        existingStore: Store
+        existingStore: Store,
     ) {
         if (source.version != existingStore.version) {
             throw EntityVersionConflictException(
@@ -80,5 +79,4 @@ class CreateOrUpdateStoreUseCase(
             )
         }
     }
-
 }

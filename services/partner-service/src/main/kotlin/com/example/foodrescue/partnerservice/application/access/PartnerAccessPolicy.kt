@@ -13,28 +13,28 @@ class PartnerAccessPolicy(
     private val storeStaffDBPort: StoreStaffDBPort,
     private val currentUserPort: CurrentUserPort,
 ) : AccessPolicy<Partner> {
-
     override fun checkAccess(
         action: AccessAction,
         resource: Partner,
     ) {
         val userId = currentUserPort.getUserId()
 
-        val accessAllowed = when (action) {
-            AccessAction.READ -> {
-                canReadPartner(
-                    partner = resource,
-                    userId = userId,
-                )
-            }
+        val accessAllowed =
+            when (action) {
+                AccessAction.READ -> {
+                    canReadPartner(
+                        partner = resource,
+                        userId = userId,
+                    )
+                }
 
-            AccessAction.CREATE_OR_UPDATE -> {
-                canModifyPartner(
-                    partner = resource,
-                    userId = userId,
-                )
+                AccessAction.CREATE_OR_UPDATE -> {
+                    canModifyPartner(
+                        partner = resource,
+                        userId = userId,
+                    )
+                }
             }
-        }
 
         if (!accessAllowed) {
             throw PartnerAccessDeniedException()
@@ -44,30 +44,19 @@ class PartnerAccessPolicy(
     private fun canReadPartner(
         partner: Partner,
         userId: String,
-    ): Boolean {
-        return currentUserPort.hasRole(ApplicationRole.ADMIN) ||
-            (
-                currentUserPort.hasRole(ApplicationRole.MANAGER) &&
-                    partner.managerId == userId
-                ) ||
-            (
-                currentUserPort.hasRole(ApplicationRole.STAFF) &&
-                    storeStaffDBPort
-                        .isStaffAssignedToAnyStoreOfPartner(
-                            userId = userId,
-                            partnerId = partner.id,
-                        )
-                )
-    }
+    ): Boolean =
+        currentUserPort.hasRole(ApplicationRole.ADMIN) ||
+            (currentUserPort.hasRole(ApplicationRole.MANAGER) && partner.managerId == userId) ||
+            (currentUserPort.hasRole(ApplicationRole.STAFF) &&
+                storeStaffDBPort.isStaffAssignedToAnyStoreOfPartner(
+                    userId = userId,
+                    partnerId = partner.id,
+                ))
 
     private fun canModifyPartner(
         partner: Partner,
         userId: String,
-    ): Boolean {
-        return currentUserPort.hasRole(ApplicationRole.ADMIN) ||
-            (
-                currentUserPort.hasRole(ApplicationRole.MANAGER) &&
-                    partner.managerId == userId
-                )
-    }
+    ): Boolean =
+        currentUserPort.hasRole(ApplicationRole.ADMIN) ||
+            (currentUserPort.hasRole(ApplicationRole.MANAGER) && partner.managerId == userId)
 }

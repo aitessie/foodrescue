@@ -9,31 +9,21 @@ import org.springframework.stereotype.Component
 
 @Component
 class CurrentUserAdapterService : CurrentUserPort {
-    override fun getUserId(): String {
-        return getAuthentication().token.subject!!
-    }
+    override fun getUserId(): String = getAuthentication().token.subject!!
 
     override fun hasRole(role: ApplicationRole): Boolean {
         val expectedAuthority = "ROLE_${role.code}"
 
-        return getAuthentication()
-            .authorities
-            .any { authority ->
-                authority.authority == expectedAuthority
-            }
+        return getAuthentication().authorities.any { authority ->
+            authority.authority == expectedAuthority
+        }
     }
 
     private fun getAuthentication(): JwtAuthenticationToken {
-        val authentication =
-            SecurityContextHolder.getContext().authentication
+        val authentication = SecurityContextHolder.getContext().authentication
 
-        if (
-            authentication !is JwtAuthenticationToken ||
-            !authentication.isAuthenticated
-        ) {
-            throw AuthenticationCredentialsNotFoundException(
-                "Authenticated user was not found"
-            )
+        if (authentication !is JwtAuthenticationToken || !authentication.isAuthenticated) {
+            throw AuthenticationCredentialsNotFoundException("Authenticated user was not found")
         }
 
         return authentication

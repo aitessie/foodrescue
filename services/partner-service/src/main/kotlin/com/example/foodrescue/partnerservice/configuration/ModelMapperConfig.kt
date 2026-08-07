@@ -7,12 +7,9 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration(proxyBeanMethods = false)
 class ModelMapperConfig {
-
     @Bean
-    fun modelMapper(): ModelMapper {
-        return ModelMapper().apply {
-            configuration.matchingStrategy =
-                MatchingStrategies.STRICT
+    fun modelMapper(): ModelMapper =
+        ModelMapper().apply {
+            configuration.matchingStrategy = MatchingStrategies.STRICT
         }
-    }
 }

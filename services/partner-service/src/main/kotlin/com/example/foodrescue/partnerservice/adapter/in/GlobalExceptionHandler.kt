@@ -17,25 +17,22 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityVersionConflictException::class)
     fun handleVersionConflict(
-        exception: EntityVersionConflictException,
+        exception: EntityVersionConflictException
     ): ResponseEntity<ApiExceptionResponse> {
-        return ResponseEntity
-            .status(HttpStatus.CONFLICT)
+        return ResponseEntity.status(HttpStatus.CONFLICT)
             .body(
                 ApiExceptionResponse(
                     code = "VERSION_CONFLICT",
-                    message = exception.message
-                        ?: "Entity version conflict",
+                    message = exception.message ?: "Entity version conflict",
                 )
             )
     }
 
     @ExceptionHandler(OptimisticLockingFailureException::class)
     fun handleOptimisticLockingFailure(
-        exception: OptimisticLockingFailureException,
+        exception: OptimisticLockingFailureException
     ): ResponseEntity<ApiExceptionResponse> {
-        return ResponseEntity
-            .status(HttpStatus.CONFLICT)
+        return ResponseEntity.status(HttpStatus.CONFLICT)
             .body(
                 ApiExceptionResponse(
                     code = "CONCURRENT_UPDATE",
@@ -48,16 +45,12 @@ class GlobalExceptionHandler {
         PartnerNotFoundException::class,
         StoreNotFoundException::class,
     )
-    fun handleNotFound(
-        exception: RuntimeException,
-    ): ResponseEntity<ApiExceptionResponse> {
-        return ResponseEntity
-            .status(HttpStatus.NOT_FOUND)
+    fun handleNotFound(exception: RuntimeException): ResponseEntity<ApiExceptionResponse> {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(
                 ApiExceptionResponse(
                     code = "ENTITY_NOT_FOUND",
-                    message = exception.message
-                        ?: "Entity was not found",
+                    message = exception.message ?: "Entity was not found",
                 )
             )
     }
@@ -66,31 +59,25 @@ class GlobalExceptionHandler {
         PartnerAccessDeniedException::class,
         StoreAccessDeniedException::class,
     )
-    fun handleAccessDenied(
-        exception: RuntimeException,
-    ): ResponseEntity<ApiExceptionResponse> {
-        return ResponseEntity
-            .status(HttpStatus.FORBIDDEN)
+    fun handleAccessDenied(exception: RuntimeException): ResponseEntity<ApiExceptionResponse> {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
             .body(
                 ApiExceptionResponse(
                     code = "ACCESS_DENIED",
-                    message = exception.message
-                        ?: "Access denied",
+                    message = exception.message ?: "Access denied",
                 )
             )
     }
 
     @ExceptionHandler(IllegalArgumentException::class)
     fun handleIllegalArgument(
-        exception: IllegalArgumentException,
+        exception: IllegalArgumentException
     ): ResponseEntity<ApiExceptionResponse> {
-        return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(
                 ApiExceptionResponse(
                     code = "INVALID_REQUEST",
-                    message = exception.message
-                        ?: "Invalid request",
+                    message = exception.message ?: "Invalid request",
                 )
             )
     }

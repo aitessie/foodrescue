@@ -7,18 +7,8 @@ import jakarta.validation.constraints.PositiveOrZero
 import jakarta.validation.constraints.Size
 
 class PartnerDto(
-
-    @field:NotBlank
-    @field:Size(max = 255)
-    val managerId: String,
-
-    @field:NotBlank
-    @field:Size(max = 255)
-    val name: String,
-
-    @field:NotNull
-    val status: PartnerStatus,
-
-    @field:PositiveOrZero
-    val version: Long = 0,
+    @field:NotBlank @field:Size(max = 255) val managerId: String,
+    @field:NotBlank @field:Size(max = 255) val name: String,
+    @field:NotNull val status: PartnerStatus,
+    @field:PositiveOrZero val version: Long = 0,
 )

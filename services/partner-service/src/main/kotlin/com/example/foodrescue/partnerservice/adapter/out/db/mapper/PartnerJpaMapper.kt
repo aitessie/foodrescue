@@ -7,9 +7,8 @@ import org.springframework.stereotype.Component
 
 @Component
 class PartnerJpaMapper {
-
-    fun toEntity(partner: Partner): PartnerJpaEntity {
-        return PartnerJpaEntity(
+    fun toEntity(partner: Partner): PartnerJpaEntity =
+        PartnerJpaEntity(
             id = partner.id.value,
             managerId = partner.managerId,
             name = partner.name,
@@ -18,10 +17,9 @@ class PartnerJpaMapper {
             updatedAt = partner.updatedAt,
             version = partner.version,
         )
-    }
 
-    fun toDomain(entity: PartnerJpaEntity): Partner {
-        return Partner(
+    fun toDomain(entity: PartnerJpaEntity): Partner =
+        Partner(
             id = PartnerId(entity.id),
             managerId = entity.managerId,
             name = entity.name,
@@ -30,5 +28,4 @@ class PartnerJpaMapper {
             updatedAt = entity.updatedAt,
             version = entity.version,
         )
-    }
 }

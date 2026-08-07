@@ -5,10 +5,10 @@ import com.example.foodrescue.partnerservice.application.exception.EntityVersion
 import com.example.foodrescue.partnerservice.application.ports.PartnerDBPort
 import com.example.foodrescue.partnerservice.domain.entity.Partner
 import com.example.foodrescue.partnerservice.domain.enum.AccessAction
-import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import java.time.Clock
 import java.time.Instant
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class CreateOrUpdatePartnerUseCase(
@@ -68,7 +68,7 @@ class CreateOrUpdatePartnerUseCase(
 
     private fun checkVersion(
         source: Partner,
-        existingPartner: Partner
+        existingPartner: Partner,
     ) {
         if (source.version != existingPartner.version) {
             throw EntityVersionConflictException(
@@ -79,5 +79,4 @@ class CreateOrUpdatePartnerUseCase(
             )
         }
     }
-
 }
