@@ -1,7 +1,9 @@
 package com.example.foodrescue.partnerservice.application.usecases
 
 import com.example.foodrescue.partnerservice.application.access.StoreAccessPolicy
+import com.example.foodrescue.partnerservice.application.exception.StoreNotFoundException
 import com.example.foodrescue.partnerservice.application.ports.StoreDBPort
+import com.example.foodrescue.partnerservice.domain.entity.PartnerId
 import com.example.foodrescue.partnerservice.domain.entity.Store
 import com.example.foodrescue.partnerservice.domain.entity.StoreId
 import com.example.foodrescue.partnerservice.domain.enum.AccessAction
@@ -13,8 +15,16 @@ class GetStoreUseCase(
     private val storeAccessPolicy: StoreAccessPolicy,
 ) {
 
-    fun getStore(storeId: StoreId): Store {
+    fun getStore(
+        partnerId: PartnerId,
+        storeId: StoreId,
+    ): Store {
         val store = storeDBPort.findById(storeId)
+            ?: throw StoreNotFoundException(storeId)
+
+        if (store.partnerId != partnerId) {
+            throw StoreNotFoundException(storeId)
+        }
 
         storeAccessPolicy.checkAccess(
             action = AccessAction.READ,

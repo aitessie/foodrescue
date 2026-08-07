@@ -1,6 +1,7 @@
 package com.example.foodrescue.partnerservice.application.usecases
 
 import com.example.foodrescue.partnerservice.application.access.PartnerAccessPolicy
+import com.example.foodrescue.partnerservice.application.exception.PartnerNotFoundException
 import com.example.foodrescue.partnerservice.application.ports.PartnerDBPort
 import com.example.foodrescue.partnerservice.domain.entity.Partner
 import com.example.foodrescue.partnerservice.domain.entity.PartnerId
@@ -15,6 +16,7 @@ class GetPartnerUseCase(
 
     fun getPartner(partnerId: PartnerId): Partner {
         val partner = partnerDBPort.findById(partnerId)
+            ?: throw PartnerNotFoundException(partnerId)
 
         partnerAccessPolicy.checkAccess(
             action = AccessAction.READ,

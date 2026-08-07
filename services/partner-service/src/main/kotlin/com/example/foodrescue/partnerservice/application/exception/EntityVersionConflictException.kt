@@ -1,10 +1,10 @@
 package com.example.foodrescue.partnerservice.application.exception
 
 class EntityVersionConflictException(
-    entityType: String,
-    entityId: String,
-    expectedVersion: Long,
-    actualVersion: Long,
+    val entityType: String,
+    val entityId: String,
+    val expectedVersion: Long,
+    val actualVersion: Long,
 ) : RuntimeException(
     "$entityType $entityId version conflict: " +
         "expected=$expectedVersion, actual=$actualVersion"

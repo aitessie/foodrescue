@@ -10,7 +10,7 @@ class Store (
     status: StoreStatus,
     workingHours: List<WorkingHours>,
     address: Address,
-    val createdAt: Instant,
+    var createdAt: Instant,
     updatedAt: Instant,
     val version: Long = 0,
 ){

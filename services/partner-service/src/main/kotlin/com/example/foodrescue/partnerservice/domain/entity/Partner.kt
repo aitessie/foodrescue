@@ -8,7 +8,7 @@ class Partner(
     managerId: String,
     name: String,
     status: PartnerStatus,
-    val createdAt: Instant,
+    var createdAt: Instant,
     updatedAt: Instant,
     val version: Long = 0,
 ) {

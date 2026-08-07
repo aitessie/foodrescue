@@ -1,6 +1,5 @@
 package com.example.foodrescue.partnerservice.application.access
 
-import com.example.foodrescue.partnerservice.application.exception.PartnerNotFoundException
 import com.example.foodrescue.partnerservice.application.exception.StoreAccessDeniedException
 import com.example.foodrescue.partnerservice.application.ports.CurrentUserPort
 import com.example.foodrescue.partnerservice.application.ports.PartnerDBPort
@@ -85,6 +84,7 @@ class StoreAccessPolicy(
         userId: String,
     ): Boolean {
         val partner = partnerDBPort.findById(partnerId)
+            ?: return false
 
         return partner.managerId == userId
     }

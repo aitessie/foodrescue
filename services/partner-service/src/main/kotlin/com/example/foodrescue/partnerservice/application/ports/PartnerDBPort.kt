@@ -5,6 +5,6 @@ import com.example.foodrescue.partnerservice.domain.entity.PartnerId
 
 interface PartnerDBPort {
     fun save(partner: Partner): Partner
-    fun findById(partnerId: PartnerId): Partner
+    fun findById(partnerId: PartnerId): Partner?
     fun findAllByManagerId(managerId: String): List<Partner>
 }

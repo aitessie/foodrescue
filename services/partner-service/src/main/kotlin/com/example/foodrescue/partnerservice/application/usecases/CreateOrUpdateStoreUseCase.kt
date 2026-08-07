@@ -20,27 +20,51 @@ class CreateOrUpdateStoreUseCase(
 
     @Transactional
     fun createOrUpdateStore(source: Store): Store {
-        val existingStore = try {
-            storeDBPort.findById(source.id)
-        } catch (_: StoreNotFoundException) {
-            null
-        }
+        val existingStore = storeDBPort.findById(source.id)
 
+        return if (existingStore == null) {
+            createStore(source)
+        } else {
+            updateStore(
+                existingStore = existingStore,
+                source = source,
+            )
+        }
+    }
+
+    private fun createStore(source: Store): Store {
         storeAccessPolicy.checkAccess(
             action = AccessAction.CREATE_OR_UPDATE,
             resource = source,
         )
 
-        return if (existingStore == null) {
-            storeDBPort.save(source)
-        } else {
-            checkVersion(source, existingStore)
-            existingStore.updateFrom(
-                source,
-                updatedAt = Instant.now(clock),
-            )
-            storeDBPort.save(existingStore)
+        return storeDBPort.save(source)
+    }
+
+    private fun updateStore(
+        existingStore: Store,
+        source: Store,
+    ): Store {
+        if (existingStore.partnerId != source.partnerId) {
+            throw StoreNotFoundException(source.id)
         }
+
+        storeAccessPolicy.checkAccess(
+            action = AccessAction.CREATE_OR_UPDATE,
+            resource = existingStore,
+        )
+
+        checkVersion(
+            source = source,
+            existingStore = existingStore,
+        )
+
+        existingStore.updateFrom(
+            source = source,
+            updatedAt = Instant.now(clock),
+        )
+
+        return storeDBPort.save(existingStore)
     }
 
     private fun checkVersion(

@@ -4,29 +4,38 @@ import com.example.foodrescue.partnerservice.adapter.`in`.dtos.PartnerDto
 import com.example.foodrescue.partnerservice.domain.entity.Partner
 import com.example.foodrescue.partnerservice.domain.entity.PartnerId
 import org.springframework.stereotype.Component
+import java.time.Clock
+import java.time.Instant
 
 @Component
-class PartnerRestMapper {
+class PartnerRestMapper(
+    private val clock: Clock,
+) {
 
-    fun toDto(partner: Partner): PartnerDto {
-        return PartnerDto(
-            id = partner.id.value,
-            managerId = partner.managerId,
-            name = partner.name,
-            status = partner.status,
-            createdAt = partner.createdAt,
-            updatedAt = partner.updatedAt,
-        )
-    }
+    fun toDomain(
+        dto: PartnerDto,
+        partnerId: PartnerId,
+    ): Partner {
+        val now = Instant.now(clock)
 
-    fun toDomain(dto: PartnerDto): Partner {
         return Partner(
-            id = PartnerId(dto.id),
+            id = partnerId,
             managerId = dto.managerId,
             name = dto.name,
             status = dto.status,
-            createdAt = dto.createdAt,
-            updatedAt = dto.updatedAt,
+            createdAt = now,
+            updatedAt = now,
+            version = dto.version,
         )
     }
+
+    fun toDto(partner: Partner): PartnerDto {
+        return PartnerDto(
+            managerId = partner.managerId,
+            name = partner.name,
+            status = partner.status,
+            version = partner.version,
+        )
+    }
+
 }

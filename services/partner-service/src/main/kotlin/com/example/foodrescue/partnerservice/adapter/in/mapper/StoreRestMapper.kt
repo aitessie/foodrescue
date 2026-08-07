@@ -9,55 +9,75 @@ import com.example.foodrescue.partnerservice.domain.entity.Store
 import com.example.foodrescue.partnerservice.domain.entity.StoreId
 import com.example.foodrescue.partnerservice.domain.entity.WorkingHours
 import org.springframework.stereotype.Component
+import java.time.Clock
+import java.time.Instant
 
 @Component
-class StoreRestMapper {
+class StoreRestMapper(
+    private val clock: Clock,
+) {
 
-    fun toDomain(dto: StoreDto): Store {
+    fun toDomain(
+        dto: StoreDto,
+        partnerId: PartnerId,
+        storeId: StoreId,
+    ): Store {
+        val now = Instant.now(clock)
+
         return Store(
-            id = StoreId(dto.id),
-            partnerId = PartnerId(dto.partnerId),
+            id = storeId,
+            partnerId = partnerId,
             name = dto.name,
             status = dto.status,
-            address = Address(
-                city = dto.address.city,
-                street = dto.address.street,
-                building = dto.address.building,
-                postalCode = dto.address.postalCode,
-            ),
-            workingHours = dto.workingHours.map { workingHours ->
-                WorkingHours(
-                    dayOfWeek = workingHours.dayOfWeek,
-                    opensAt = workingHours.opensAt,
-                    closesAt = workingHours.closesAt,
-                )
-            },
-            createdAt = dto.createdAt,
-            updatedAt = dto.updatedAt,
+            workingHours = dto.workingHours.map(::toDomain),
+            address = toDomain(dto.address),
+            createdAt = now,
+            updatedAt = now,
+            version = dto.version,
         )
     }
 
     fun toDto(store: Store): StoreDto {
         return StoreDto(
-            id = store.id.value,
-            partnerId = store.partnerId.value,
             name = store.name,
             status = store.status,
-            address = AddressDto(
-                city = store.address.city,
-                street = store.address.street,
-                building = store.address.building,
-                postalCode = store.address.postalCode,
-            ),
-            workingHours = store.workingHours.map { workingHours ->
-                WorkingHoursDto(
-                    dayOfWeek = workingHours.dayOfWeek,
-                    opensAt = workingHours.opensAt,
-                    closesAt = workingHours.closesAt,
-                )
-            },
-            createdAt = store.createdAt,
-            updatedAt = store.updatedAt,
+            workingHours = store.workingHours.map(::toDto),
+            address = toDto(store.address),
+            version = store.version,
+        )
+    }
+
+    private fun toDomain(dto: WorkingHoursDto): WorkingHours {
+        return WorkingHours(
+            dayOfWeek = dto.dayOfWeek,
+            opensAt = dto.opensAt,
+            closesAt = dto.closesAt,
+        )
+    }
+
+    private fun toDto(workingHours: WorkingHours): WorkingHoursDto {
+        return WorkingHoursDto(
+            dayOfWeek = workingHours.dayOfWeek,
+            opensAt = workingHours.opensAt,
+            closesAt = workingHours.closesAt,
+        )
+    }
+
+    private fun toDomain(dto: AddressDto): Address {
+        return Address(
+            city = dto.city,
+            street = dto.street,
+            building = dto.building,
+            postalCode = dto.postalCode,
+        )
+    }
+
+    private fun toDto(address: Address): AddressDto {
+        return AddressDto(
+            city = address.city,
+            street = address.street,
+            building = address.building,
+            postalCode = address.postalCode,
         )
     }
 }

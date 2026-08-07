@@ -4,6 +4,7 @@ import com.example.foodrescue.partnerservice.adapter.`in`.dtos.StoreDto
 import com.example.foodrescue.partnerservice.adapter.`in`.mapper.StoreRestMapper
 import com.example.foodrescue.partnerservice.application.usecases.GetStoreUseCase
 import com.example.foodrescue.partnerservice.application.usecases.CreateOrUpdateStoreUseCase
+import com.example.foodrescue.partnerservice.domain.entity.PartnerId
 import com.example.foodrescue.partnerservice.domain.entity.StoreId
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-@RequestMapping("/api/v1/stores")
+@RequestMapping("/api/v1/partners/{partnerId}/stores")
 class StoreController(
     private val getStoreUseCase: GetStoreUseCase,
     private val createOrUpdateStoreUseCase: CreateOrUpdateStoreUseCase,
@@ -23,15 +24,32 @@ class StoreController(
 ) {
 
     @GetMapping("/{storeId}")
-    fun getStore(@PathVariable storeId: UUID): StoreDto {
-        val store = getStoreUseCase.getStore(StoreId(storeId))
+    fun getStore(
+        @PathVariable partnerId: UUID,
+        @PathVariable storeId: UUID,
+    ): StoreDto {
+        val store = getStoreUseCase.getStore(
+            partnerId = PartnerId(partnerId),
+            storeId = StoreId(storeId),
+        )
+
         return storeRestMapper.toDto(store)
     }
 
-    @PutMapping
-    fun createOrUpdateStore(@Valid @RequestBody store: StoreDto): StoreDto {
-        val store = storeRestMapper.toDomain(store)
+    @PutMapping("/{storeId}")
+    fun createOrUpdateStore(
+        @PathVariable partnerId: UUID,
+        @PathVariable storeId: UUID,
+        @Valid @RequestBody storeDto: StoreDto,
+    ): StoreDto {
+        val source = storeRestMapper.toDomain(
+            dto = storeDto,
+            partnerId = PartnerId(partnerId),
+            storeId = StoreId(storeId),
+        )
 
-        return storeRestMapper.toDto(createOrUpdateStoreUseCase.createOrUpdateStore(store))
+        val savedStore = createOrUpdateStoreUseCase.createOrUpdateStore(source)
+
+        return storeRestMapper.toDto(savedStore)
     }
 }

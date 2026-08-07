@@ -23,16 +23,26 @@ class PartnerController(
 ) {
 
     @GetMapping("/{partnerId}")
-    fun getPartner(@PathVariable partnerId: UUID): PartnerDto {
+    fun getPartner(
+        @PathVariable partnerId: UUID,
+    ): PartnerDto {
         val partner = getPartnerUseCase.getPartner(PartnerId(partnerId))
 
         return partnerRestMapper.toDto(partner)
     }
 
-    @PutMapping
-    fun createOrUpdatePartner(@Valid @RequestBody partnerDto: PartnerDto): PartnerDto {
-        val partner = partnerRestMapper.toDomain(partnerDto)
+    @PutMapping("/{partnerId}")
+    fun createOrUpdatePartner(
+        @PathVariable partnerId: UUID,
+        @Valid @RequestBody partnerDto: PartnerDto,
+    ): PartnerDto {
+        val source = partnerRestMapper.toDomain(
+            dto = partnerDto,
+            partnerId = PartnerId(partnerId),
+        )
 
-        return partnerRestMapper.toDto(createOrUpdatePartnerUseCase.createOrUpdatePartner(partner))
+        val savedPartner = createOrUpdatePartnerUseCase.createOrUpdatePartner(source)
+
+        return partnerRestMapper.toDto(savedPartner)
     }
 }

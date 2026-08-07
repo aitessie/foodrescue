@@ -34,6 +34,7 @@ dependencies {
     implementation("org.modelmapper:modelmapper:3.2.6")
     implementation("org.hibernate.orm:hibernate-core:7.4.5.Final")
     implementation("jakarta.validation:jakarta.validation-api:4.0.0-M1")
+    implementation("org.springframework.boot:spring-boot-starter-liquibase")
 
     runtimeOnly("org.postgresql:postgresql")
 

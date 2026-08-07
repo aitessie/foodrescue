@@ -2,7 +2,6 @@ package com.example.foodrescue.partnerservice.adapter.out.db
 
 import com.example.foodrescue.partnerservice.adapter.out.db.mapper.StoreJpaMapper
 import com.example.foodrescue.partnerservice.adapter.out.db.persistence.StoreJpaRepository
-import com.example.foodrescue.partnerservice.application.exception.StoreNotFoundException
 import com.example.foodrescue.partnerservice.application.ports.StoreDBPort
 import com.example.foodrescue.partnerservice.domain.entity.PartnerId
 import com.example.foodrescue.partnerservice.domain.entity.Store
@@ -21,12 +20,10 @@ class StoreRepository(
         return mapper.toDomain(savedEntity)
     }
 
-    override fun findById(storeId: StoreId): Store {
+    override fun findById(storeId: StoreId): Store? {
         return jpaRepository.findById(storeId.value)
             .map(mapper::toDomain)
-            .orElseThrow {
-                StoreNotFoundException(storeId)
-            }
+            .orElse(null)
     }
 
     override fun findAllByPartnerId(

@@ -2,7 +2,6 @@ package com.example.foodrescue.partnerservice.application.usecases
 
 import com.example.foodrescue.partnerservice.application.access.PartnerAccessPolicy
 import com.example.foodrescue.partnerservice.application.exception.EntityVersionConflictException
-import com.example.foodrescue.partnerservice.application.exception.PartnerNotFoundException
 import com.example.foodrescue.partnerservice.application.ports.PartnerDBPort
 import com.example.foodrescue.partnerservice.domain.entity.Partner
 import com.example.foodrescue.partnerservice.domain.enum.AccessAction
@@ -20,27 +19,51 @@ class CreateOrUpdatePartnerUseCase(
 
     @Transactional
     fun createOrUpdatePartner(source: Partner): Partner {
-        val existingPartner = try {
-            partnerDBPort.findById(source.id)
-        } catch (_: PartnerNotFoundException) {
-            null
-        }
+        val existingPartner = partnerDBPort.findById(source.id)
 
+        return if (existingPartner == null) {
+            createPartner(source)
+        } else {
+            updatePartner(
+                existingPartner = existingPartner,
+                source = source,
+            )
+        }
+    }
+
+    private fun createPartner(source: Partner): Partner {
         partnerAccessPolicy.checkAccess(
             action = AccessAction.CREATE_OR_UPDATE,
             resource = source,
         )
 
-        return if (existingPartner == null) {
-            partnerDBPort.save(source)
-        } else {
-            checkVersion(source, existingPartner)
-            existingPartner.updateFrom(
-                source,
-                updatedAt = Instant.now(clock),
-            )
-            partnerDBPort.save(existingPartner)
+        return partnerDBPort.save(source)
+    }
+
+    private fun updatePartner(
+        existingPartner: Partner,
+        source: Partner,
+    ): Partner {
+        partnerAccessPolicy.checkAccess(
+            action = AccessAction.CREATE_OR_UPDATE,
+            resource = existingPartner,
+        )
+
+        require(existingPartner.managerId == source.managerId) {
+            "Partner managerId cannot be changed"
         }
+
+        checkVersion(
+            source = source,
+            existingPartner = existingPartner,
+        )
+
+        existingPartner.updateFrom(
+            source = source,
+            updatedAt = Instant.now(clock),
+        )
+
+        return partnerDBPort.save(existingPartner)
     }
 
     private fun checkVersion(

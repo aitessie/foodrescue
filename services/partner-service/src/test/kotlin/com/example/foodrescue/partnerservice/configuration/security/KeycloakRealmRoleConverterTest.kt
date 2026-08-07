@@ -19,7 +19,7 @@ class KeycloakRealmRoleConverterTest {
             .claim(
                 "realm_access",
                 mapOf(
-                    "roles" to listOf("STORE_MANAGER", "CUSTOMER"),
+                    "roles" to listOf("MANAGER", "CUSTOMER"),
                 ),
             )
             .build()
@@ -30,7 +30,7 @@ class KeycloakRealmRoleConverterTest {
             .map { authority -> authority.authority }
             .toSet()
 
-        assertTrue("ROLE_STORE_MANAGER" in authorities)
+        assertTrue("ROLE_MANAGER" in authorities)
         assertTrue("ROLE_CUSTOMER" in authorities)
         assertEquals("manager.demo", authentication.name)
     }
