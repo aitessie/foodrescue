@@ -2,8 +2,11 @@ package com.example.foodrescue.partnerservice.application.usecases
 
 import com.example.foodrescue.partnerservice.application.access.StoreAccessPolicy
 import com.example.foodrescue.partnerservice.application.exception.EntityVersionConflictException
+import com.example.foodrescue.partnerservice.application.exception.PartnerNotFoundException
 import com.example.foodrescue.partnerservice.application.exception.StoreNotFoundException
+import com.example.foodrescue.partnerservice.application.ports.PartnerDBPort
 import com.example.foodrescue.partnerservice.application.ports.StoreDBPort
+import com.example.foodrescue.partnerservice.domain.entity.PartnerId
 import com.example.foodrescue.partnerservice.domain.entity.Store
 import com.example.foodrescue.partnerservice.domain.enum.AccessAction
 import java.time.Clock
@@ -14,9 +17,11 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class CreateOrUpdateStoreUseCase(
     private val storeDBPort: StoreDBPort,
+    private val partnerDBPort: PartnerDBPort,
     private val storeAccessPolicy: StoreAccessPolicy,
     private val clock: Clock,
 ) {
+
     @Transactional
     fun createOrUpdateStore(source: Store): Store {
         val existingStore = storeDBPort.findById(source.id)
@@ -32,6 +37,8 @@ class CreateOrUpdateStoreUseCase(
     }
 
     private fun createStore(source: Store): Store {
+        checkPartnerExists(source.partnerId)
+
         storeAccessPolicy.checkAccess(
             action = AccessAction.CREATE_OR_UPDATE,
             resource = source,
@@ -64,6 +71,10 @@ class CreateOrUpdateStoreUseCase(
         )
 
         return storeDBPort.save(existingStore)
+    }
+
+    private fun checkPartnerExists(partnerId: PartnerId) {
+        partnerDBPort.findById(partnerId) ?: throw PartnerNotFoundException(partnerId)
     }
 
     private fun checkVersion(

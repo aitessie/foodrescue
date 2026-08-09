@@ -2,6 +2,7 @@ package com.example.foodrescue.partnerservice.application.usecases
 
 import com.example.foodrescue.partnerservice.application.access.PartnerAccessPolicy
 import com.example.foodrescue.partnerservice.application.exception.EntityVersionConflictException
+import com.example.foodrescue.partnerservice.application.exception.PartnerManagerChangeNotAllowedException
 import com.example.foodrescue.partnerservice.application.ports.PartnerDBPort
 import com.example.foodrescue.partnerservice.domain.entity.Partner
 import com.example.foodrescue.partnerservice.domain.enum.AccessAction
@@ -49,8 +50,8 @@ class CreateOrUpdatePartnerUseCase(
             resource = existingPartner,
         )
 
-        require(existingPartner.managerId == source.managerId) {
-            "Partner managerId cannot be changed"
+        if (existingPartner.managerId != source.managerId) {
+            throw PartnerManagerChangeNotAllowedException(partnerId = existingPartner.id)
         }
 
         checkVersion(
