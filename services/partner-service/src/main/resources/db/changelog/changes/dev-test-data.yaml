@@ -1,0 +1,155 @@
+databaseChangeLog:
+  - changeSet:
+      id: load-local-partner-test-data
+      author: yakov
+      contextFilter: "@local"
+
+      changes:
+        - loadData:
+            tableName: partners
+            file: ../test-data/partners.csv
+            relativeToChangelogFile: true
+            encoding: UTF-8
+            separator: ";"
+            quotchar: '"'
+            columns:
+              - column:
+                  header: id
+                  name: id
+                  type: UUID
+              - column:
+                  header: manager_id
+                  name: manager_id
+                  type: STRING
+              - column:
+                  header: name
+                  name: name
+                  type: STRING
+              - column:
+                  header: status
+                  name: status
+                  type: STRING
+              - column:
+                  header: created_at
+                  name: created_at
+                  type: TIMESTAMP
+              - column:
+                  header: updated_at
+                  name: updated_at
+                  type: TIMESTAMP
+              - column:
+                  header: version
+                  name: version
+                  type: NUMERIC
+
+        - loadData:
+            tableName: stores
+            file: ../test-data/stores.csv
+            relativeToChangelogFile: true
+            encoding: UTF-8
+            separator: ";"
+            quotchar: '"'
+            columns:
+              - column:
+                  header: id
+                  name: id
+                  type: UUID
+              - column:
+                  header: partner_id
+                  name: partner_id
+                  type: UUID
+              - column:
+                  header: name
+                  name: name
+                  type: STRING
+              - column:
+                  header: status
+                  name: status
+                  type: STRING
+              - column:
+                  header: address_city
+                  name: address_city
+                  type: STRING
+              - column:
+                  header: address_street
+                  name: address_street
+                  type: STRING
+              - column:
+                  header: address_building
+                  name: address_building
+                  type: STRING
+              - column:
+                  header: address_postal_code
+                  name: address_postal_code
+                  type: STRING
+              - column:
+                  header: created_at
+                  name: created_at
+                  type: TIMESTAMP
+              - column:
+                  header: updated_at
+                  name: updated_at
+                  type: TIMESTAMP
+              - column:
+                  header: version
+                  name: version
+                  type: NUMERIC
+
+        - loadData:
+            tableName: store_staff
+            file: ../test-data/store-staff.csv
+            relativeToChangelogFile: true
+            encoding: UTF-8
+            separator: ";"
+            quotchar: '"'
+            columns:
+              - column:
+                  header: id
+                  name: id
+                  type: UUID
+
+              - column:
+                  header: user_id
+                  name: user_id
+                  type: STRING
+
+              - column:
+                  header: store_id
+                  name: store_id
+                  type: UUID
+
+              - column:
+                  header: created_at
+                  name: created_at
+                  type: TIMESTAMP
+
+      rollback:
+        - delete:
+            tableName: store_staff
+            where: >
+              id IN (
+                '30000000-0000-0000-0000-000000000001',
+                '30000000-0000-0000-0000-000000000002',
+                '30000000-0000-0000-0000-000000000003',
+                '30000000-0000-0000-0000-000000000004'
+              )
+
+        - delete:
+            tableName: stores
+            where: >
+              id IN (
+                '20000000-0000-0000-0000-000000000001',
+                '20000000-0000-0000-0000-000000000002',
+                '20000000-0000-0000-0000-000000000003',
+                '20000000-0000-0000-0000-000000000004',
+                '20000000-0000-0000-0000-000000000005'
+              )
+
+        - delete:
+            tableName: partners
+            where: >
+              id IN (
+                '10000000-0000-0000-0000-000000000001',
+                '10000000-0000-0000-0000-000000000002',
+                '10000000-0000-0000-0000-000000000003'
+              )

@@ -6,6 +6,6 @@ enum class ApplicationRole(
 ) {
     CUSTOMER("CUSTOMER", "Покупатель"),
     STAFF("STAFF", "Персонал магазина"),
-    MANAGER("MANAGER", "Мэнеджер магазина"),
+    MANAGER("MANAGER", "Менеджер магазина"),
     ADMIN("ADMIN", "Админ"),
 }

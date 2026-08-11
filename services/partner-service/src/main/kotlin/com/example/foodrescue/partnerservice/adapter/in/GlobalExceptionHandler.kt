@@ -3,6 +3,7 @@ package com.example.foodrescue.partnerservice.adapter.`in`
 import com.example.foodrescue.partnerservice.adapter.`in`.dtos.ApiExceptionResponse
 import com.example.foodrescue.partnerservice.application.exception.EntityVersionConflictException
 import com.example.foodrescue.partnerservice.application.exception.PartnerAccessDeniedException
+import com.example.foodrescue.partnerservice.application.exception.PartnerManagerChangeNotAllowedException
 import com.example.foodrescue.partnerservice.application.exception.PartnerNotFoundException
 import com.example.foodrescue.partnerservice.application.exception.StoreAccessDeniedException
 import com.example.foodrescue.partnerservice.application.exception.StoreNotFoundException
@@ -80,5 +81,18 @@ class GlobalExceptionHandler {
                     message = exception.message ?: "Invalid request",
                 )
             )
+    }
+
+    @ExceptionHandler(PartnerManagerChangeNotAllowedException::class)
+    fun handlePartnerManagerChangeNotAllowedException(
+        exception: PartnerManagerChangeNotAllowedException
+    ): ResponseEntity<ApiExceptionResponse> {
+        val response =
+            ApiExceptionResponse(
+                code = "PARTNER_MANAGER_CHANGE_NOT_ALLOWED",
+                message = exception.message ?: "Partner manager cannot be changed",
+            )
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response)
     }
 }

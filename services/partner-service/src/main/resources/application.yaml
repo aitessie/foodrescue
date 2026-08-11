@@ -1,5 +1,5 @@
 server:
-  port: 8082
+  port: ${PARTNER_SERVICE_PORT:8082}
 
 spring:
   application:
@@ -22,6 +22,7 @@ spring:
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    partner-events-topic: ${PARTNER_EVENTS_TOPIC:partner.events.v1}
 
   security:
     oauth2:
@@ -56,9 +57,4 @@ management:
 
   tracing:
     sampling:
-      probability: 1.0
-
-logging:
-  structured:
-    format:
-      console: ecs
+      probability: ${TRACING_SAMPLING_PROBABILITY:0.1}

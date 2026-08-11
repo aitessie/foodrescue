@@ -17,7 +17,7 @@ class KeycloakRealmRoleConverterTest {
                 .claim("preferred_username", "manager.demo")
                 .claim(
                     "realm_access",
-                    mapOf("roles" to listOf("MANAGER", "CUSTOMER")),
+                    mapOf("roles" to listOf("ADMIN", "MANAGER", "CUSTOMER", "STAFF")),
                 )
                 .build()
 
@@ -26,8 +26,10 @@ class KeycloakRealmRoleConverterTest {
         val authorities =
             authentication.authorities.map { authority -> authority.authority }.toSet()
 
+        assertTrue("ROLE_ADMIN" in authorities)
         assertTrue("ROLE_MANAGER" in authorities)
         assertTrue("ROLE_CUSTOMER" in authorities)
+        assertTrue("ROLE_STAFF" in authorities)
         assertEquals("manager.demo", authentication.name)
     }
 
