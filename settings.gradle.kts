@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "foodrescue"
 
 include(":services:partner-service")
+include(":services:offer-service")
