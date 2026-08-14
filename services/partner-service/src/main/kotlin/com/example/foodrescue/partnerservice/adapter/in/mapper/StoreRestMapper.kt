@@ -3,11 +3,11 @@ package com.example.foodrescue.partnerservice.adapter.`in`.mapper
 import com.example.foodrescue.partnerservice.adapter.`in`.dtos.AddressDto
 import com.example.foodrescue.partnerservice.adapter.`in`.dtos.StoreDto
 import com.example.foodrescue.partnerservice.adapter.`in`.dtos.WorkingHoursDto
-import com.example.foodrescue.partnerservice.domain.entity.Address
-import com.example.foodrescue.partnerservice.domain.entity.PartnerId
-import com.example.foodrescue.partnerservice.domain.entity.Store
-import com.example.foodrescue.partnerservice.domain.entity.StoreId
-import com.example.foodrescue.partnerservice.domain.entity.WorkingHours
+import com.example.foodrescue.partnerservice.domain.entities.Address
+import com.example.foodrescue.partnerservice.domain.entities.PartnerId
+import com.example.foodrescue.partnerservice.domain.entities.Store
+import com.example.foodrescue.partnerservice.domain.entities.StoreId
+import com.example.foodrescue.partnerservice.domain.entities.WorkingHours
 import java.time.Clock
 import java.time.Instant
 import org.springframework.stereotype.Component

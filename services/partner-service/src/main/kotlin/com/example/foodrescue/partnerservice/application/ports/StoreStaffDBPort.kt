@@ -1,7 +1,7 @@
 package com.example.foodrescue.partnerservice.application.ports
 
-import com.example.foodrescue.partnerservice.domain.entity.PartnerId
-import com.example.foodrescue.partnerservice.domain.entity.StoreId
+import com.example.foodrescue.partnerservice.domain.entities.PartnerId
+import com.example.foodrescue.partnerservice.domain.entities.StoreId
 
 interface StoreStaffDBPort {
     fun isStaffAssignedToStore(

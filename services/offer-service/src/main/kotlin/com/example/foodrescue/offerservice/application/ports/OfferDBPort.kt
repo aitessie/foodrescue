@@ -1,10 +1,10 @@
 package com.example.foodrescue.offerservice.application.ports
 
-import com.example.foodrescue.offerservice.domain.entity.NormalizedOfferSearchFilter
-import com.example.foodrescue.offerservice.domain.entity.Offer
-import com.example.foodrescue.offerservice.domain.entity.OfferCursorData
-import com.example.foodrescue.offerservice.domain.entity.OfferId
-import com.example.foodrescue.offerservice.domain.entity.OfferSearchItem
+import com.example.foodrescue.offerservice.domain.entities.NormalizedOfferSearchFilter
+import com.example.foodrescue.offerservice.domain.entities.Offer
+import com.example.foodrescue.offerservice.domain.entities.OfferCursorData
+import com.example.foodrescue.offerservice.domain.entities.OfferId
+import com.example.foodrescue.offerservice.domain.entities.OfferSearchItem
 import java.time.Instant
 
 interface OfferDBPort {

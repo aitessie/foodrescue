@@ -1,11 +1,11 @@
 package com.example.foodrescue.partnerservice.application.access
 
-import com.example.foodrescue.partnerservice.application.exception.PartnerAccessDeniedException
+import com.example.foodrescue.partnerservice.application.exceptions.PartnerAccessDeniedException
 import com.example.foodrescue.partnerservice.application.ports.CurrentUserPort
 import com.example.foodrescue.partnerservice.application.ports.PartnerDBPort
 import com.example.foodrescue.partnerservice.application.ports.StoreStaffDBPort
-import com.example.foodrescue.partnerservice.domain.entity.Partner
-import com.example.foodrescue.partnerservice.domain.entity.PartnerId
+import com.example.foodrescue.partnerservice.domain.entities.Partner
+import com.example.foodrescue.partnerservice.domain.entities.PartnerId
 import com.example.foodrescue.partnerservice.domain.enum.AccessAction
 import com.example.foodrescue.partnerservice.domain.enum.ApplicationRole
 import com.example.foodrescue.partnerservice.domain.enum.PartnerStatus

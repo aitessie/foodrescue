@@ -1,11 +1,11 @@
 package com.example.foodrescue.partnerservice.application.usecases
 
 import com.example.foodrescue.partnerservice.application.access.StoreAccessPolicy
-import com.example.foodrescue.partnerservice.application.exception.StoreNotFoundException
+import com.example.foodrescue.partnerservice.application.exceptions.StoreNotFoundException
 import com.example.foodrescue.partnerservice.application.ports.StoreDBPort
-import com.example.foodrescue.partnerservice.domain.entity.PartnerId
-import com.example.foodrescue.partnerservice.domain.entity.Store
-import com.example.foodrescue.partnerservice.domain.entity.StoreId
+import com.example.foodrescue.partnerservice.domain.entities.PartnerId
+import com.example.foodrescue.partnerservice.domain.entities.Store
+import com.example.foodrescue.partnerservice.domain.entities.StoreId
 import com.example.foodrescue.partnerservice.domain.enum.AccessAction
 import org.springframework.stereotype.Service
 

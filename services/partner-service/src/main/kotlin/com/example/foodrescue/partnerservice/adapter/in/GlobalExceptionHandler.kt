@@ -1,12 +1,12 @@
 package com.example.foodrescue.partnerservice.adapter.`in`
 
 import com.example.foodrescue.partnerservice.adapter.`in`.dtos.ApiExceptionResponse
-import com.example.foodrescue.partnerservice.application.exception.EntityVersionConflictException
-import com.example.foodrescue.partnerservice.application.exception.PartnerAccessDeniedException
-import com.example.foodrescue.partnerservice.application.exception.PartnerManagerChangeNotAllowedException
-import com.example.foodrescue.partnerservice.application.exception.PartnerNotFoundException
-import com.example.foodrescue.partnerservice.application.exception.StoreAccessDeniedException
-import com.example.foodrescue.partnerservice.application.exception.StoreNotFoundException
+import com.example.foodrescue.partnerservice.application.exceptions.EntityVersionConflictException
+import com.example.foodrescue.partnerservice.application.exceptions.PartnerAccessDeniedException
+import com.example.foodrescue.partnerservice.application.exceptions.PartnerManagerChangeNotAllowedException
+import com.example.foodrescue.partnerservice.application.exceptions.PartnerNotFoundException
+import com.example.foodrescue.partnerservice.application.exceptions.StoreAccessDeniedException
+import com.example.foodrescue.partnerservice.application.exceptions.StoreNotFoundException
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

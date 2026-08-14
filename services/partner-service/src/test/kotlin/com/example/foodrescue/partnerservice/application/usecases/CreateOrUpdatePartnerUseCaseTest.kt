@@ -1,12 +1,12 @@
 package com.example.foodrescue.partnerservice.application.usecases
 
 import com.example.foodrescue.partnerservice.application.access.PartnerAccessPolicy
-import com.example.foodrescue.partnerservice.application.exception.EntityVersionConflictException
-import com.example.foodrescue.partnerservice.application.exception.PartnerAccessDeniedException
-import com.example.foodrescue.partnerservice.application.exception.PartnerManagerChangeNotAllowedException
+import com.example.foodrescue.partnerservice.application.exceptions.EntityVersionConflictException
+import com.example.foodrescue.partnerservice.application.exceptions.PartnerAccessDeniedException
+import com.example.foodrescue.partnerservice.application.exceptions.PartnerManagerChangeNotAllowedException
 import com.example.foodrescue.partnerservice.application.ports.PartnerDBPort
-import com.example.foodrescue.partnerservice.domain.entity.Partner
-import com.example.foodrescue.partnerservice.domain.entity.PartnerId
+import com.example.foodrescue.partnerservice.domain.entities.Partner
+import com.example.foodrescue.partnerservice.domain.entities.PartnerId
 import com.example.foodrescue.partnerservice.domain.enum.AccessAction
 import com.example.foodrescue.partnerservice.domain.enum.PartnerStatus
 import java.time.Clock

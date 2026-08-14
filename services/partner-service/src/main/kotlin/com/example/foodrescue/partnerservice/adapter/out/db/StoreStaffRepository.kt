@@ -2,8 +2,8 @@ package com.example.foodrescue.partnerservice.adapter.out.db
 
 import com.example.foodrescue.partnerservice.adapter.out.db.persistence.StoreStaffJpaRepository
 import com.example.foodrescue.partnerservice.application.ports.StoreStaffDBPort
-import com.example.foodrescue.partnerservice.domain.entity.PartnerId
-import com.example.foodrescue.partnerservice.domain.entity.StoreId
+import com.example.foodrescue.partnerservice.domain.entities.PartnerId
+import com.example.foodrescue.partnerservice.domain.entities.StoreId
 import org.springframework.stereotype.Repository
 
 @Repository

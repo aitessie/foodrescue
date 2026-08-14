@@ -1,7 +1,7 @@
 package com.example.foodrescue.partnerservice.application.ports
 
-import com.example.foodrescue.partnerservice.domain.entity.Partner
-import com.example.foodrescue.partnerservice.domain.entity.PartnerId
+import com.example.foodrescue.partnerservice.domain.entities.Partner
+import com.example.foodrescue.partnerservice.domain.entities.PartnerId
 
 interface PartnerDBPort {
     fun save(partner: Partner): Partner

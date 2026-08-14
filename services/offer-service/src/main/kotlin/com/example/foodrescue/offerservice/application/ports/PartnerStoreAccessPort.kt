@@ -1,8 +1,8 @@
 package com.example.foodrescue.offerservice.application.ports
 
-import com.example.foodrescue.offerservice.domain.entity.PartnerId
-import com.example.foodrescue.offerservice.domain.entity.PartnerStoreAccessSnapshot
-import com.example.foodrescue.offerservice.domain.entity.StoreId
+import com.example.foodrescue.offerservice.domain.entities.PartnerId
+import com.example.foodrescue.offerservice.domain.entities.PartnerStoreAccessSnapshot
+import com.example.foodrescue.offerservice.domain.entities.StoreId
 
 interface PartnerStoreAccessPort {
     fun checkAccess(

@@ -1,10 +1,10 @@
 package com.example.foodrescue.partnerservice.application.usecases
 
 import com.example.foodrescue.partnerservice.application.access.PartnerAccessPolicy
-import com.example.foodrescue.partnerservice.application.exception.PartnerNotFoundException
+import com.example.foodrescue.partnerservice.application.exceptions.PartnerNotFoundException
 import com.example.foodrescue.partnerservice.application.ports.PartnerDBPort
-import com.example.foodrescue.partnerservice.domain.entity.Partner
-import com.example.foodrescue.partnerservice.domain.entity.PartnerId
+import com.example.foodrescue.partnerservice.domain.entities.Partner
+import com.example.foodrescue.partnerservice.domain.entities.PartnerId
 import com.example.foodrescue.partnerservice.domain.enum.AccessAction
 import org.springframework.stereotype.Service
 

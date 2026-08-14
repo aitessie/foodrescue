@@ -1,7 +1,7 @@
 package com.example.foodrescue.offerservice.application.ports
 
-import com.example.foodrescue.offerservice.domain.entity.ProductTemplate
-import com.example.foodrescue.offerservice.domain.entity.ProductTemplateId
+import com.example.foodrescue.offerservice.domain.entities.ProductTemplate
+import com.example.foodrescue.offerservice.domain.entities.ProductTemplateId
 
 interface ProductTemplateDBPort {
     fun findById(id: ProductTemplateId): ProductTemplate?

@@ -3,11 +3,11 @@ package com.example.foodrescue.partnerservice.adapter.out.db.mapper
 import com.example.foodrescue.partnerservice.adapter.out.db.entity.AddressJpaEmbeddable
 import com.example.foodrescue.partnerservice.adapter.out.db.entity.StoreJpaEntity
 import com.example.foodrescue.partnerservice.adapter.out.db.entity.WorkingHoursJpaEmbeddable
-import com.example.foodrescue.partnerservice.domain.entity.Address
-import com.example.foodrescue.partnerservice.domain.entity.PartnerId
-import com.example.foodrescue.partnerservice.domain.entity.Store
-import com.example.foodrescue.partnerservice.domain.entity.StoreId
-import com.example.foodrescue.partnerservice.domain.entity.WorkingHours
+import com.example.foodrescue.partnerservice.domain.entities.Address
+import com.example.foodrescue.partnerservice.domain.entities.PartnerId
+import com.example.foodrescue.partnerservice.domain.entities.Store
+import com.example.foodrescue.partnerservice.domain.entities.StoreId
+import com.example.foodrescue.partnerservice.domain.entities.WorkingHours
 import org.springframework.stereotype.Component
 
 @Component

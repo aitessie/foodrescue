@@ -1,8 +1,8 @@
 package com.example.foodrescue.partnerservice.adapter.out.db.mapper
 
 import com.example.foodrescue.partnerservice.adapter.out.db.entity.PartnerJpaEntity
-import com.example.foodrescue.partnerservice.domain.entity.Partner
-import com.example.foodrescue.partnerservice.domain.entity.PartnerId
+import com.example.foodrescue.partnerservice.domain.entities.Partner
+import com.example.foodrescue.partnerservice.domain.entities.PartnerId
 import org.springframework.stereotype.Component
 
 @Component

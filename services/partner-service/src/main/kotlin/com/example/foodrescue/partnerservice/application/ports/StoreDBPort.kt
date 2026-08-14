@@ -1,8 +1,8 @@
 package com.example.foodrescue.partnerservice.application.ports
 
-import com.example.foodrescue.partnerservice.domain.entity.PartnerId
-import com.example.foodrescue.partnerservice.domain.entity.Store
-import com.example.foodrescue.partnerservice.domain.entity.StoreId
+import com.example.foodrescue.partnerservice.domain.entities.PartnerId
+import com.example.foodrescue.partnerservice.domain.entities.Store
+import com.example.foodrescue.partnerservice.domain.entities.StoreId
 
 interface StoreDBPort {
     fun save(store: Store): Store

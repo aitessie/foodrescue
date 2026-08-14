@@ -4,8 +4,8 @@ import com.example.foodrescue.partnerservice.adapter.`in`.dtos.StoreDto
 import com.example.foodrescue.partnerservice.adapter.`in`.mapper.StoreRestMapper
 import com.example.foodrescue.partnerservice.application.usecases.CreateOrUpdateStoreUseCase
 import com.example.foodrescue.partnerservice.application.usecases.GetStoreUseCase
-import com.example.foodrescue.partnerservice.domain.entity.PartnerId
-import com.example.foodrescue.partnerservice.domain.entity.StoreId
+import com.example.foodrescue.partnerservice.domain.entities.PartnerId
+import com.example.foodrescue.partnerservice.domain.entities.StoreId
 import jakarta.validation.Valid
 import java.util.UUID
 import org.springframework.web.bind.annotation.GetMapping

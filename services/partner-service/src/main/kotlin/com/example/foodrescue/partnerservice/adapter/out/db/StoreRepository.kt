@@ -3,9 +3,9 @@ package com.example.foodrescue.partnerservice.adapter.out.db
 import com.example.foodrescue.partnerservice.adapter.out.db.mapper.StoreJpaMapper
 import com.example.foodrescue.partnerservice.adapter.out.db.persistence.StoreJpaRepository
 import com.example.foodrescue.partnerservice.application.ports.StoreDBPort
-import com.example.foodrescue.partnerservice.domain.entity.PartnerId
-import com.example.foodrescue.partnerservice.domain.entity.Store
-import com.example.foodrescue.partnerservice.domain.entity.StoreId
+import com.example.foodrescue.partnerservice.domain.entities.PartnerId
+import com.example.foodrescue.partnerservice.domain.entities.Store
+import com.example.foodrescue.partnerservice.domain.entities.StoreId
 import org.springframework.stereotype.Repository
 
 @Repository

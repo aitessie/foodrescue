@@ -1,8 +1,8 @@
 package com.example.foodrescue.partnerservice.adapter.`in`.mapper
 
 import com.example.foodrescue.partnerservice.adapter.`in`.dtos.PartnerDto
-import com.example.foodrescue.partnerservice.domain.entity.Partner
-import com.example.foodrescue.partnerservice.domain.entity.PartnerId
+import com.example.foodrescue.partnerservice.domain.entities.Partner
+import com.example.foodrescue.partnerservice.domain.entities.PartnerId
 import java.time.Clock
 import java.time.Instant
 import org.springframework.stereotype.Component

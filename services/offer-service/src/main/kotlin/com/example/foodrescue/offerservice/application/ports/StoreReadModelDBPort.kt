@@ -1,10 +1,10 @@
 package com.example.foodrescue.offerservice.application.ports
 
-import com.example.foodrescue.offerservice.domain.entity.PartnerStatusProjectionUpdate
-import com.example.foodrescue.offerservice.domain.entity.ProcessedPartnerEvent
-import com.example.foodrescue.offerservice.domain.entity.StoreId
-import com.example.foodrescue.offerservice.domain.entity.StoreProjectionUpdate
-import com.example.foodrescue.offerservice.domain.entity.StoreReadModel
+import com.example.foodrescue.offerservice.domain.entities.PartnerStatusProjectionUpdate
+import com.example.foodrescue.offerservice.domain.entities.ProcessedPartnerEvent
+import com.example.foodrescue.offerservice.domain.entities.StoreId
+import com.example.foodrescue.offerservice.domain.entities.StoreProjectionUpdate
+import com.example.foodrescue.offerservice.domain.entities.StoreReadModel
 
 interface StoreReadModelDBPort {
     fun findById(storeId: StoreId): StoreReadModel?
