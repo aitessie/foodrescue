@@ -2,21 +2,20 @@ package com.example.foodrescue.offerservice.domain.entities
 
 import com.example.foodrescue.offerservice.domain.enum.Allergen
 import com.example.foodrescue.offerservice.domain.enum.MoneyCurrency
-import com.example.foodrescue.offerservice.domain.enum.ProductCategory
-import com.example.foodrescue.offerservice.domain.enum.ProductTemplateStatus
+import com.example.foodrescue.offerservice.domain.enum.FoodBagCategory
+import com.example.foodrescue.offerservice.domain.enum.FoodBagStatus
 import java.time.Instant
 
-class ProductTemplate(
-    val id: ProductTemplateId,
-    val partnerId: PartnerId,
+class FoodBag(
+    val id: FoodBagId,
     val storeId: StoreId,
     name: String,
     description: String?,
-    category: ProductCategory,
+    category: FoodBagCategory,
     originalPrice: Money,
     unitPrice: Money,
     allergens: Set<Allergen>,
-    status: ProductTemplateStatus,
+    status: FoodBagStatus,
     val createdAt: Instant,
     updatedAt: Instant,
     version: Long,
@@ -27,7 +26,7 @@ class ProductTemplate(
     var description: String? = description
         private set
 
-    var category: ProductCategory = category
+    var category: FoodBagCategory = category
         private set
 
     var originalPrice: Money = validateRubPrice(originalPrice, "originalPrice")
@@ -44,7 +43,7 @@ class ProductTemplate(
             allergenValues = value.toSet()
         }
 
-    var status: ProductTemplateStatus = status
+    var status: FoodBagStatus = status
         private set
 
     var updatedAt: Instant = validateInitialProductTimestamp(createdAt, updatedAt)
@@ -53,21 +52,18 @@ class ProductTemplate(
     val version: Long = validateProductVersion(version)
 
     fun updateFrom(
-        source: ProductTemplate,
+        source: FoodBag,
         updatedAt: Instant,
     ) {
         require(source.id == id) {
             "Product template id cannot be changed"
         }
-        require(source.partnerId == partnerId) {
-            "Product template partnerId cannot be changed"
-        }
         require(source.storeId == storeId) {
             "Product template storeId cannot be changed"
         }
         check(
-            status != ProductTemplateStatus.INACTIVE ||
-                source.status != ProductTemplateStatus.ACTIVE
+            status != FoodBagStatus.INACTIVE ||
+                source.status != FoodBagStatus.ACTIVE
         ) {
             "Inactive product template cannot be reactivated"
         }
@@ -87,11 +83,11 @@ class ProductTemplate(
     fun deactivate(updatedAt: Instant) {
         validateUpdateTimestamp(updatedAt)
 
-        if (status == ProductTemplateStatus.INACTIVE) {
+        if (status == FoodBagStatus.INACTIVE) {
             return
         }
 
-        status = ProductTemplateStatus.INACTIVE
+        status = FoodBagStatus.INACTIVE
         this.updatedAt = updatedAt
     }
 

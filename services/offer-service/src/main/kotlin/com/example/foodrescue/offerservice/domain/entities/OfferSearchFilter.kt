@@ -3,14 +3,14 @@ package com.example.foodrescue.offerservice.domain.entities
 import com.example.foodrescue.offerservice.domain.enum.Allergen
 import com.example.foodrescue.offerservice.domain.enum.DateFilter
 import com.example.foodrescue.offerservice.domain.enum.OfferSort
-import com.example.foodrescue.offerservice.domain.enum.ProductCategory
+import com.example.foodrescue.offerservice.domain.enum.FoodBagCategory
 import java.time.Instant
 import java.time.ZoneId
 
 class OfferSearchFilter(
     val date: DateFilter?,
     val timeZone: ZoneId?,
-    val category: ProductCategory?,
+    val category: FoodBagCategory?,
     val minPriceMinor: Long?,
     val maxPriceMinor: Long?,
     val pickupStart: Instant?,

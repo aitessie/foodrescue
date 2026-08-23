@@ -1,6 +1,6 @@
 package com.example.foodrescue.offerservice.domain.enum
 
-enum class ProductCategory(
+enum class FoodBagCategory(
     val code: String,
     val description: String,
 ) {
