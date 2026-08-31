@@ -1,0 +1,41 @@
+{
+  "id": "a0000000-0000-0000-0000-000000000008",
+  "name": "partner-access-wrong-parent-child",
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/internal/api/v1/partner-store-access/check",
+    "headers": {
+      "Authorization": {
+        "matches": "Bearer [^\\s]+"
+      },
+      "Content-Type": {
+        "contains": "application/json"
+      }
+    },
+    "bodyPatterns": [
+      {
+        "equalToJson": {
+          "partnerId": "10000000-0000-0000-0000-000000000001",
+          "storeId": "20000000-0000-0000-0000-000000000002",
+          "userId": "44444444-4444-4444-4444-444444444444"
+        },
+        "ignoreArrayOrder": true,
+        "ignoreExtraElements": false
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "partnerStatus": "ACTIVE",
+      "storeStatus": "ACTIVE",
+      "storeBelongsToPartner": false,
+      "userIsManager": false,
+      "userIsStaff": false
+    }
+  }
+}

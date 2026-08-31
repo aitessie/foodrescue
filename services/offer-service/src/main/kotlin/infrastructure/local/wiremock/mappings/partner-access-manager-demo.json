@@ -1,0 +1,41 @@
+{
+  "id": "a0000000-0000-0000-0000-000000000001",
+  "name": "partner-access-manager-demo",
+  "priority": 10,
+  "request": {
+    "method": "POST",
+    "urlPath": "/internal/api/v1/partner-store-access/check",
+    "headers": {
+      "Authorization": {
+        "matches": "Bearer [^\\s]+"
+      },
+      "Content-Type": {
+        "contains": "application/json"
+      }
+    },
+    "bodyPatterns": [
+      {
+        "equalToJson": {
+          "partnerId": "10000000-0000-0000-0000-000000000001",
+          "storeId": "20000000-0000-0000-0000-000000000001",
+          "userId": "11111111-1111-1111-1111-111111111111"
+        },
+        "ignoreArrayOrder": true,
+        "ignoreExtraElements": false
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "partnerStatus": "ACTIVE",
+      "storeStatus": "ACTIVE",
+      "storeBelongsToPartner": true,
+      "userIsManager": true,
+      "userIsStaff": false
+    }
+  }
+}
