@@ -6,7 +6,7 @@ spring:
     name: partner-service
 
   datasource:
-    url: ${PARTNER_DB_URL:jdbc:postgresql://localhost:5432/partner_db}
+    url: "${PARTNER_DB_URL:jdbc:postgresql://localhost:5432/partner_db}"
     username: ${PARTNER_DB_USER:partner}
     password: ${PARTNER_DB_PASSWORD:partner-local-password}
 

@@ -59,25 +59,31 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-validation:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-security:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-restclient:$springBootVersion")
     implementation(
         "org.springframework.boot:spring-boot-starter-oauth2-resource-server:$springBootVersion"
     )
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-liquibase:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-jackson:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-kafka:4.1.0")
     implementation("org.hibernate.orm:hibernate-spatial:$hibernateVersion")
     implementation("tools.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+    implementation("org.springframework.kafka:spring-kafka:4.1.0")
+    implementation("org.apache.kafka:kafka-clients:4.3.1")
 
     runtimeOnly("org.postgresql:postgresql:$postgresqlVersion")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
     testImplementation("org.springframework.security:spring-security-test:$springSecurityVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-kafka-test:$springBootVersion")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test:4.1.0")
     testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
     testImplementation("org.testcontainers:testcontainers-junit-jupiter:$testcontainersVersion")
     testImplementation("org.testcontainers:testcontainers-postgresql:$testcontainersVersion")
     testImplementation("org.testcontainers:testcontainers-kafka:$testcontainersVersion")
+    testImplementation("com.squareup.okhttp3:mockwebserver:5.4.0")
 }
 
 kotlin {

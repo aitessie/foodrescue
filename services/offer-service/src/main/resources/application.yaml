@@ -25,7 +25,7 @@ spring:
       datetime:
         write-dates-as-timestamps: false
     deserialization:
-      fail-on-unknown-properties: false
+      fail-on-unknown-properties: true
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
@@ -59,7 +59,7 @@ spring:
             token-uri: "${KEYCLOAK_TOKEN_URI:http://localhost:8081/realms/foodrescue/protocol/openid-connect/token}"
 
         registration:
-          offer-service:
+          partner-service:
             provider: keycloak
             authorization-grant-type: client_credentials
             client-authentication-method: client_secret_basic
@@ -99,7 +99,7 @@ food-rescue:
   partner-http:
     base-url: "${PARTNER_SERVICE_URL:http://localhost:8082}"
     timeout: ${PARTNER_HTTP_TIMEOUT:500ms}
-    oauth2-registration-id: offer-service
+    oauth2-registration-id: ${PARTNER_OAUTH2_REGISTRATION_ID:partner-service}
 
   kafka:
     partner-events-topic: ${PARTNER_EVENTS_TOPIC:partner.events.v1}
@@ -108,12 +108,10 @@ food-rescue:
 
   scheduler:
     close-expired-enabled: ${CLOSE_EXPIRED_OFFERS_ENABLED:true}
-    close-expired-initial-delay: ${CLOSE_EXPIRED_OFFERS_INITIAL_DELAY:30s}
-    close-expired-fixed-delay: ${CLOSE_EXPIRED_OFFERS_FIXED_DELAY:60s}
+    close-expired-cron: "${CLOSE_EXPIRED_OFFERS_CRON:0 */1 * * * *}"
+    close-expired-zone: ${CLOSE_EXPIRED_OFFERS_ZONE:UTC}
     close-expired-batch-size: ${CLOSE_EXPIRED_OFFERS_BATCH_SIZE:100}
 
   search:
-    default-limit: ${OFFER_SEARCH_DEFAULT_LIMIT:20}
     min-limit: ${OFFER_SEARCH_MIN_LIMIT:1}
     max-limit: ${OFFER_SEARCH_MAX_LIMIT:100}
-    max-radius-meters: ${OFFER_SEARCH_MAX_RADIUS_METERS:100000}
