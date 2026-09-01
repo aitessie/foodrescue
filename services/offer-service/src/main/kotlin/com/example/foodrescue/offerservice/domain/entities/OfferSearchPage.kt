@@ -1,11 +1,14 @@
 package com.example.foodrescue.offerservice.domain.entities
 
 class OfferSearchPage(
-    items: List<OfferSearchItem>,
-    val nextCursor: String?,
+    content: List<OfferSearchItem>,
+    val totalElements: Long,
+    val totalPages: Int,
+    val pageNumber: Int,
+    val pageSize: Int,
 ) {
-    private val itemValues: List<OfferSearchItem> = items.toList()
+    private val contentValues: List<OfferSearchItem> = content.toList()
 
-    val items: List<OfferSearchItem>
-        get() = itemValues.toList()
+    val content: List<OfferSearchItem>
+        get() = contentValues.toList()
 }
