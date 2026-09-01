@@ -1,0 +1,111 @@
+databaseChangeLog:
+  - changeSet:
+      id: offer-service-dev-test-data
+      author: foodrescue
+      contextFilter: "@local"
+      changes:
+        - loadData:
+            tableName: store_snapshots
+            file: db/changelog/test-data/store-snapshots.csv
+            separator: ","
+            quotchar: '"'
+            usePreparedStatements: true
+
+        - loadData:
+            tableName: food_bags
+            file: db/changelog/test-data/food-bags.csv
+            separator: ","
+            quotchar: '"'
+            usePreparedStatements: true
+
+        - loadData:
+            tableName: food_bag_allergens
+            file: db/changelog/test-data/food-bag-allergens.csv
+            separator: ","
+            quotchar: '"'
+            usePreparedStatements: true
+
+        - loadData:
+            tableName: offers
+            file: db/changelog/test-data/offers.csv
+            separator: ","
+            quotchar: '"'
+            usePreparedStatements: true
+
+        - loadData:
+            tableName: offer_allergens
+            file: db/changelog/test-data/offer-allergens.csv
+            separator: ","
+            quotchar: '"'
+            usePreparedStatements: true
+
+        - loadData:
+            tableName: offer_reservations
+            file: db/changelog/test-data/offer-reservations.csv
+            separator: ","
+            quotchar: '"'
+            usePreparedStatements: true
+
+      rollback:
+        - delete:
+            tableName: offer_reservations
+            where: >
+              id IN (
+                  '50000000-0000-0000-0000-000000000001',
+                  '50000000-0000-0000-0000-000000000002'
+              )
+
+        - delete:
+            tableName: offer_allergens
+            where: >
+              offer_id IN (
+                  '40000000-0000-0000-0000-000000000001',
+                  '40000000-0000-0000-0000-000000000002',
+                  '40000000-0000-0000-0000-000000000003',
+                  '40000000-0000-0000-0000-000000000004',
+                  '40000000-0000-0000-0000-000000000005',
+                  '40000000-0000-0000-0000-000000000006',
+                  '40000000-0000-0000-0000-000000000007'
+              )
+
+        - delete:
+            tableName: offers
+            where: >
+              id IN (
+                  '40000000-0000-0000-0000-000000000001',
+                  '40000000-0000-0000-0000-000000000002',
+                  '40000000-0000-0000-0000-000000000003',
+                  '40000000-0000-0000-0000-000000000004',
+                  '40000000-0000-0000-0000-000000000005',
+                  '40000000-0000-0000-0000-000000000006',
+                  '40000000-0000-0000-0000-000000000007'
+              )
+
+        - delete:
+            tableName: food_bag_allergens
+            where: >
+              food_bag_id IN (
+                  '30000000-0000-0000-0000-000000000001',
+                  '30000000-0000-0000-0000-000000000002',
+                  '30000000-0000-0000-0000-000000000003',
+                  '30000000-0000-0000-0000-000000000004'
+              )
+
+        - delete:
+            tableName: food_bags
+            where: >
+              id IN (
+                  '30000000-0000-0000-0000-000000000001',
+                  '30000000-0000-0000-0000-000000000002',
+                  '30000000-0000-0000-0000-000000000003',
+                  '30000000-0000-0000-0000-000000000004'
+              )
+
+        - delete:
+            tableName: store_snapshots
+            where: >
+              store_id IN (
+                  '20000000-0000-0000-0000-000000000001',
+                  '20000000-0000-0000-0000-000000000002',
+                  '20000000-0000-0000-0000-000000000003'
+              )

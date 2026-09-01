@@ -1,0 +1,168 @@
+databaseChangeLog:
+  - changeSet:
+      id: offer-service-init-food-bags
+      author: foodrescue
+      changes:
+        - createTable:
+            tableName: food_bags
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_food_bags
+                    nullable: false
+
+              - column:
+                  name: store_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: description
+                  type: TEXT
+
+              - column:
+                  name: category
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: original_price_minor
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: unit_price_minor
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: currency
+                  type: VARCHAR(3)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(32)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+        - sql:
+            sql: >
+              ALTER TABLE food_bags
+              ADD CONSTRAINT chk_food_bags_name
+              CHECK (length(trim(name)) BETWEEN 1 AND 255);
+
+        - sql:
+            sql: >
+              ALTER TABLE food_bags
+              ADD CONSTRAINT chk_food_bags_original_price
+              CHECK (original_price_minor > 0);
+
+        - sql:
+            sql: >
+              ALTER TABLE food_bags
+              ADD CONSTRAINT chk_food_bags_unit_price
+              CHECK (unit_price_minor > 0);
+
+        - sql:
+            sql: >
+              ALTER TABLE food_bags
+              ADD CONSTRAINT chk_food_bags_price_order
+              CHECK (unit_price_minor < original_price_minor);
+
+        - sql:
+            sql: >
+              ALTER TABLE food_bags
+              ADD CONSTRAINT chk_food_bags_currency
+              CHECK (currency = 'RUB');
+
+        - sql:
+            sql: >
+              ALTER TABLE food_bags
+              ADD CONSTRAINT chk_food_bags_status
+              CHECK (status IN ('ACTIVE', 'INACTIVE'));
+
+        - sql:
+            sql: >
+              ALTER TABLE food_bags
+              ADD CONSTRAINT chk_food_bags_timestamps
+              CHECK (updated_at >= created_at);
+
+        - sql:
+            sql: >
+              ALTER TABLE food_bags
+              ADD CONSTRAINT chk_food_bags_version
+              CHECK (version >= 0);
+
+      rollback:
+        - dropTable:
+            tableName: food_bags
+
+  - changeSet:
+      id: offer-service-002-init-food-bag-allergens
+      author: foodrescue
+      changes:
+        - createTable:
+            tableName: food_bag_allergens
+            columns:
+              - column:
+                  name: food_bag_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: allergen
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            tableName: food_bag_allergens
+            columnNames: food_bag_id, allergen
+            constraintName: pk_food_bag_allergens
+
+        - addForeignKeyConstraint:
+            baseTableName: food_bag_allergens
+            baseColumnNames: food_bag_id
+            referencedTableName: food_bags
+            referencedColumnNames: id
+            constraintName: fk_food_bag_allergens_food_bag
+            onDelete: CASCADE
+
+      rollback:
+        - dropTable:
+            tableName: food_bag_allergens

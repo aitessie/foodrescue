@@ -1,9 +1,9 @@
 package com.example.foodrescue.offerservice.domain.entities
 
-import com.example.foodrescue.offerservice.domain.enum.Allergen
-import com.example.foodrescue.offerservice.domain.enum.MoneyCurrency
-import com.example.foodrescue.offerservice.domain.enum.FoodBagCategory
-import com.example.foodrescue.offerservice.domain.enum.FoodBagStatus
+import com.example.foodrescue.offerservice.domain.`enum`.Allergen
+import com.example.foodrescue.offerservice.domain.`enum`.FoodBagCategory
+import com.example.foodrescue.offerservice.domain.`enum`.FoodBagStatus
+import com.example.foodrescue.offerservice.domain.`enum`.MoneyCurrency
 import java.time.Instant
 
 class FoodBag(
@@ -20,138 +20,153 @@ class FoodBag(
     updatedAt: Instant,
     version: Long,
 ) {
-    var name: String = validateProductName(name)
+    var name: String = validateFoodBagName(name)
         private set
 
-    var description: String? = description
+    var description: String? = normalizeFoodBagDescription(description)
         private set
 
     var category: FoodBagCategory = category
         private set
 
-    var originalPrice: Money = validateRubPrice(originalPrice, "originalPrice")
+    var originalPrice: Money = originalPrice.also {
+        validateFoodBagPrices(
+            originalPrice = it,
+            unitPrice = unitPrice,
+        )
+    }
         private set
 
-    var unitPrice: Money = validateDiscountPrice(this.originalPrice, unitPrice)
+    var unitPrice: Money = unitPrice.also {
+        validateFoodBagPrices(
+            originalPrice = originalPrice,
+            unitPrice = it,
+        )
+    }
         private set
 
     private var allergenValues: Set<Allergen> = allergens.toSet()
 
-    var allergens: Set<Allergen>
+    val allergens: Set<Allergen>
         get() = allergenValues.toSet()
-        private set(value) {
-            allergenValues = value.toSet()
-        }
 
     var status: FoodBagStatus = status
         private set
 
-    var updatedAt: Instant = validateInitialProductTimestamp(createdAt, updatedAt)
+    var updatedAt: Instant =
+        validateFoodBagUpdatedAt(
+            createdAt = createdAt,
+            currentUpdatedAt = createdAt,
+            requestedUpdatedAt = updatedAt,
+        )
         private set
 
-    val version: Long = validateProductVersion(version)
+    val version: Long = validateFoodBagVersion(version)
 
     fun updateFrom(
         source: FoodBag,
         updatedAt: Instant,
     ) {
         require(source.id == id) {
-            "Product template id cannot be changed"
+            "FoodBag id cannot be changed"
         }
         require(source.storeId == storeId) {
-            "Product template storeId cannot be changed"
+            "FoodBag storeId cannot be changed"
         }
-        check(
-            status != FoodBagStatus.INACTIVE ||
-                source.status != FoodBagStatus.ACTIVE
-        ) {
-            "Inactive product template cannot be reactivated"
+        require(source.status == status) {
+            "FoodBag status must be changed through the status subresource"
         }
 
-        validateUpdateTimestamp(updatedAt)
+        validateFoodBagPrices(
+            originalPrice = source.originalPrice,
+            unitPrice = source.unitPrice,
+        )
+        validateFoodBagUpdatedAt(
+            createdAt = createdAt,
+            currentUpdatedAt = this.updatedAt,
+            requestedUpdatedAt = updatedAt,
+        )
 
-        name = validateProductName(source.name)
-        description = source.description
+        name = validateFoodBagName(source.name)
+        description = normalizeFoodBagDescription(source.description)
         category = source.category
-        originalPrice = validateRubPrice(source.originalPrice, "originalPrice")
-        unitPrice = validateDiscountPrice(originalPrice, source.unitPrice)
-        allergens = source.allergens
-        status = source.status
+        originalPrice = source.originalPrice
+        unitPrice = source.unitPrice
+        allergenValues = source.allergens.toSet()
         this.updatedAt = updatedAt
     }
 
-    fun deactivate(updatedAt: Instant) {
-        validateUpdateTimestamp(updatedAt)
+    fun changeStatus(
+        targetStatus: FoodBagStatus,
+        updatedAt: Instant,
+    ): Boolean {
+        validateFoodBagUpdatedAt(
+            createdAt = createdAt,
+            currentUpdatedAt = this.updatedAt,
+            requestedUpdatedAt = updatedAt,
+        )
 
-        if (status == FoodBagStatus.INACTIVE) {
-            return
+        if (status == targetStatus) {
+            return false
         }
 
-        status = FoodBagStatus.INACTIVE
+        status = targetStatus
         this.updatedAt = updatedAt
+
+        return true
     }
 
-    private fun validateUpdateTimestamp(candidate: Instant) {
-        require(!candidate.isBefore(createdAt)) {
-            "Product template updatedAt cannot be earlier than createdAt"
+    private fun validateFoodBagName(name: String): String {
+        val normalizedName = name.trim()
+
+        require(normalizedName.isNotEmpty()) {
+            "FoodBag name must not be blank"
         }
-        require(!candidate.isBefore(updatedAt)) {
-            "Product template updatedAt cannot move backwards"
+        require(normalizedName.length <= 255) {
+            "FoodBag name must not exceed 255 characters"
+        }
+
+        return normalizedName
+    }
+
+    private fun normalizeFoodBagDescription(description: String?): String? =
+        description?.trim()?.takeIf { value -> value.isNotEmpty() }
+
+    private fun validateFoodBagPrices(
+        originalPrice: Money,
+        unitPrice: Money,
+    ) {
+        require(originalPrice.currency == MoneyCurrency.RUB) {
+            "FoodBag originalPrice currency must be RUB"
+        }
+        require(unitPrice.currency == MoneyCurrency.RUB) {
+            "FoodBag unitPrice currency must be RUB"
+        }
+        require(unitPrice.amountMinor < originalPrice.amountMinor) {
+            "FoodBag unitPrice must be less than originalPrice"
         }
     }
-}
 
-private fun validateProductName(value: String): String {
-    val normalized = value.trim()
+    private fun validateFoodBagUpdatedAt(
+        createdAt: Instant,
+        currentUpdatedAt: Instant,
+        requestedUpdatedAt: Instant,
+    ): Instant {
+        require(!requestedUpdatedAt.isBefore(createdAt)) {
+            "FoodBag updatedAt must not be earlier than createdAt"
+        }
+        require(!requestedUpdatedAt.isBefore(currentUpdatedAt)) {
+            "FoodBag updatedAt must not move backwards"
+        }
 
-    require(normalized.isNotEmpty()) {
-        "Product template name must not be blank"
-    }
-    require(normalized.length <= 255) {
-        "Product template name must contain at most 255 characters"
-    }
-
-    return normalized
-}
-
-private fun validateRubPrice(
-    value: Money,
-    fieldName: String,
-): Money {
-    require(value.currency == MoneyCurrency.RUB) {
-        "Product template $fieldName currency must be RUB"
+        return requestedUpdatedAt
     }
 
-    return value
-}
+    private fun validateFoodBagVersion(version: Long): Long {
+        require(version >= 0) {
+            "FoodBag version must not be negative"
+        }
 
-private fun validateDiscountPrice(
-    originalPrice: Money,
-    unitPrice: Money,
-): Money {
-    validateRubPrice(unitPrice, "unitPrice")
-    require(unitPrice.amountMinor < originalPrice.amountMinor) {
-        "Product template unitPrice must be lower than originalPrice"
+        return version
     }
-
-    return unitPrice
-}
-
-private fun validateInitialProductTimestamp(
-    createdAt: Instant,
-    updatedAt: Instant,
-): Instant {
-    require(!updatedAt.isBefore(createdAt)) {
-        "Product template updatedAt cannot be earlier than createdAt"
-    }
-
-    return updatedAt
-}
-
-private fun validateProductVersion(version: Long): Long {
-    require(version >= 0) {
-        "Product template version must not be negative"
-    }
-
-    return version
 }
