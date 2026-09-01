@@ -1,0 +1,109 @@
+databaseChangeLog:
+  - changeSet:
+      id: offer-service-init-store-snapshots
+      author: foodrescue
+      changes:
+        - createTable:
+            tableName: store_snapshots
+            columns:
+              - column:
+                  name: store_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_store_snapshots
+                    nullable: false
+
+              - column:
+                  name: partner_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: partner_status
+                  type: VARCHAR(32)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: store_status
+                  type: VARCHAR(32)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: address
+                  type: TEXT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: time_zone
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: store_version
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: partner_version
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+        - sql:
+            sql: >
+              ALTER TABLE store_snapshots
+              ADD CONSTRAINT chk_store_snapshots_partner_status
+              CHECK (partner_status IN ('ACTIVE', 'SUSPENDED'));
+
+        - sql:
+            sql: >
+              ALTER TABLE store_snapshots
+              ADD CONSTRAINT chk_store_snapshots_store_status
+              CHECK (store_status IN ('ACTIVE', 'SUSPENDED'));
+
+        - sql:
+            sql: >
+              ALTER TABLE store_snapshots
+              ADD CONSTRAINT chk_store_snapshots_name
+              CHECK (length(trim(name)) BETWEEN 1 AND 255);
+
+        - sql:
+            sql: >
+              ALTER TABLE store_snapshots
+              ADD CONSTRAINT chk_store_snapshots_address
+              CHECK (length(trim(address)) > 0);
+
+        - sql:
+            sql: >
+              ALTER TABLE store_snapshots
+              ADD CONSTRAINT chk_store_snapshots_time_zone
+              CHECK (length(trim(time_zone)) > 0);
+
+        - sql:
+            sql: >
+              ALTER TABLE store_snapshots
+              ADD CONSTRAINT chk_store_snapshots_store_version
+              CHECK (store_version >= 0);
+
+        - sql:
+            sql: >
+              ALTER TABLE store_snapshots
+              ADD CONSTRAINT chk_store_snapshots_partner_version
+              CHECK (partner_version >= 0);
+
+      rollback:
+        - dropTable:
+            tableName: store_snapshots
