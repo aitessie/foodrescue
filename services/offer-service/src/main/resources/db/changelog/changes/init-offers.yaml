@@ -1,0 +1,200 @@
+databaseChangeLog:
+  - changeSet:
+      id: offer-service-init-offers
+      author: foodrescue
+      changes:
+        - createTable:
+            tableName: offers
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_offers
+                    nullable: false
+
+              - column:
+                  name: store_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: food_bag_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: category
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: unit_price_minor
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: currency
+                  type: VARCHAR(3)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: VARCHAR(32)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: total_quantity
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: available_quantity
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: pickup_start
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: pickup_end
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: offers
+            baseColumnNames: food_bag_id
+            referencedTableName: food_bags
+            referencedColumnNames: id
+            constraintName: fk_offers_food_bag
+            onDelete: RESTRICT
+
+        - sql:
+            sql: >
+              ALTER TABLE offers
+              ADD CONSTRAINT chk_offers_unit_price
+              CHECK (unit_price_minor > 0);
+
+        - sql:
+            sql: >
+              ALTER TABLE offers
+              ADD CONSTRAINT chk_offers_currency
+              CHECK (currency = 'RUB');
+
+        - sql:
+            sql: >
+              ALTER TABLE offers
+              ADD CONSTRAINT chk_offers_status
+              CHECK (
+                  status IN (
+                      'SCHEDULED',
+                      'ACTIVE',
+                      'CANCELLED',
+                      'CLOSED'
+                  )
+              );
+
+        - sql:
+            sql: >
+              ALTER TABLE offers
+              ADD CONSTRAINT chk_offers_total_quantity
+              CHECK (total_quantity > 0);
+
+        - sql:
+            sql: >
+              ALTER TABLE offers
+              ADD CONSTRAINT chk_offers_available_quantity
+              CHECK (
+                  available_quantity >= 0
+                  AND available_quantity <= total_quantity
+              );
+
+        - sql:
+            sql: >
+              ALTER TABLE offers
+              ADD CONSTRAINT chk_offers_pickup_window
+              CHECK (pickup_end > pickup_start);
+
+        - sql:
+            sql: >
+              ALTER TABLE offers
+              ADD CONSTRAINT chk_offers_timestamps
+              CHECK (updated_at >= created_at);
+
+        - sql:
+            sql: >
+              ALTER TABLE offers
+              ADD CONSTRAINT chk_offers_version
+              CHECK (version >= 0);
+
+      rollback:
+        - dropTable:
+            tableName: offers
+
+  - changeSet:
+      id: offer-service-005-init-offer-allergens
+      author: foodrescue
+      changes:
+        - createTable:
+            tableName: offer_allergens
+            columns:
+              - column:
+                  name: offer_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: allergen
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: false
+
+        - addPrimaryKey:
+            tableName: offer_allergens
+            columnNames: offer_id, allergen
+            constraintName: pk_offer_allergens
+
+        - addForeignKeyConstraint:
+            baseTableName: offer_allergens
+            baseColumnNames: offer_id
+            referencedTableName: offers
+            referencedColumnNames: id
+            constraintName: fk_offer_allergens_offer
+            onDelete: CASCADE
+
+      rollback:
+        - dropTable:
+            tableName: offer_allergens

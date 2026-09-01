@@ -1,28 +1,26 @@
 package com.example.foodrescue.offerservice.domain.entities
 
-import com.example.foodrescue.offerservice.domain.enum.Allergen
-import com.example.foodrescue.offerservice.domain.enum.MoneyCurrency
-import com.example.foodrescue.offerservice.domain.enum.OfferStatus
-import com.example.foodrescue.offerservice.domain.enum.ProductCategory
+import com.example.foodrescue.offerservice.domain.`enum`.Allergen
+import com.example.foodrescue.offerservice.domain.`enum`.FoodBagCategory
+import com.example.foodrescue.offerservice.domain.`enum`.FoodBagStatus
+import com.example.foodrescue.offerservice.domain.`enum`.OfferStatus
 import java.time.Instant
 
 class Offer(
     val id: OfferId,
-    val partnerId: PartnerId,
     val storeId: StoreId,
-    val productTemplateId: ProductTemplateId,
-    val category: ProductCategory,
-    unitPrice: Money,
+    val foodBagId: FoodBagId,
+    val category: FoodBagCategory,
+    val unitPrice: Money,
     allergens: Set<Allergen>,
     status: OfferStatus,
     totalQuantity: Int,
+    availableQuantity: Int,
     pickupWindow: PickupWindow,
     val createdAt: Instant,
     updatedAt: Instant,
     version: Long,
 ) {
-    val unitPrice: Money = validateOfferUnitPrice(unitPrice)
-
     private val allergenValues: Set<Allergen> = allergens.toSet()
 
     val allergens: Set<Allergen>
@@ -34,32 +32,175 @@ class Offer(
     var totalQuantity: Int = validateTotalQuantity(totalQuantity)
         private set
 
+    var availableQuantity: Int =
+        validateAvailableQuantity(
+            totalQuantity = this.totalQuantity,
+            availableQuantity = availableQuantity,
+        )
+        private set
+
+    val reservedQuantity: Int
+        get() = totalQuantity - availableQuantity
+
     var pickupWindow: PickupWindow = pickupWindow
         private set
 
-    var updatedAt: Instant = validateInitialOfferTimestamp(createdAt, updatedAt)
+    var updatedAt: Instant =
+        validateUpdatedAt(
+            currentUpdatedAt = createdAt,
+            requestedUpdatedAt = updatedAt,
+        )
         private set
 
-    val version: Long = validateOfferVersion(version)
-
-    val availableQuantity: Int
-        get() = totalQuantity
+    val version: Long = validateVersion(version)
 
     fun updateFrom(
         source: Offer,
         updatedAt: Instant,
     ) {
+        validateUpdateSource(source)
+        validateUpdatedAt(
+            currentUpdatedAt = this.updatedAt,
+            requestedUpdatedAt = updatedAt,
+        )
+
+        val updatedTotalQuantity = validateTotalQuantity(source.totalQuantity)
+        val currentReservedQuantity = reservedQuantity
+
+        check(updatedTotalQuantity >= currentReservedQuantity) {
+            "Offer totalQuantity cannot be less than reservedQuantity"
+        }
+
+        totalQuantity = updatedTotalQuantity
+        availableQuantity = updatedTotalQuantity - currentReservedQuantity
+        pickupWindow = source.pickupWindow
+        this.updatedAt = updatedAt
+    }
+
+    fun changeStatus(
+        targetStatus: OfferStatus,
+        foodBagStatus: FoodBagStatus,
+        now: Instant,
+        updatedAt: Instant,
+    ): Boolean {
+        if (status == targetStatus) {
+            return false
+        }
+
+        validateUpdatedAt(
+            currentUpdatedAt = this.updatedAt,
+            requestedUpdatedAt = updatedAt,
+        )
+        validateStatusTransition(
+            targetStatus = targetStatus,
+            foodBagStatus = foodBagStatus,
+            now = now,
+        )
+
+        status = targetStatus
+        this.updatedAt = updatedAt
+
+        return true
+    }
+
+    fun changeTotalQuantity(
+        quantity: Int,
+        updatedAt: Instant,
+    ) {
+        val validatedQuantity = validateTotalQuantity(quantity)
+        val currentReservedQuantity = reservedQuantity
+
+        check(validatedQuantity >= currentReservedQuantity) {
+            "Offer totalQuantity cannot be less than reservedQuantity"
+        }
+
+        validateUpdatedAt(
+            currentUpdatedAt = this.updatedAt,
+            requestedUpdatedAt = updatedAt,
+        )
+
+        totalQuantity = validatedQuantity
+        availableQuantity = validatedQuantity - currentReservedQuantity
+        this.updatedAt = updatedAt
+    }
+
+    fun reserve(
+        quantity: Int,
+        now: Instant,
+        updatedAt: Instant,
+    ) {
+        validateReservationQuantity(quantity)
+
+        check(status == OfferStatus.ACTIVE) {
+            "FoodBags can only be reserved from an ACTIVE Offer"
+        }
+        check(pickupWindow.end.isAfter(now)) {
+            "FoodBags cannot be reserved after pickup window end"
+        }
+        check(quantity <= availableQuantity) {
+            "Requested quantity exceeds available Offer quantity"
+        }
+
+        validateUpdatedAt(
+            currentUpdatedAt = this.updatedAt,
+            requestedUpdatedAt = updatedAt,
+        )
+
+        availableQuantity -= quantity
+        this.updatedAt = updatedAt
+    }
+
+    fun release(
+        quantity: Int,
+        updatedAt: Instant,
+    ) {
+        validateReservationQuantity(quantity)
+
+        check(quantity <= reservedQuantity) {
+            "Released quantity exceeds reserved Offer quantity"
+        }
+
+        validateUpdatedAt(
+            currentUpdatedAt = this.updatedAt,
+            requestedUpdatedAt = updatedAt,
+        )
+
+        availableQuantity += quantity
+        this.updatedAt = updatedAt
+    }
+
+    fun closeWhenExpired(
+        now: Instant,
+        updatedAt: Instant,
+    ): Boolean {
+        if (isTerminal()) {
+            return false
+        }
+
+        if (pickupWindow.end.isAfter(now)) {
+            return false
+        }
+
+        validateUpdatedAt(
+            currentUpdatedAt = this.updatedAt,
+            requestedUpdatedAt = updatedAt,
+        )
+
+        status = OfferStatus.CLOSED
+        this.updatedAt = updatedAt
+
+        return true
+    }
+
+    private fun validateUpdateSource(source: Offer) {
         require(source.id == id) {
             "Offer id cannot be changed"
-        }
-        require(source.partnerId == partnerId) {
-            "Offer partnerId cannot be changed"
         }
         require(source.storeId == storeId) {
             "Offer storeId cannot be changed"
         }
-        require(source.productTemplateId == productTemplateId) {
-            "Offer productTemplateId cannot be changed"
+        require(source.foodBagId == foodBagId) {
+            "Offer foodBagId cannot be changed"
         }
         require(source.category == category) {
             "Offer category snapshot cannot be changed"
@@ -68,133 +209,121 @@ class Offer(
             "Offer unitPrice snapshot cannot be changed"
         }
         require(source.allergens == allergens) {
-            "Offer allergen snapshot cannot be changed"
+            "Offer allergens snapshot cannot be changed"
         }
-        check(source.status == status) {
-            "Offer status cannot be changed through update"
+        require(source.status == status) {
+            "Offer status must be changed through the status subresource"
         }
-        check(!status.isTerminal()) {
-            "Terminal offer cannot be updated"
-        }
-
-        validateUpdateTimestamp(updatedAt)
-
-        totalQuantity = validateTotalQuantity(source.totalQuantity)
-        pickupWindow = source.pickupWindow
-        this.updatedAt = updatedAt
     }
 
-    fun activate(
+    private fun validateStatusTransition(
+        targetStatus: OfferStatus,
+        foodBagStatus: FoodBagStatus,
         now: Instant,
-        updatedAt: Instant,
+    ) {
+        if (targetStatus == OfferStatus.SCHEDULED) {
+            throw IllegalStateException("Offer cannot return to SCHEDULED status")
+        }
+
+        if (targetStatus == OfferStatus.CLOSED) {
+            throw IllegalStateException("CLOSED status is managed by Offer Service")
+        }
+
+        if (targetStatus == OfferStatus.ACTIVE) {
+            validateActivation(
+                foodBagStatus = foodBagStatus,
+                now = now,
+            )
+            return
+        }
+
+        if (targetStatus == OfferStatus.CANCELLED) {
+            validateCancellation()
+            return
+        }
+
+        throw IllegalStateException("Unsupported Offer status transition")
+    }
+
+    private fun validateActivation(
+        foodBagStatus: FoodBagStatus,
+        now: Instant,
     ) {
         check(status == OfferStatus.SCHEDULED) {
-            "Only a scheduled offer can be activated"
+            "Only SCHEDULED Offer can become ACTIVE"
+        }
+        check(foodBagStatus == FoodBagStatus.ACTIVE) {
+            "Offer cannot become ACTIVE for an inactive FoodBag"
         }
         check(pickupWindow.end.isAfter(now)) {
-            "Offer with an expired pickup window cannot be activated"
+            "Offer cannot become ACTIVE after pickup window end"
         }
-
-        validateUpdateTimestamp(updatedAt)
-
-        status = OfferStatus.ACTIVE
-        this.updatedAt = updatedAt
+        check(availableQuantity > 0) {
+            "Offer without available FoodBags cannot become ACTIVE"
+        }
     }
 
-    fun changeTotalQuantity(
-        quantity: Int,
-        updatedAt: Instant,
-    ) {
-        val validatedQuantity = validateTotalQuantity(quantity)
+    private fun validateCancellation() {
+        val canBeCancelled = status == OfferStatus.SCHEDULED || status == OfferStatus.ACTIVE
 
-        check(!status.isTerminal()) {
-            "Terminal offer quantity cannot be changed"
+        check(canBeCancelled) {
+            "Only SCHEDULED or ACTIVE Offer can be cancelled"
         }
-
-        validateUpdateTimestamp(updatedAt)
-
-        totalQuantity = validatedQuantity
-        this.updatedAt = updatedAt
+        check(reservedQuantity == 0) {
+            "Offer with active reservations cannot be cancelled"
+        }
     }
 
-    fun cancel(updatedAt: Instant) {
-        check(
-            status == OfferStatus.DRAFT ||
-                status == OfferStatus.SCHEDULED ||
-                status == OfferStatus.ACTIVE ||
-                status == OfferStatus.SOLD_OUT
-        ) {
-            "Offer cannot be cancelled from status ${status.code}"
+    private fun isTerminal(): Boolean =
+        status == OfferStatus.CANCELLED || status == OfferStatus.CLOSED
+
+    private fun validateTotalQuantity(quantity: Int): Int {
+        require(quantity > 0) {
+            "Offer totalQuantity must be greater than zero"
         }
 
-        validateUpdateTimestamp(updatedAt)
-
-        status = OfferStatus.CANCELLED
-        this.updatedAt = updatedAt
+        return quantity
     }
 
-    fun closeWhenExpired(
-        now: Instant,
-        updatedAt: Instant,
-    ): Boolean {
-        if (status.isTerminal()) {
-            return false
+    private fun validateAvailableQuantity(
+        totalQuantity: Int,
+        availableQuantity: Int,
+    ): Int {
+        require(availableQuantity >= 0) {
+            "Offer availableQuantity must not be negative"
         }
-        if (pickupWindow.end.isAfter(now)) {
-            return false
+        require(availableQuantity <= totalQuantity) {
+            "Offer availableQuantity must not exceed totalQuantity"
         }
 
-        validateUpdateTimestamp(updatedAt)
-
-        status = OfferStatus.CLOSED
-        this.updatedAt = updatedAt
-        return true
+        return availableQuantity
     }
 
-    private fun validateUpdateTimestamp(candidate: Instant) {
-        require(!candidate.isBefore(createdAt)) {
-            "Offer updatedAt cannot be earlier than createdAt"
+    private fun validateReservationQuantity(quantity: Int) {
+        require(quantity > 0) {
+            "Reservation quantity must be greater than zero"
         }
-        require(!candidate.isBefore(updatedAt)) {
-            "Offer updatedAt cannot move backwards"
+    }
+
+    private fun validateUpdatedAt(
+        currentUpdatedAt: Instant,
+        requestedUpdatedAt: Instant,
+    ): Instant {
+        require(!requestedUpdatedAt.isBefore(createdAt)) {
+            "Offer updatedAt must not be earlier than createdAt"
         }
+        require(!requestedUpdatedAt.isBefore(currentUpdatedAt)) {
+            "Offer updatedAt must not move backwards"
+        }
+
+        return requestedUpdatedAt
+    }
+
+    private fun validateVersion(version: Long): Long {
+        require(version >= 0) {
+            "Offer version must not be negative"
+        }
+
+        return version
     }
 }
-
-private fun validateOfferUnitPrice(value: Money): Money {
-    require(value.currency == MoneyCurrency.RUB) {
-        "Offer unitPrice currency must be RUB"
-    }
-
-    return value
-}
-
-private fun validateTotalQuantity(value: Int): Int {
-    require(value > 0) {
-        "Offer totalQuantity must be greater than zero"
-    }
-
-    return value
-}
-
-private fun validateInitialOfferTimestamp(
-    createdAt: Instant,
-    updatedAt: Instant,
-): Instant {
-    require(!updatedAt.isBefore(createdAt)) {
-        "Offer updatedAt cannot be earlier than createdAt"
-    }
-
-    return updatedAt
-}
-
-private fun validateOfferVersion(version: Long): Long {
-    require(version >= 0) {
-        "Offer version must not be negative"
-    }
-
-    return version
-}
-
-private fun OfferStatus.isTerminal(): Boolean =
-    this == OfferStatus.CANCELLED || this == OfferStatus.CLOSED
