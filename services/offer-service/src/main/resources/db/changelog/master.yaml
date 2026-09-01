@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changes/init-store-snapshots.yaml
+
+  - include:
+      file: db/changelog/changes/init-food-bags.yaml
+
+  - include:
+      file: db/changelog/changes/init-offers.yaml
+
+  - include:
+      file: db/changelog/changes/init-offer-reservations.yaml
+
+  - include:
+      file: db/changelog/changes/init-outbox.yaml
+
+  - include:
+      file: db/changelog/changes/init-indexes.yaml
+
+  - include:
+      file: db/changelog/changes/dev-test-data.yaml

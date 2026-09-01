@@ -1,0 +1,104 @@
+databaseChangeLog:
+  - changeSet:
+      id: offer-service-init-indexes
+      author: foodrescue
+      changes:
+        - createIndex:
+            tableName: offers
+            indexName: idx_offers_status_pickup_end_id
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: pickup_end
+              - column:
+                  name: id
+
+        - createIndex:
+            tableName: offers
+            indexName: idx_offers_status_store_pickup_end_id
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: store_id
+              - column:
+                  name: pickup_end
+              - column:
+                  name: id
+
+        - createIndex:
+            tableName: offers
+            indexName: idx_offers_status_category_pickup_end_id
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: category
+              - column:
+                  name: pickup_end
+              - column:
+                  name: id
+
+        - createIndex:
+            tableName: offers
+            indexName: idx_offers_food_bag_id
+            columns:
+              - column:
+                  name: food_bag_id
+
+        - createIndex:
+            tableName: store_snapshots
+            indexName: idx_store_snapshots_partner_version
+            columns:
+              - column:
+                  name: partner_id
+              - column:
+                  name: partner_version
+
+        - createIndex:
+            tableName: offer_reservations
+            indexName: idx_offer_reservations_offer_id
+            columns:
+              - column:
+                  name: offer_id
+
+        - createIndex:
+            tableName: outbox_events
+            indexName: idx_outbox_events_status_occurred_id
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: occurred_at
+              - column:
+                  name: id
+
+      rollback:
+        - dropIndex:
+            tableName: outbox_events
+            indexName: idx_outbox_events_status_occurred_id
+
+        - dropIndex:
+            tableName: offer_reservations
+            indexName: idx_offer_reservations_offer_id
+
+        - dropIndex:
+            tableName: store_snapshots
+            indexName: idx_store_snapshots_partner_version
+
+        - dropIndex:
+            tableName: offers
+            indexName: idx_offers_food_bag_id
+
+        - dropIndex:
+            tableName: offers
+            indexName: idx_offers_status_category_pickup_end_id
+
+        - dropIndex:
+            tableName: offers
+            indexName: idx_offers_status_store_pickup_end_id
+
+        - dropIndex:
+            tableName: offers
+            indexName: idx_offers_status_pickup_end_id
