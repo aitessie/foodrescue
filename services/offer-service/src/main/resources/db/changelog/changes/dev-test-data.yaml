@@ -1,50 +1,245 @@
 databaseChangeLog:
   - changeSet:
       id: offer-service-dev-test-data
-      author: foodrescue
+      author: aitessie
       contextFilter: "@local"
+
       changes:
         - loadData:
             tableName: store_snapshots
             file: db/changelog/test-data/store-snapshots.csv
+            encoding: UTF-8
             separator: ","
             quotchar: '"'
-            usePreparedStatements: true
+            columns:
+              - column:
+                  header: store_id
+                  name: store_id
+                  type: UUID
+              - column:
+                  header: partner_id
+                  name: partner_id
+                  type: UUID
+              - column:
+                  header: partner_status
+                  name: partner_status
+                  type: STRING
+              - column:
+                  header: store_status
+                  name: store_status
+                  type: STRING
+              - column:
+                  header: name
+                  name: name
+                  type: STRING
+              - column:
+                  header: address
+                  name: address
+                  type: STRING
+              - column:
+                  header: time_zone
+                  name: time_zone
+                  type: STRING
+              - column:
+                  header: store_version
+                  name: store_version
+                  type: NUMERIC
+              - column:
+                  header: partner_version
+                  name: partner_version
+                  type: NUMERIC
 
         - loadData:
             tableName: food_bags
             file: db/changelog/test-data/food-bags.csv
+            encoding: UTF-8
             separator: ","
             quotchar: '"'
-            usePreparedStatements: true
+            columns:
+              - column:
+                  header: id
+                  name: id
+                  type: UUID
+              - column:
+                  header: store_id
+                  name: store_id
+                  type: UUID
+              - column:
+                  header: name
+                  name: name
+                  type: STRING
+              - column:
+                  header: description
+                  name: description
+                  type: STRING
+              - column:
+                  header: category
+                  name: category
+                  type: STRING
+              - column:
+                  header: original_price_minor
+                  name: original_price_minor
+                  type: NUMERIC
+              - column:
+                  header: unit_price_minor
+                  name: unit_price_minor
+                  type: NUMERIC
+              - column:
+                  header: currency
+                  name: currency
+                  type: STRING
+              - column:
+                  header: status
+                  name: status
+                  type: STRING
+              - column:
+                  header: created_at
+                  name: created_at
+                  type: TIMESTAMP
+              - column:
+                  header: updated_at
+                  name: updated_at
+                  type: TIMESTAMP
+              - column:
+                  header: version
+                  name: version
+                  type: NUMERIC
 
         - loadData:
             tableName: food_bag_allergens
             file: db/changelog/test-data/food-bag-allergens.csv
+            encoding: UTF-8
             separator: ","
             quotchar: '"'
-            usePreparedStatements: true
+            columns:
+              - column:
+                  header: food_bag_id
+                  name: food_bag_id
+                  type: UUID
+              - column:
+                  header: allergen
+                  name: allergen
+                  type: STRING
 
         - loadData:
             tableName: offers
             file: db/changelog/test-data/offers.csv
+            encoding: UTF-8
             separator: ","
             quotchar: '"'
-            usePreparedStatements: true
+            columns:
+              - column:
+                  header: id
+                  name: id
+                  type: UUID
+              - column:
+                  header: store_id
+                  name: store_id
+                  type: UUID
+              - column:
+                  header: food_bag_id
+                  name: food_bag_id
+                  type: UUID
+              - column:
+                  header: category
+                  name: category
+                  type: STRING
+              - column:
+                  header: unit_price_minor
+                  name: unit_price_minor
+                  type: NUMERIC
+              - column:
+                  header: currency
+                  name: currency
+                  type: STRING
+              - column:
+                  header: status
+                  name: status
+                  type: STRING
+              - column:
+                  header: total_quantity
+                  name: total_quantity
+                  type: NUMERIC
+              - column:
+                  header: available_quantity
+                  name: available_quantity
+                  type: NUMERIC
+              - column:
+                  header: pickup_start
+                  name: pickup_start
+                  type: TIMESTAMP
+              - column:
+                  header: pickup_end
+                  name: pickup_end
+                  type: TIMESTAMP
+              - column:
+                  header: created_at
+                  name: created_at
+                  type: TIMESTAMP
+              - column:
+                  header: updated_at
+                  name: updated_at
+                  type: TIMESTAMP
+              - column:
+                  header: version
+                  name: version
+                  type: NUMERIC
 
         - loadData:
             tableName: offer_allergens
             file: db/changelog/test-data/offer-allergens.csv
+            encoding: UTF-8
             separator: ","
             quotchar: '"'
-            usePreparedStatements: true
+            columns:
+              - column:
+                  header: offer_id
+                  name: offer_id
+                  type: UUID
+              - column:
+                  header: allergen
+                  name: allergen
+                  type: STRING
 
         - loadData:
             tableName: offer_reservations
             file: db/changelog/test-data/offer-reservations.csv
+            encoding: UTF-8
             separator: ","
             quotchar: '"'
-            usePreparedStatements: true
+            columns:
+              - column:
+                  header: id
+                  name: id
+                  type: UUID
+              - column:
+                  header: offer_id
+                  name: offer_id
+                  type: UUID
+              - column:
+                  header: customer_id
+                  name: customer_id
+                  type: STRING
+              - column:
+                  header: quantity
+                  name: quantity
+                  type: NUMERIC
+              - column:
+                  header: status
+                  name: status
+                  type: STRING
+              - column:
+                  header: created_at
+                  name: created_at
+                  type: TIMESTAMP
+              - column:
+                  header: updated_at
+                  name: updated_at
+                  type: TIMESTAMP
+              - column:
+                  header: version
+                  name: version
+                  type: NUMERIC
 
       rollback:
         - delete:

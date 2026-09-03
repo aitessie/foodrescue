@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
-      id: load-local-partner-test-data
-      author: yakov
+      id: partner-service-dev-test-data
+      author: aitessie
       contextFilter: "@local"
 
       changes:
@@ -10,7 +10,7 @@ databaseChangeLog:
             file: ../test-data/partners.csv
             relativeToChangelogFile: true
             encoding: UTF-8
-            separator: ";"
+            separator: ","
             quotchar: '"'
             columns:
               - column:
@@ -47,7 +47,7 @@ databaseChangeLog:
             file: ../test-data/stores.csv
             relativeToChangelogFile: true
             encoding: UTF-8
-            separator: ";"
+            separator: ","
             quotchar: '"'
             columns:
               - column:
@@ -100,7 +100,7 @@ databaseChangeLog:
             file: ../test-data/store-staff.csv
             relativeToChangelogFile: true
             encoding: UTF-8
-            separator: ";"
+            separator: ","
             quotchar: '"'
             columns:
               - column:
