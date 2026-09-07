@@ -1,12 +1,18 @@
 package com.example.foodrescue.offerservice.configuration.security
 
+import com.example.foodrescue.offerservice.domain.enum.ApplicationRole
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.any
+import org.mockito.Mockito.doAnswer
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.verifyNoMoreInteractions
+import org.mockito.Mockito.`when`
 import org.mockito.junit.jupiter.MockitoExtension
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer
@@ -31,7 +37,28 @@ class SecurityConfigurationTest {
         AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry
 
     @Mock
-    private lateinit var authorizedUrl: AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizedUrl
+    private lateinit var healthAuthorizedUrl:
+        AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizedUrl
+
+    @Mock
+    private lateinit var reservationCreationAuthorizedUrl:
+        AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizedUrl
+
+    @Mock
+    private lateinit var reservationsAuthorizedUrl:
+        AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizedUrl
+
+    @Mock
+    private lateinit var partnerManagementAuthorizedUrl:
+        AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizedUrl
+
+    @Mock
+    private lateinit var publicOffersAuthorizedUrl:
+        AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizedUrl
+
+    @Mock
+    private lateinit var anyRequestAuthorizedUrl:
+        AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizedUrl
 
     @Mock
     private lateinit var resourceServerConfigurer: OAuth2ResourceServerConfigurer<HttpSecurity>
@@ -71,11 +98,32 @@ class SecurityConfigurationTest {
                     "/actuator/health/**",
                 )
             )
-            .thenReturn(authorizedUrl)
-        `when`(authorizationRegistry.requestMatchers("/api/v1/offers/**")).thenReturn(authorizedUrl)
+            .thenReturn(healthAuthorizedUrl)
+
+        `when`(
+                authorizationRegistry.requestMatchers(
+                    HttpMethod.PUT,
+                    "/api/v1/offers/*/reservations/*",
+                )
+            )
+            .thenReturn(reservationCreationAuthorizedUrl)
+
+        `when`(authorizationRegistry.requestMatchers("/api/v1/reservations/**"))
+            .thenReturn(reservationsAuthorizedUrl)
+
         `when`(authorizationRegistry.requestMatchers("/api/v1/partners/**"))
-            .thenReturn(authorizedUrl)
-        `when`(authorizationRegistry.anyRequest()).thenReturn(authorizedUrl)
+            .thenReturn(partnerManagementAuthorizedUrl)
+
+        `when`(
+                authorizationRegistry.requestMatchers(
+                    HttpMethod.GET,
+                    "/api/v1/offers",
+                    "/api/v1/offers/*",
+                )
+            )
+            .thenReturn(publicOffersAuthorizedUrl)
+
+        `when`(authorizationRegistry.anyRequest()).thenReturn(anyRequestAuthorizedUrl)
 
         doAnswer { invocation ->
                 val customizer =
@@ -155,16 +203,50 @@ class SecurityConfigurationTest {
                     >
                 >()
             )
+
         verify(authorizationRegistry)
             .requestMatchers(
                 "/actuator/health",
                 "/actuator/health/**",
             )
-        verify(authorizationRegistry).requestMatchers("/api/v1/offers/**")
+        verify(healthAuthorizedUrl).permitAll()
+
+        verify(authorizationRegistry)
+            .requestMatchers(
+                HttpMethod.PUT,
+                "/api/v1/offers/*/reservations/*",
+            )
+        verify(reservationCreationAuthorizedUrl)
+            .hasAnyRole(
+                ApplicationRole.CUSTOMER.code,
+                ApplicationRole.ADMIN.code,
+            )
+
+        verify(authorizationRegistry).requestMatchers("/api/v1/reservations/**")
+        verify(reservationsAuthorizedUrl)
+            .hasAnyRole(
+                ApplicationRole.CUSTOMER.code,
+                ApplicationRole.ADMIN.code,
+            )
+
         verify(authorizationRegistry).requestMatchers("/api/v1/partners/**")
+        verify(partnerManagementAuthorizedUrl)
+            .hasAnyRole(
+                ApplicationRole.STAFF.code,
+                ApplicationRole.MANAGER.code,
+                ApplicationRole.ADMIN.code,
+            )
+
+        verify(authorizationRegistry)
+            .requestMatchers(
+                HttpMethod.GET,
+                "/api/v1/offers",
+                "/api/v1/offers/*",
+            )
+        verify(publicOffersAuthorizedUrl).authenticated()
+
         verify(authorizationRegistry).anyRequest()
-        verify(authorizedUrl).permitAll()
-        verify(authorizedUrl, times(3)).authenticated()
+        verify(anyRequestAuthorizedUrl).authenticated()
 
         verify(http)
             .oauth2ResourceServer(any<Customizer<OAuth2ResourceServerConfigurer<HttpSecurity>>>())
@@ -179,7 +261,12 @@ class SecurityConfigurationTest {
             csrfConfigurer,
             sessionConfigurer,
             authorizationRegistry,
-            authorizedUrl,
+            healthAuthorizedUrl,
+            reservationCreationAuthorizedUrl,
+            reservationsAuthorizedUrl,
+            partnerManagementAuthorizedUrl,
+            publicOffersAuthorizedUrl,
+            anyRequestAuthorizedUrl,
             resourceServerConfigurer,
             jwtConfigurer,
             keycloakRealmRoleConverter,

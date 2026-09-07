@@ -40,18 +40,14 @@ class SecurityConfiguration(private val keycloakRealmRoleConverter: KeycloakReal
                     )
 
                 authorization
-                    .requestMatchers(
-                        "/api/v1/reservations/**",
-                    )
+                    .requestMatchers("/api/v1/reservations/**")
                     .hasAnyRole(
                         ApplicationRole.CUSTOMER.code,
                         ApplicationRole.ADMIN.code,
                     )
 
                 authorization
-                    .requestMatchers(
-                        "/api/v1/partners/**",
-                    )
+                    .requestMatchers("/api/v1/partners/**")
                     .hasAnyRole(
                         ApplicationRole.STAFF.code,
                         ApplicationRole.MANAGER.code,
