@@ -36,6 +36,17 @@
       "standardFlowEnabled": false,
       "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": false
+    },
+    {
+      "clientId": "offer-service",
+      "name": "Offer Service",
+      "enabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "secret": "offer-service-local-secret"
     }
   ],
   "users": [

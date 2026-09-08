@@ -1,9 +1,11 @@
 package com.example.foodrescue.offerservice.adapter.out.http.dtos
 
+import com.example.foodrescue.offerservice.domain.enum.PartnerStatus
+import com.example.foodrescue.offerservice.domain.enum.StoreStatus
+
 data class PartnerStoreAccessResponseDto(
-    val partnerStatus: String?,
-    val storeStatus: String?,
-    val storeBelongsToPartner: Boolean?,
-    val userIsManager: Boolean?,
-    val userIsStaff: Boolean?,
+    val partnerStatus: PartnerStatus,
+    val storeStatus: StoreStatus,
+    val userIsStoreManager: Boolean,
+    val userIsStoreStaff: Boolean,
 )

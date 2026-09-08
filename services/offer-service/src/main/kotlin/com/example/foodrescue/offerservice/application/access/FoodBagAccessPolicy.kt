@@ -2,7 +2,6 @@ package com.example.foodrescue.offerservice.application.access
 
 import com.example.foodrescue.offerservice.application.exceptions.AccessDeniedException
 import com.example.foodrescue.offerservice.application.exceptions.InvalidStateException
-import com.example.foodrescue.offerservice.application.exceptions.NotFoundException
 import com.example.foodrescue.offerservice.application.ports.CurrentUserPort
 import com.example.foodrescue.offerservice.application.ports.PartnerStoreAccessPort
 import com.example.foodrescue.offerservice.domain.entities.PartnerId
@@ -29,12 +28,6 @@ class FoodBagAccessPolicy(
                 userId = userId,
             )
 
-        if (!access.storeBelongsToPartner) {
-            throw NotFoundException(
-                "Store ${storeId.value} was not found for " + "Partner ${partnerId.value}"
-            )
-        }
-
         if (access.partnerStatus != PartnerStatus.ACTIVE) {
             throw InvalidStateException("Partner ${partnerId.value} must be ACTIVE")
         }
@@ -48,13 +41,13 @@ class FoodBagAccessPolicy(
         }
 
         val isAssignedManager =
-            currentUserPort.hasRole(ApplicationRole.MANAGER) && access.userIsManager
+            currentUserPort.hasRole(ApplicationRole.MANAGER) && access.userIsStoreManager
 
         if (isAssignedManager) {
             return
         }
 
-        val isAssignedStaff = currentUserPort.hasRole(ApplicationRole.STAFF) && access.userIsStaff
+        val isAssignedStaff = currentUserPort.hasRole(ApplicationRole.STAFF) && access.userIsStoreStaff
 
         if (isAssignedStaff) {
             return

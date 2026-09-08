@@ -3,7 +3,6 @@ package com.example.foodrescue.offerservice.application.access
 import com.example.foodrescue.offerservice.application.exceptions.AccessDeniedException
 import com.example.foodrescue.offerservice.application.exceptions.InvalidStateException
 import com.example.foodrescue.offerservice.application.exceptions.OfferNotFoundException
-import com.example.foodrescue.offerservice.application.exceptions.PartnerStoreNotFoundException
 import com.example.foodrescue.offerservice.application.ports.CurrentUserPort
 import com.example.foodrescue.offerservice.application.ports.PartnerStoreAccessPort
 import com.example.foodrescue.offerservice.domain.entities.Offer
@@ -32,9 +31,6 @@ class OfferAccessPolicy(
                 userId = userId,
             )
 
-        if (!snapshot.storeBelongsToPartner) {
-            throw PartnerStoreNotFoundException(partnerId, storeId)
-        }
         if (snapshot.partnerStatus != PartnerStatus.ACTIVE) {
             throw InvalidStateException("Partner '$partnerId' is not active")
         }
@@ -44,8 +40,8 @@ class OfferAccessPolicy(
 
         val hasAccess =
             currentUserPort.hasRole(ApplicationRole.ADMIN) ||
-                (currentUserPort.hasRole(ApplicationRole.MANAGER) && snapshot.userIsManager) ||
-                (currentUserPort.hasRole(ApplicationRole.STAFF) && snapshot.userIsStaff)
+                (currentUserPort.hasRole(ApplicationRole.MANAGER) && snapshot.userIsStoreManager) ||
+                (currentUserPort.hasRole(ApplicationRole.STAFF) && snapshot.userIsStoreStaff)
 
         if (!hasAccess) {
             throw AccessDeniedException()

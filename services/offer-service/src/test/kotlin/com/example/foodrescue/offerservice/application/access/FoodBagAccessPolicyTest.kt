@@ -3,6 +3,7 @@ package com.example.foodrescue.offerservice.application.access
 import com.example.foodrescue.offerservice.application.exceptions.AccessDeniedException
 import com.example.foodrescue.offerservice.application.exceptions.InvalidStateException
 import com.example.foodrescue.offerservice.application.exceptions.NotFoundException
+import com.example.foodrescue.offerservice.application.exceptions.PartnerStoreNotFoundException
 import com.example.foodrescue.offerservice.application.ports.CurrentUserPort
 import com.example.foodrescue.offerservice.application.ports.PartnerStoreAccessPort
 import com.example.foodrescue.offerservice.domain.entities.PartnerId
@@ -75,7 +76,7 @@ class FoodBagAccessPolicyTest {
         // Arrange
         val partnerId = PartnerId(UUID.randomUUID())
         val storeId = StoreId(UUID.randomUUID())
-        val access = createAccessSnapshot(userIsManager = true)
+        val access = createAccessSnapshot(userIsStoreManager = true)
 
         `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(
@@ -117,7 +118,7 @@ class FoodBagAccessPolicyTest {
         // Arrange
         val partnerId = PartnerId(UUID.randomUUID())
         val storeId = StoreId(UUID.randomUUID())
-        val access = createAccessSnapshot(userIsStaff = true)
+        val access = createAccessSnapshot(userIsStoreStaff = true)
 
         `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(
@@ -160,7 +161,7 @@ class FoodBagAccessPolicyTest {
         // Arrange
         val partnerId = PartnerId(UUID.randomUUID())
         val storeId = StoreId(UUID.randomUUID())
-        val access = createAccessSnapshot(userIsStaff = true)
+        val access = createAccessSnapshot(userIsStoreStaff = true)
 
         `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(
@@ -199,11 +200,10 @@ class FoodBagAccessPolicyTest {
     }
 
     @Test
-    fun whenStoreDoesNotBelongToPartner_throwsNotFoundException() {
+    fun whenPartnerStoreDoesNotExist_throwsPartnerStoreNotFoundException() {
         // Arrange
         val partnerId = PartnerId(UUID.randomUUID())
         val storeId = StoreId(UUID.randomUUID())
-        val access = createAccessSnapshot(storeBelongsToPartner = false)
 
         `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(
@@ -213,7 +213,12 @@ class FoodBagAccessPolicyTest {
                     userId = CURRENT_USER_ID,
                 )
             )
-            .thenReturn(access)
+            .thenThrow(
+                PartnerStoreNotFoundException(
+                    partnerId = partnerId,
+                    storeId = storeId,
+                )
+            )
 
         // Act
         val exception =
@@ -225,8 +230,7 @@ class FoodBagAccessPolicyTest {
             }
 
         // Assert
-        assertThat(exception.message)
-            .isEqualTo("Store ${storeId.value} was not found for Partner ${partnerId.value}")
+        assertThat(exception).isExactlyInstanceOf(PartnerStoreNotFoundException::class.java)
 
         verify(currentUserPort).getUserId()
         verify(partnerStoreAccessPort)
@@ -535,16 +539,14 @@ class FoodBagAccessPolicyTest {
     private fun createAccessSnapshot(
         partnerStatus: PartnerStatus = PartnerStatus.ACTIVE,
         storeStatus: StoreStatus = StoreStatus.ACTIVE,
-        storeBelongsToPartner: Boolean = true,
-        userIsManager: Boolean = false,
-        userIsStaff: Boolean = false,
+        userIsStoreManager: Boolean = false,
+        userIsStoreStaff: Boolean = false,
     ): PartnerStoreAccessSnapshot =
         PartnerStoreAccessSnapshot(
             partnerStatus = partnerStatus,
             storeStatus = storeStatus,
-            storeBelongsToPartner = storeBelongsToPartner,
-            userIsManager = userIsManager,
-            userIsStaff = userIsStaff,
+            userIsStoreManager = userIsStoreManager,
+            userIsStoreStaff = userIsStoreStaff,
         )
 
     companion object {

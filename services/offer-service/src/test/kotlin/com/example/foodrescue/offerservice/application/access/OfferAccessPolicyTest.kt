@@ -85,7 +85,7 @@ class OfferAccessPolicyTest {
         // Arrange
         val partnerId = PartnerId(UUID.randomUUID())
         val storeId = StoreId(UUID.randomUUID())
-        val snapshot = createAccessSnapshot(userIsManager = true)
+        val snapshot = createAccessSnapshot(userIsStoreManager = true)
 
         `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(
@@ -127,7 +127,7 @@ class OfferAccessPolicyTest {
         // Arrange
         val partnerId = PartnerId(UUID.randomUUID())
         val storeId = StoreId(UUID.randomUUID())
-        val snapshot = createAccessSnapshot(userIsStaff = true)
+        val snapshot = createAccessSnapshot(userIsStoreStaff = true)
 
         `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(
@@ -170,7 +170,7 @@ class OfferAccessPolicyTest {
         // Arrange
         val partnerId = PartnerId(UUID.randomUUID())
         val storeId = StoreId(UUID.randomUUID())
-        val snapshot = createAccessSnapshot(userIsStaff = true)
+        val snapshot = createAccessSnapshot(userIsStoreStaff = true)
 
         `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(
@@ -209,11 +209,10 @@ class OfferAccessPolicyTest {
     }
 
     @Test
-    fun whenStoreDoesNotBelongToPartner_throwsPartnerStoreNotFoundException() {
+    fun whenPartnerStoreDoesNotExist_throwsPartnerStoreNotFoundException() {
         // Arrange
         val partnerId = PartnerId(UUID.randomUUID())
         val storeId = StoreId(UUID.randomUUID())
-        val snapshot = createAccessSnapshot(storeBelongsToPartner = false)
 
         `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(
@@ -223,7 +222,12 @@ class OfferAccessPolicyTest {
                     userId = CURRENT_USER_ID,
                 )
             )
-            .thenReturn(snapshot)
+            .thenThrow(
+                PartnerStoreNotFoundException(
+                    partnerId = partnerId,
+                    storeId = storeId,
+                )
+            )
 
         // Act
         val exception =
@@ -565,16 +569,14 @@ class OfferAccessPolicyTest {
     private fun createAccessSnapshot(
         partnerStatus: PartnerStatus = PartnerStatus.ACTIVE,
         storeStatus: StoreStatus = StoreStatus.ACTIVE,
-        storeBelongsToPartner: Boolean = true,
-        userIsManager: Boolean = false,
-        userIsStaff: Boolean = false,
+        userIsStoreManager: Boolean = false,
+        userIsStoreStaff: Boolean = false,
     ): PartnerStoreAccessSnapshot =
         PartnerStoreAccessSnapshot(
             partnerStatus = partnerStatus,
             storeStatus = storeStatus,
-            storeBelongsToPartner = storeBelongsToPartner,
-            userIsManager = userIsManager,
-            userIsStaff = userIsStaff,
+            userIsStoreManager = userIsStoreManager,
+            userIsStoreStaff = userIsStoreStaff,
         )
 
     private fun createOffer(
