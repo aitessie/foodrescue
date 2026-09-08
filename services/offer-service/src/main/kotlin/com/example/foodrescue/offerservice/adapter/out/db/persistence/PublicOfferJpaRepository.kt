@@ -17,20 +17,20 @@ interface PublicOfferJpaRepository : Repository<OfferJpaEntity, UUID> {
     @Query(
         """
         SELECT
-            offer,
-            foodBag,
-            storeSnapshot
-        FROM OfferJpaEntity offer
-        JOIN FoodBagJpaEntity foodBag
-            ON foodBag.id = offer.foodBagId
-        JOIN StoreSnapshotJpaEntity storeSnapshot
-            ON storeSnapshot.storeId = offer.storeId
-        WHERE offer.id = :offerId
-          AND offer.status = :offerStatus
-          AND offer.availableQuantity > 0
-          AND offer.pickupEnd > :visibleAt
-          AND storeSnapshot.partnerStatus = :partnerStatus
-          AND storeSnapshot.storeStatus = :storeStatus
+            o AS offer,
+            fb AS foodBag,
+            ss AS storeSnapshot
+        FROM OfferJpaEntity o
+        JOIN FoodBagJpaEntity fb
+            ON fb.id = o.foodBagId
+        JOIN StoreSnapshotJpaEntity ss
+            ON ss.storeId = o.storeId
+        WHERE o.id = :offerId
+          AND o.status = :offerStatus
+          AND o.availableQuantity > 0
+          AND o.pickupEnd > :visibleAt
+          AND ss.partnerStatus = :partnerStatus
+          AND ss.storeStatus = :storeStatus
         """
     )
     fun findVisibleOfferById(
@@ -44,40 +44,40 @@ interface PublicOfferJpaRepository : Repository<OfferJpaEntity, UUID> {
     @Query(
         value =
             """
-            SELECT
-                offer,
-                foodBag,
-                storeSnapshot
-            FROM OfferJpaEntity offer
-            JOIN FoodBagJpaEntity foodBag
-                ON foodBag.id = offer.foodBagId
-            JOIN StoreSnapshotJpaEntity storeSnapshot
-                ON storeSnapshot.storeId = offer.storeId
-            WHERE offer.status = :offerStatus
-              AND offer.availableQuantity > 0
-              AND offer.pickupEnd > :visibleAt
-              AND storeSnapshot.partnerStatus = :partnerStatus
-              AND storeSnapshot.storeStatus = :storeStatus
-              AND (:storeId IS NULL OR offer.storeId = :storeId)
-              AND (:category IS NULL OR offer.category = :category)
-            ORDER BY offer.pickupEnd ASC, offer.id ASC
-            """,
+        SELECT
+            o AS offer,
+            fb AS foodBag,
+            ss AS storeSnapshot
+        FROM OfferJpaEntity o
+        JOIN FoodBagJpaEntity fb
+            ON fb.id = o.foodBagId
+        JOIN StoreSnapshotJpaEntity ss
+            ON ss.storeId = o.storeId
+        WHERE o.status = :offerStatus
+          AND o.availableQuantity > 0
+          AND o.pickupEnd > :visibleAt
+          AND ss.partnerStatus = :partnerStatus
+          AND ss.storeStatus = :storeStatus
+          AND (:storeId IS NULL OR o.storeId = :storeId)
+          AND (:category IS NULL OR o.category = :category)
+        ORDER BY o.pickupEnd ASC, o.id ASC
+        """,
         countQuery =
             """
-            SELECT COUNT(offer)
-            FROM OfferJpaEntity offer
-            JOIN FoodBagJpaEntity foodBag
-                ON foodBag.id = offer.foodBagId
-            JOIN StoreSnapshotJpaEntity storeSnapshot
-                ON storeSnapshot.storeId = offer.storeId
-            WHERE offer.status = :offerStatus
-              AND offer.availableQuantity > 0
-              AND offer.pickupEnd > :visibleAt
-              AND storeSnapshot.partnerStatus = :partnerStatus
-              AND storeSnapshot.storeStatus = :storeStatus
-              AND (:storeId IS NULL OR offer.storeId = :storeId)
-              AND (:category IS NULL OR offer.category = :category)
-            """,
+        SELECT COUNT(o)
+        FROM OfferJpaEntity o
+        JOIN FoodBagJpaEntity fb
+            ON fb.id = o.foodBagId
+        JOIN StoreSnapshotJpaEntity ss
+            ON ss.storeId = o.storeId
+        WHERE o.status = :offerStatus
+          AND o.availableQuantity > 0
+          AND o.pickupEnd > :visibleAt
+          AND ss.partnerStatus = :partnerStatus
+          AND ss.storeStatus = :storeStatus
+          AND (:storeId IS NULL OR o.storeId = :storeId)
+          AND (:category IS NULL OR o.category = :category)
+        """,
     )
     fun findVisibleOffers(
         @Param("storeId") storeId: UUID?,
