@@ -2,4 +2,5 @@ package com.example.foodrescue.partnerservice.domain.entities
 
 import java.util.UUID
 
-class StoreId(val value: UUID)
+@JvmInline
+value class StoreId(val value: UUID)

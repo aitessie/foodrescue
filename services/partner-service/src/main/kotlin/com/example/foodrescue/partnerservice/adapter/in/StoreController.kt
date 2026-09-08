@@ -1,7 +1,7 @@
 package com.example.foodrescue.partnerservice.adapter.`in`
 
 import com.example.foodrescue.partnerservice.adapter.`in`.dtos.StoreDto
-import com.example.foodrescue.partnerservice.adapter.`in`.mapper.StoreRestMapper
+import com.example.foodrescue.partnerservice.adapter.`in`.mappers.StoreRestMapper
 import com.example.foodrescue.partnerservice.application.usecases.CreateOrUpdateStoreUseCase
 import com.example.foodrescue.partnerservice.application.usecases.GetStoreUseCase
 import com.example.foodrescue.partnerservice.domain.entities.PartnerId

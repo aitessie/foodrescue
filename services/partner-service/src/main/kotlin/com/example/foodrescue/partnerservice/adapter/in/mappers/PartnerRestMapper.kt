@@ -1,4 +1,4 @@
-package com.example.foodrescue.partnerservice.adapter.`in`.mapper
+package com.example.foodrescue.partnerservice.adapter.`in`.mappers
 
 import com.example.foodrescue.partnerservice.adapter.`in`.dtos.PartnerDto
 import com.example.foodrescue.partnerservice.domain.entities.Partner
