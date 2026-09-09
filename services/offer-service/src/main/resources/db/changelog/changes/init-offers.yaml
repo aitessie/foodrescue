@@ -39,12 +39,6 @@ databaseChangeLog:
                     nullable: false
 
               - column:
-                  name: currency
-                  type: VARCHAR(3)
-                  constraints:
-                    nullable: false
-
-              - column:
                   name: status
                   type: VARCHAR(32)
                   constraints:
@@ -106,12 +100,6 @@ databaseChangeLog:
               ALTER TABLE offers
               ADD CONSTRAINT chk_offers_unit_price
               CHECK (unit_price_minor > 0);
-
-        - sql:
-            sql: >
-              ALTER TABLE offers
-              ADD CONSTRAINT chk_offers_currency
-              CHECK (currency = 'RUB');
 
         - sql:
             sql: >

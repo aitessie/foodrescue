@@ -1,7 +1,6 @@
 package com.example.foodrescue.offerservice.application.events
 
 import com.example.foodrescue.offerservice.domain.entities.FoodBagId
-import com.example.foodrescue.offerservice.domain.entities.Money
 import com.example.foodrescue.offerservice.domain.entities.OfferId
 import com.example.foodrescue.offerservice.domain.entities.PickupWindow
 import com.example.foodrescue.offerservice.domain.entities.StoreId
@@ -15,7 +14,7 @@ class OfferEventPayload(
     val storeId: StoreId,
     val foodBagId: FoodBagId,
     val category: FoodBagCategory,
-    val unitPrice: Money,
+    val unitPrice: Long,
     allergens: Set<Allergen>,
     val status: OfferStatus,
     val totalQuantity: Int,

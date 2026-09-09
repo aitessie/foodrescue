@@ -3,7 +3,6 @@ package com.example.foodrescue.offerservice.adapter.`in`.dtos
 import com.example.foodrescue.offerservice.adapter.`in`.dtos.validation.ValidFoodBagPriceRange
 import com.example.foodrescue.offerservice.domain.enum.Allergen
 import com.example.foodrescue.offerservice.domain.enum.FoodBagCategory
-import com.example.foodrescue.offerservice.domain.enum.MoneyCurrency
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.PositiveOrZero
@@ -19,10 +18,8 @@ data class FoodBagDto(
     val name: String,
     val description: String?,
     val category: FoodBagCategory,
-    @field:Positive(message = "originalPriceMinor must be greater than zero")
-    val originalPriceMinor: Long,
-    @field:Positive(message = "unitPriceMinor must be greater than zero") val unitPriceMinor: Long,
-    val currency: MoneyCurrency,
+    @field:Positive(message = "originalPrice must be greater than zero") val originalPrice: Long,
+    @field:Positive(message = "unitPrice must be greater than zero") val unitPrice: Long,
     val allergens: Set<Allergen>,
     @field:PositiveOrZero(message = "version must not be negative") val version: Long,
 )

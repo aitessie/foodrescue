@@ -10,12 +10,10 @@ import com.example.foodrescue.offerservice.application.ports.DomainEventPublishe
 import com.example.foodrescue.offerservice.application.ports.FoodBagDBPort
 import com.example.foodrescue.offerservice.domain.entities.FoodBag
 import com.example.foodrescue.offerservice.domain.entities.FoodBagId
-import com.example.foodrescue.offerservice.domain.entities.Money
 import com.example.foodrescue.offerservice.domain.entities.PartnerId
 import com.example.foodrescue.offerservice.domain.entities.StoreId
 import com.example.foodrescue.offerservice.domain.`enum`.FoodBagCategory
 import com.example.foodrescue.offerservice.domain.`enum`.FoodBagStatus
-import com.example.foodrescue.offerservice.domain.`enum`.MoneyCurrency
 import java.time.Clock
 import java.time.Instant
 import java.util.UUID
@@ -116,16 +114,8 @@ class CreateOrUpdateFoodBagUseCaseTest {
                 storeId = existing.storeId,
                 name = "Updated surprise bag",
                 description = "Updated description",
-                originalPrice =
-                    Money(
-                        amountMinor = 1200,
-                        currency = MoneyCurrency.RUB,
-                    ),
-                unitPrice =
-                    Money(
-                        amountMinor = 600,
-                        currency = MoneyCurrency.RUB,
-                    ),
+                originalPrice = 1200,
+                unitPrice = 600,
             )
         val now = Instant.parse("2026-08-20T11:00:00Z")
         val savedFoodBag =
@@ -404,16 +394,8 @@ class CreateOrUpdateFoodBagUseCaseTest {
         storeId: StoreId = StoreId(UUID.randomUUID()),
         name: String = "Surprise bag",
         description: String? = "Food bag description",
-        originalPrice: Money =
-            Money(
-                amountMinor = 1000,
-                currency = MoneyCurrency.RUB,
-            ),
-        unitPrice: Money =
-            Money(
-                amountMinor = 500,
-                currency = MoneyCurrency.RUB,
-            ),
+        originalPrice: Long = 1000,
+        unitPrice: Long = 500,
         status: FoodBagStatus = FoodBagStatus.ACTIVE,
         updatedAt: Instant = Instant.parse("2026-08-20T10:00:00Z"),
         version: Long = 0,

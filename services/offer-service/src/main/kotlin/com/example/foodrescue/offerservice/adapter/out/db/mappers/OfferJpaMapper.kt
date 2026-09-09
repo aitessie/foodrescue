@@ -2,7 +2,6 @@ package com.example.foodrescue.offerservice.adapter.`out`.db.mappers
 
 import com.example.foodrescue.offerservice.adapter.`out`.db.entities.OfferJpaEntity
 import com.example.foodrescue.offerservice.domain.entities.FoodBagId
-import com.example.foodrescue.offerservice.domain.entities.Money
 import com.example.foodrescue.offerservice.domain.entities.Offer
 import com.example.foodrescue.offerservice.domain.entities.OfferId
 import com.example.foodrescue.offerservice.domain.entities.PickupWindow
@@ -17,11 +16,7 @@ class OfferJpaMapper {
             storeId = StoreId(entity.storeId),
             foodBagId = FoodBagId(entity.foodBagId),
             category = entity.category,
-            unitPrice =
-                Money(
-                    amountMinor = entity.unitPriceMinor,
-                    currency = entity.currency,
-                ),
+            unitPrice = entity.unitPrice,
             allergens = entity.allergens.toSet(),
             status = entity.status,
             totalQuantity = entity.totalQuantity,
@@ -42,8 +37,7 @@ class OfferJpaMapper {
             storeId = offer.storeId.value,
             foodBagId = offer.foodBagId.value,
             category = offer.category,
-            unitPriceMinor = offer.unitPrice.amountMinor,
-            currency = offer.unitPrice.currency,
+            unitPrice = offer.unitPrice,
             allergens = offer.allergens.toMutableSet(),
             status = offer.status,
             totalQuantity = offer.totalQuantity,

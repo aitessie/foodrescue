@@ -9,7 +9,7 @@ import kotlin.reflect.KClass
 @MustBeDocumented
 @Constraint(validatedBy = [FoodBagPriceRangeValidator::class])
 annotation class ValidFoodBagPriceRange(
-    val message: String = "unitPriceMinor must be less than originalPriceMinor",
+    val message: String = "unitPrice must be less than originalPrice",
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = [],
 )

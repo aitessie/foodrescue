@@ -3,7 +3,6 @@ package com.example.foodrescue.offerservice.adapter.`out`.db.mappers
 import com.example.foodrescue.offerservice.adapter.`out`.db.entities.FoodBagJpaEntity
 import com.example.foodrescue.offerservice.domain.entities.FoodBag
 import com.example.foodrescue.offerservice.domain.entities.FoodBagId
-import com.example.foodrescue.offerservice.domain.entities.Money
 import com.example.foodrescue.offerservice.domain.entities.StoreId
 import org.springframework.stereotype.Component
 
@@ -16,16 +15,8 @@ class FoodBagJpaMapper {
             name = entity.name,
             description = entity.description,
             category = entity.category,
-            originalPrice =
-                Money(
-                    amountMinor = entity.originalPriceMinor,
-                    currency = entity.currency,
-                ),
-            unitPrice =
-                Money(
-                    amountMinor = entity.unitPriceMinor,
-                    currency = entity.currency,
-                ),
+            originalPrice = entity.originalPrice,
+            unitPrice = entity.unitPrice,
             allergens = entity.allergens.toSet(),
             status = entity.status,
             createdAt = entity.createdAt,
@@ -40,9 +31,8 @@ class FoodBagJpaMapper {
             name = foodBag.name,
             description = foodBag.description,
             category = foodBag.category,
-            originalPriceMinor = foodBag.originalPrice.amountMinor,
-            unitPriceMinor = foodBag.unitPrice.amountMinor,
-            currency = foodBag.unitPrice.currency,
+            originalPrice = foodBag.originalPrice,
+            unitPrice = foodBag.unitPrice,
             allergens = foodBag.allergens.toMutableSet(),
             status = foodBag.status,
             createdAt = foodBag.createdAt,

@@ -2,7 +2,6 @@ package com.example.foodrescue.offerservice.adapter.`out`.db.entities
 
 import com.example.foodrescue.offerservice.domain.`enum`.Allergen
 import com.example.foodrescue.offerservice.domain.`enum`.FoodBagCategory
-import com.example.foodrescue.offerservice.domain.`enum`.MoneyCurrency
 import com.example.foodrescue.offerservice.domain.`enum`.OfferStatus
 import jakarta.persistence.CollectionTable
 import jakarta.persistence.Column
@@ -53,15 +52,7 @@ class OfferJpaEntity(
         nullable = false,
         updatable = false,
     )
-    var unitPriceMinor: Long,
-    @Enumerated(EnumType.STRING)
-    @Column(
-        name = "currency",
-        nullable = false,
-        updatable = false,
-        length = 3,
-    )
-    var currency: MoneyCurrency,
+    var unitPrice: Long,
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
         name = "offer_allergens",

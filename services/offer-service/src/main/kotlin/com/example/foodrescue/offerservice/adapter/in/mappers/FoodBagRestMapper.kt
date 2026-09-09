@@ -4,7 +4,6 @@ import com.example.foodrescue.offerservice.adapter.`in`.dtos.FoodBagDto
 import com.example.foodrescue.offerservice.adapter.`in`.dtos.FoodBagStatusDto
 import com.example.foodrescue.offerservice.domain.entities.FoodBag
 import com.example.foodrescue.offerservice.domain.entities.FoodBagId
-import com.example.foodrescue.offerservice.domain.entities.Money
 import com.example.foodrescue.offerservice.domain.entities.StoreId
 import com.example.foodrescue.offerservice.domain.`enum`.FoodBagStatus
 import java.time.Clock
@@ -26,16 +25,8 @@ class FoodBagRestMapper(private val clock: Clock) {
             name = dto.name,
             description = dto.description,
             category = dto.category,
-            originalPrice =
-                Money(
-                    amountMinor = dto.originalPriceMinor,
-                    currency = dto.currency,
-                ),
-            unitPrice =
-                Money(
-                    amountMinor = dto.unitPriceMinor,
-                    currency = dto.currency,
-                ),
+            originalPrice = dto.originalPrice,
+            unitPrice = dto.unitPrice,
             allergens = dto.allergens,
             status = FoodBagStatus.ACTIVE,
             createdAt = now,
@@ -49,9 +40,8 @@ class FoodBagRestMapper(private val clock: Clock) {
             name = foodBag.name,
             description = foodBag.description,
             category = foodBag.category,
-            originalPriceMinor = foodBag.originalPrice.amountMinor,
-            unitPriceMinor = foodBag.unitPrice.amountMinor,
-            currency = foodBag.unitPrice.currency,
+            originalPrice = foodBag.originalPrice,
+            unitPrice = foodBag.unitPrice,
             allergens = foodBag.allergens,
             version = foodBag.version,
         )

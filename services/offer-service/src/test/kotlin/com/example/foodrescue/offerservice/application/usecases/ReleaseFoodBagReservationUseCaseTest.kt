@@ -10,7 +10,6 @@ import com.example.foodrescue.offerservice.application.ports.DomainEventPublishe
 import com.example.foodrescue.offerservice.application.ports.OfferDBPort
 import com.example.foodrescue.offerservice.application.ports.OfferReservationDBPort
 import com.example.foodrescue.offerservice.domain.entities.FoodBagId
-import com.example.foodrescue.offerservice.domain.entities.Money
 import com.example.foodrescue.offerservice.domain.entities.Offer
 import com.example.foodrescue.offerservice.domain.entities.OfferId
 import com.example.foodrescue.offerservice.domain.entities.OfferReservation
@@ -19,7 +18,6 @@ import com.example.foodrescue.offerservice.domain.entities.ReservationId
 import com.example.foodrescue.offerservice.domain.entities.StoreId
 import com.example.foodrescue.offerservice.domain.`enum`.ApplicationRole
 import com.example.foodrescue.offerservice.domain.`enum`.FoodBagCategory
-import com.example.foodrescue.offerservice.domain.`enum`.MoneyCurrency
 import com.example.foodrescue.offerservice.domain.`enum`.OfferStatus
 import com.example.foodrescue.offerservice.domain.`enum`.ReservationStatus
 import java.time.Clock
@@ -490,11 +488,7 @@ class ReleaseFoodBagReservationUseCaseTest {
             storeId = storeId,
             foodBagId = foodBagId,
             category = FoodBagCategory.entries.first(),
-            unitPrice =
-                Money(
-                    amountMinor = 500,
-                    currency = MoneyCurrency.RUB,
-                ),
+            unitPrice = 500,
             allergens = emptySet(),
             status = OfferStatus.ACTIVE,
             totalQuantity = 5,

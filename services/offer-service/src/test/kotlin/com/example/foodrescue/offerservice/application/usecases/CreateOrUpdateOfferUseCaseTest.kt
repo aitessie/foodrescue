@@ -12,7 +12,6 @@ import com.example.foodrescue.offerservice.application.ports.FoodBagDBPort
 import com.example.foodrescue.offerservice.application.ports.OfferDBPort
 import com.example.foodrescue.offerservice.domain.entities.FoodBag
 import com.example.foodrescue.offerservice.domain.entities.FoodBagId
-import com.example.foodrescue.offerservice.domain.entities.Money
 import com.example.foodrescue.offerservice.domain.entities.Offer
 import com.example.foodrescue.offerservice.domain.entities.OfferId
 import com.example.foodrescue.offerservice.domain.entities.PartnerId
@@ -20,7 +19,6 @@ import com.example.foodrescue.offerservice.domain.entities.PickupWindow
 import com.example.foodrescue.offerservice.domain.entities.StoreId
 import com.example.foodrescue.offerservice.domain.`enum`.FoodBagCategory
 import com.example.foodrescue.offerservice.domain.`enum`.FoodBagStatus
-import com.example.foodrescue.offerservice.domain.`enum`.MoneyCurrency
 import com.example.foodrescue.offerservice.domain.`enum`.OfferStatus
 import java.time.Clock
 import java.time.Instant
@@ -679,11 +677,7 @@ class CreateOrUpdateOfferUseCaseTest {
             storeId = storeId,
             foodBagId = foodBagId,
             category = FoodBagCategory.entries.first(),
-            unitPrice =
-                Money(
-                    amountMinor = 500,
-                    currency = MoneyCurrency.RUB,
-                ),
+            unitPrice = 500,
             allergens = emptySet(),
             status = status,
             totalQuantity = totalQuantity,
@@ -705,16 +699,8 @@ class CreateOrUpdateOfferUseCaseTest {
             name = "Surprise bag",
             description = "Food bag description",
             category = FoodBagCategory.entries.first(),
-            originalPrice =
-                Money(
-                    amountMinor = 1000,
-                    currency = MoneyCurrency.RUB,
-                ),
-            unitPrice =
-                Money(
-                    amountMinor = 500,
-                    currency = MoneyCurrency.RUB,
-                ),
+            originalPrice = 1000,
+            unitPrice = 500,
             allergens = emptySet(),
             status = status,
             createdAt = Instant.parse("2026-08-20T10:00:00Z"),

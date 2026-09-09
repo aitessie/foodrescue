@@ -49,12 +49,6 @@ databaseChangeLog:
                     nullable: false
 
               - column:
-                  name: currency
-                  type: VARCHAR(3)
-                  constraints:
-                    nullable: false
-
-              - column:
                   name: status
                   type: VARCHAR(32)
                   constraints:
@@ -102,12 +96,6 @@ databaseChangeLog:
               ALTER TABLE food_bags
               ADD CONSTRAINT chk_food_bags_price_order
               CHECK (unit_price_minor < original_price_minor);
-
-        - sql:
-            sql: >
-              ALTER TABLE food_bags
-              ADD CONSTRAINT chk_food_bags_currency
-              CHECK (currency = 'RUB');
 
         - sql:
             sql: >

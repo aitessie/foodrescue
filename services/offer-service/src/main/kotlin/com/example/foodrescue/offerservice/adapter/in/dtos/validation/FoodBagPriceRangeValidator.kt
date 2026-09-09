@@ -13,16 +13,16 @@ class FoodBagPriceRangeValidator : ConstraintValidator<ValidFoodBagPriceRange, F
             return true
         }
 
-        if (value.unitPriceMinor < value.originalPriceMinor) {
+        if (value.unitPrice < value.originalPrice) {
             return true
         }
 
         context.disableDefaultConstraintViolation()
         context
             .buildConstraintViolationWithTemplate(
-                "unitPriceMinor must be less than originalPriceMinor"
+                "unitPrice must be less than originalPrice",
             )
-            .addPropertyNode("unitPriceMinor")
+            .addPropertyNode("unitPrice")
             .addConstraintViolation()
 
         return false

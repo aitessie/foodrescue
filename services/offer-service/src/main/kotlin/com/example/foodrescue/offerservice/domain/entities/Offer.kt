@@ -11,7 +11,7 @@ class Offer(
     val storeId: StoreId,
     val foodBagId: FoodBagId,
     val category: FoodBagCategory,
-    val unitPrice: Money,
+    val unitPrice: Long,
     allergens: Set<Allergen>,
     status: OfferStatus,
     totalQuantity: Int,
@@ -21,6 +21,12 @@ class Offer(
     updatedAt: Instant,
     version: Long,
 ) {
+    init {
+        require(unitPrice > 0) {
+            "Offer unitPrice must be greater than zero"
+        }
+    }
+
     private val allergenValues: Set<Allergen> = allergens.toSet()
 
     val allergens: Set<Allergen>

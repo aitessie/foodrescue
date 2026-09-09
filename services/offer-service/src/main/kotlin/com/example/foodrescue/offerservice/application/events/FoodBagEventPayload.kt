@@ -1,7 +1,6 @@
 package com.example.foodrescue.offerservice.application.events
 
 import com.example.foodrescue.offerservice.domain.entities.FoodBagId
-import com.example.foodrescue.offerservice.domain.entities.Money
 import com.example.foodrescue.offerservice.domain.entities.StoreId
 import com.example.foodrescue.offerservice.domain.`enum`.Allergen
 import com.example.foodrescue.offerservice.domain.`enum`.FoodBagCategory
@@ -14,8 +13,8 @@ class FoodBagEventPayload(
     val name: String,
     val description: String?,
     val category: FoodBagCategory,
-    val originalPrice: Money,
-    val unitPrice: Money,
+    val originalPrice: Long,
+    val unitPrice: Long,
     allergens: Set<Allergen>,
     val status: FoodBagStatus,
     val createdAt: Instant,

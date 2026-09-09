@@ -3,7 +3,6 @@ package com.example.foodrescue.offerservice.domain.entities
 import com.example.foodrescue.offerservice.domain.`enum`.Allergen
 import com.example.foodrescue.offerservice.domain.`enum`.FoodBagCategory
 import com.example.foodrescue.offerservice.domain.`enum`.FoodBagStatus
-import com.example.foodrescue.offerservice.domain.`enum`.MoneyCurrency
 import java.time.Instant
 
 class FoodBag(
@@ -12,8 +11,8 @@ class FoodBag(
     name: String,
     description: String?,
     category: FoodBagCategory,
-    originalPrice: Money,
-    unitPrice: Money,
+    originalPrice: Long,
+    unitPrice: Long,
     allergens: Set<Allergen>,
     status: FoodBagStatus,
     val createdAt: Instant,
@@ -29,7 +28,7 @@ class FoodBag(
     var category: FoodBagCategory = category
         private set
 
-    var originalPrice: Money = originalPrice.also {
+    var originalPrice: Long = originalPrice.also {
         validateFoodBagPrices(
             originalPrice = it,
             unitPrice = unitPrice,
@@ -37,7 +36,7 @@ class FoodBag(
     }
         private set
 
-    var unitPrice: Money = unitPrice.also {
+    var unitPrice: Long = unitPrice.also {
         validateFoodBagPrices(
             originalPrice = originalPrice,
             unitPrice = it,
@@ -133,16 +132,16 @@ class FoodBag(
         description?.trim()?.takeIf { value -> value.isNotEmpty() }
 
     private fun validateFoodBagPrices(
-        originalPrice: Money,
-        unitPrice: Money,
+        originalPrice: Long,
+        unitPrice: Long,
     ) {
-        require(originalPrice.currency == MoneyCurrency.RUB) {
-            "FoodBag originalPrice currency must be RUB"
+        require(originalPrice > 0) {
+            "FoodBag originalPrice must be greater than zero"
         }
-        require(unitPrice.currency == MoneyCurrency.RUB) {
-            "FoodBag unitPrice currency must be RUB"
+        require(unitPrice > 0) {
+            "FoodBag unitPrice must be greater than zero"
         }
-        require(unitPrice.amountMinor < originalPrice.amountMinor) {
+        require(unitPrice < originalPrice) {
             "FoodBag unitPrice must be less than originalPrice"
         }
     }

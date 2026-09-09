@@ -47,7 +47,8 @@ class FoodBagAccessPolicy(
             return
         }
 
-        val isAssignedStaff = currentUserPort.hasRole(ApplicationRole.STAFF) && access.userIsStoreStaff
+        val isAssignedStaff =
+            currentUserPort.hasRole(ApplicationRole.STAFF) && access.userIsStoreStaff
 
         if (isAssignedStaff) {
             return

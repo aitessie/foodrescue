@@ -3,13 +3,11 @@ package com.example.foodrescue.offerservice.application.usecases
 import com.example.foodrescue.offerservice.application.exceptions.OfferNotFoundException
 import com.example.foodrescue.offerservice.application.ports.PublicOfferQueryPort
 import com.example.foodrescue.offerservice.domain.entities.FoodBagId
-import com.example.foodrescue.offerservice.domain.entities.Money
 import com.example.foodrescue.offerservice.domain.entities.OfferId
 import com.example.foodrescue.offerservice.domain.entities.OfferSearchItem
 import com.example.foodrescue.offerservice.domain.entities.PickupWindow
 import com.example.foodrescue.offerservice.domain.entities.StoreId
 import com.example.foodrescue.offerservice.domain.`enum`.FoodBagCategory
-import com.example.foodrescue.offerservice.domain.`enum`.MoneyCurrency
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
@@ -112,16 +110,8 @@ class GetPublicOfferUseCaseTest {
             foodBagName = "Surprise bag",
             foodBagDescription = "Food bag description",
             category = FoodBagCategory.entries.first(),
-            originalPrice =
-                Money(
-                    amountMinor = 1000,
-                    currency = MoneyCurrency.RUB,
-                ),
-            unitPrice =
-                Money(
-                    amountMinor = 500,
-                    currency = MoneyCurrency.RUB,
-                ),
+            originalPrice = 1000,
+            unitPrice = 500,
             allergens = emptySet(),
             availableQuantity = 5,
             pickupWindow =

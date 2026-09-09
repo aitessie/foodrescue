@@ -2,7 +2,6 @@ package com.example.foodrescue.offerservice.adapter.`in`.dtos
 
 import com.example.foodrescue.offerservice.domain.`enum`.Allergen
 import com.example.foodrescue.offerservice.domain.`enum`.FoodBagCategory
-import com.example.foodrescue.offerservice.domain.`enum`.MoneyCurrency
 import java.time.Instant
 import java.time.ZoneId
 import java.util.UUID
@@ -14,9 +13,8 @@ data class OfferSearchItemDto(
     val foodBagName: String,
     val foodBagDescription: String?,
     val category: FoodBagCategory,
-    val originalPriceMinor: Long,
-    val unitPriceMinor: Long,
-    val currency: MoneyCurrency,
+    val originalPrice: Long,
+    val unitPrice: Long,
     val allergens: Set<Allergen>,
     val availableQuantity: Int,
     val pickupStart: Instant,
