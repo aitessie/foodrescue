@@ -98,7 +98,7 @@ management:
 food-rescue:
   partner-http:
     base-url: "${PARTNER_SERVICE_URL:http://localhost:8082}"
-    timeout: ${PARTNER_HTTP_TIMEOUT:500ms}
+    timeout: ${PARTNER_HTTP_TIMEOUT:5000ms}
     oauth2-registration-id: ${PARTNER_OAUTH2_REGISTRATION_ID:partner-service}
 
   kafka:
