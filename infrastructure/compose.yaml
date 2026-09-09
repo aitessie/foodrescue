@@ -77,6 +77,11 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: foodrescue-zipkin
+    ports:
+      - "9411:9411"
 
 volumes:
   postgres-data:

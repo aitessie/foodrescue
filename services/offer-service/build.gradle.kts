@@ -55,6 +55,7 @@ val testcontainersVersion = "2.0.5"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-zipkin")
     implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-validation:$springBootVersion")
