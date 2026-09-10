@@ -85,10 +85,6 @@ databaseChangeLog:
                   name: unit_price_minor
                   type: NUMERIC
               - column:
-                  header: currency
-                  name: currency
-                  type: STRING
-              - column:
                   header: status
                   name: status
                   type: STRING
@@ -148,10 +144,6 @@ databaseChangeLog:
                   header: unit_price_minor
                   name: unit_price_minor
                   type: NUMERIC
-              - column:
-                  header: currency
-                  name: currency
-                  type: STRING
               - column:
                   header: status
                   name: status
