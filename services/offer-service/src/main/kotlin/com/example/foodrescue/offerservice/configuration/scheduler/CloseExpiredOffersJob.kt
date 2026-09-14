@@ -26,9 +26,7 @@ class CloseExpiredOffersJob(
     )
     fun closeExpiredOffers() {
         val closedOffers =
-            closeExpiredOffersUseCase.execute(
-                schedulerProperties.closeExpiredBatchSize
-            )
+            closeExpiredOffersUseCase.execute(schedulerProperties.closeExpiredBatchSize)
 
         logger.info(
             "Expired offers job completed: closedOffers={}",
