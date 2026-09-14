@@ -17,3 +17,4 @@ rootProject.name = "foodrescue"
 
 include(":services:partner-service")
 include(":services:offer-service")
+include(":services:order-service")

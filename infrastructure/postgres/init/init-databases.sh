@@ -66,6 +66,11 @@ create_database \
   "$OFFER_DB_PASSWORD"
 
 create_database \
+  "$ORDER_DB_NAME" \
+  "$ORDER_DB_USER" \
+  "$ORDER_DB_PASSWORD"
+
+create_database \
   "$KEYCLOAK_DB_NAME" \
   "$KEYCLOAK_DB_USER" \
   "$KEYCLOAK_DB_PASSWORD"
