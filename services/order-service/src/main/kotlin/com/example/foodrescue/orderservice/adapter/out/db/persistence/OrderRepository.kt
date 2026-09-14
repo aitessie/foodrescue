@@ -7,7 +7,7 @@ import com.example.foodrescue.orderservice.domain.entities.OrderId
 import org.springframework.stereotype.Component
 
 @Component
-class OrderDBAdapterService(
+class OrderRepository(
     private val orderJpaRepository: OrderJpaRepository,
     private val orderJpaMapper: OrderJpaMapper,
 ) : OrderDBPort {

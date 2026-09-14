@@ -1,5 +1,6 @@
 package com.example.foodrescue.orderservice.adapter.`in`
 
+import com.example.foodrescue.orderservice.application.exceptions.OrderAccessDeniedException
 import com.example.foodrescue.orderservice.application.exceptions.OrderNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail
@@ -14,4 +15,8 @@ class GlobalExceptionHandler {
             HttpStatus.NOT_FOUND,
             exception.message ?: "Order not found",
         )
+
+    @ExceptionHandler(OrderAccessDeniedException::class)
+    fun handleOrderAccessDenied(exception: OrderAccessDeniedException): ProblemDetail =
+        ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, exception.message ?: "Access denied")
 }
