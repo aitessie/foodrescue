@@ -5,4 +5,6 @@ import com.example.foodrescue.orderservice.domain.entities.OrderId
 
 interface OrderDBPort {
     fun findById(orderId: OrderId): Order?
+
+    fun save(order: Order): Order
 }

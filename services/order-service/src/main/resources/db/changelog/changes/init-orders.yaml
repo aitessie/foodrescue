@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 001-init-orders
+      id: init-orders
       author: foodrescue
       changes:
         - createTable:

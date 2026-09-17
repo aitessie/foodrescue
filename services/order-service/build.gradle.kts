@@ -8,7 +8,6 @@ plugins {
 }
 
 group = "com.example.foodrescue"
-
 version = "0.0.1-SNAPSHOT"
 
 java {
@@ -52,10 +51,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-validation:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-security:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-restclient:$springBootVersion")
     implementation(
         "org.springframework.boot:spring-boot-starter-oauth2-resource-server:$springBootVersion"
     )
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-client:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-liquibase:$springBootVersion")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 

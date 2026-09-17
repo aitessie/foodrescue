@@ -25,4 +25,21 @@ class OrderJpaMapper {
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt,
         )
+
+    fun toJpaEntity(order: Order): OrderJpaEntity =
+        OrderJpaEntity(
+            id = order.id.value,
+            customerId = order.customerId,
+            offerId = order.offerId.value,
+            storeId = order.storeId.value,
+            quantity = order.quantity,
+            unitPrice = order.unitPrice,
+            totalAmount = order.totalAmount,
+            pickupStart = order.pickupStart,
+            pickupEnd = order.pickupEnd,
+            status = order.status,
+            version = order.version,
+            createdAt = order.createdAt,
+            updatedAt = order.updatedAt,
+        )
 }

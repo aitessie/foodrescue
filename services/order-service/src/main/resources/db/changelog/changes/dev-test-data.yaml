@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 002-local-order-test-data
+      id: local-order-test-data
       author: foodrescue
       context: "@local"
       changes:

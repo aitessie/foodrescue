@@ -13,4 +13,7 @@ class OrderRepository(
 ) : OrderDBPort {
     override fun findById(orderId: OrderId): Order? =
         orderJpaRepository.findById(orderId.value)?.let(orderJpaMapper::toDomain)
+
+    override fun save(order: Order): Order =
+        orderJpaRepository.save(orderJpaMapper.toJpaEntity(order)).let(orderJpaMapper::toDomain)
 }

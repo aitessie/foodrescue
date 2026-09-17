@@ -6,4 +6,6 @@ import org.springframework.data.repository.Repository
 
 interface OrderJpaRepository : Repository<OrderJpaEntity, UUID> {
     fun findById(id: UUID): OrderJpaEntity?
+
+    fun save(order: OrderJpaEntity): OrderJpaEntity
 }

@@ -31,6 +31,19 @@ spring:
         jwt:
           issuer-uri: "${KEYCLOAK_ISSUER_URI:http://localhost:8081/realms/foodrescue}"
 
+      client:
+        provider:
+          keycloak:
+            token-uri: "${KEYCLOAK_TOKEN_URI:http://localhost:8081/realms/foodrescue/protocol/openid-connect/token}"
+
+        registration:
+          offer-service:
+            provider: keycloak
+            authorization-grant-type: client_credentials
+            client-authentication-method: client_secret_post
+            client-id: ${ORDER_SERVICE_CLIENT_ID}
+            client-secret: ${ORDER_SERVICE_CLIENT_SECRET}
+
   mvc:
     problemdetails:
       enabled: true
@@ -55,3 +68,9 @@ management:
       enabled: true
     readinessstate:
       enabled: true
+
+food-rescue:
+  offer-http:
+    base-url: "${OFFER_SERVICE_URL:http://localhost:8083}"
+    timeout: ${OFFER_HTTP_TIMEOUT:5000ms}
+    oauth2-registration-id: ${OFFER_OAUTH2_REGISTRATION_ID:offer-service}
