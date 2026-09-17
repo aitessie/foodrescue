@@ -1,9 +1,11 @@
 package com.example.foodrescue.orderservice.application.usecases
 
+import com.example.foodrescue.orderservice.application.events.ApplicationEventFactory
 import com.example.foodrescue.orderservice.application.exceptions.OrderConflictException
 import com.example.foodrescue.orderservice.application.exceptions.OrderNotFoundException
 import com.example.foodrescue.orderservice.application.exceptions.OrderValidationException
 import com.example.foodrescue.orderservice.application.ports.CurrentUserPort
+import com.example.foodrescue.orderservice.application.ports.DomainEventPublisherPort
 import com.example.foodrescue.orderservice.application.ports.OfferQueryPort
 import com.example.foodrescue.orderservice.application.ports.OrderDBPort
 import com.example.foodrescue.orderservice.domain.entities.OfferId
@@ -18,16 +20,20 @@ import java.time.Instant
 import org.slf4j.LoggerFactory
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class CreateOrderUseCase(
     private val orderDBPort: OrderDBPort,
     private val offerQueryPort: OfferQueryPort,
     private val currentUserPort: CurrentUserPort,
+    private val eventFactory: ApplicationEventFactory,
+    private val eventPublisherPort: DomainEventPublisherPort,
     private val clock: Clock,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
+    @Transactional
     fun execute(
         orderId: OrderId,
         offerId: OfferId,
@@ -89,13 +95,22 @@ class CreateOrderUseCase(
                 updatedAt = now,
             )
 
-        val savedOrder =
+        val (savedOrder, created) =
             saveOrder(
                 order = order,
                 customerId = customerId,
                 offerId = offerId,
                 quantity = quantity,
             )
+
+        if (created) {
+            eventPublisherPort.publish(
+                eventFactory.orderReservationRequested(
+                    order = savedOrder,
+                    occurredAt = now,
+                )
+            )
+        }
 
         logger.info(
             "Order created successfully: orderId={}, status={}",
@@ -110,9 +125,9 @@ class CreateOrderUseCase(
         customerId: String,
         offerId: OfferId,
         quantity: Int,
-    ): Order =
+    ): Pair<Order, Boolean> =
         try {
-            orderDBPort.save(order)
+            orderDBPort.save(order) to true
         } catch (exception: DataIntegrityViolationException) {
             val existingOrder = orderDBPort.findById(order.id) ?: throw exception
 
@@ -122,7 +137,7 @@ class CreateOrderUseCase(
                 customerId = customerId,
                 offerId = offerId,
                 quantity = quantity,
-            )
+            ) to false
         }
 
     private fun validateQuantity(quantity: Int) {

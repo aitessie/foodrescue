@@ -44,6 +44,7 @@ noArg {
 }
 
 val springBootVersion = "4.1.0"
+val jacksonVersion = "3.1.4"
 val kotlinVersion = "2.3.21"
 val postgresqlVersion = "42.7.11"
 
@@ -59,6 +60,9 @@ dependencies {
     )
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client:$springBootVersion")
     implementation("org.springframework.boot:spring-boot-starter-liquibase:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-jackson:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-kafka:$springBootVersion")
+    implementation("tools.jackson.module:jackson-module-kotlin:$jacksonVersion")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
     runtimeOnly("org.postgresql:postgresql:$postgresqlVersion")
