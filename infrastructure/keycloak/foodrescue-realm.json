@@ -47,6 +47,17 @@
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": true,
       "secret": "offer-service-local-secret"
+    },
+    {
+      "clientId": "order-service",
+      "name": "Order Service",
+      "enabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "secret": "order-service-local-secret"
     }
   ],
   "users": [

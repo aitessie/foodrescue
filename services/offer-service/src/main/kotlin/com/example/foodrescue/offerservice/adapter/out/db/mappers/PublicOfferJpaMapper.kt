@@ -30,6 +30,7 @@ class PublicOfferJpaMapper(
             storeName = storeSnapshot.name,
             storeAddress = storeSnapshot.address,
             storeTimeZone = storeSnapshot.timeZone,
+            status = offer.status,
         )
     }
 }

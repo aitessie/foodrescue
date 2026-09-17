@@ -77,6 +77,7 @@ class OfferRestMapper {
             foodBagName = item.foodBagName,
             foodBagDescription = item.foodBagDescription,
             category = item.category,
+            status = item.status,
             originalPrice = item.originalPrice,
             unitPrice = item.unitPrice,
             allergens = item.allergens,
