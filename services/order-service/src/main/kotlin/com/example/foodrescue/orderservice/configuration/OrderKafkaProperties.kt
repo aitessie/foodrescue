@@ -6,4 +6,8 @@ import org.springframework.validation.annotation.Validated
 
 @Validated
 @ConfigurationProperties(prefix = "food-rescue.kafka")
-data class OrderKafkaProperties(@field:NotBlank val orderCommandsTopic: String)
+data class OrderKafkaProperties(
+    @field:NotBlank val orderCommandsTopic: String,
+    @field:NotBlank val offerEventsTopic: String,
+    @field:NotBlank val offerEventsConsumerGroup: String,
+)

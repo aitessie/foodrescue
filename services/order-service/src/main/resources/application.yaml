@@ -28,12 +28,21 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
+    consumer:
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       acks: all
       properties:
         enable.idempotence: true
+
+    listener:
+      ack-mode: record
 
   security:
     oauth2:
@@ -87,6 +96,8 @@ food-rescue:
 
   kafka:
     order-commands-topic: ${ORDER_COMMANDS_TOPIC:order.commands.v1}
+    offer-events-topic: ${OFFER_EVENTS_TOPIC:offer.events.v1}
+    offer-events-consumer-group: ${OFFER_EVENTS_CONSUMER_GROUP:order-service-offer-events-v1}
 
   outbox:
     batch-size: ${ORDER_OUTBOX_BATCH_SIZE:100}
