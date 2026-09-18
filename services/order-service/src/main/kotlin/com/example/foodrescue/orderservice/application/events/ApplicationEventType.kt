@@ -7,5 +7,5 @@ enum class ApplicationEventType(
     ORDER_RESERVATION_REQUESTED(
         "order.reservation-requested",
         "Запрошено резервирование предложения для заказа",
-    ),
+    )
 }

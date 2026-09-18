@@ -35,8 +35,7 @@ class OfferHttpConfiguration {
         restClientBuilder: RestClient.Builder,
         properties: OfferHttpProperties,
         authorizedClientManager: OAuth2AuthorizedClientManager,
-        @Qualifier("offerServiceClientHttpRequestFactory")
-        requestFactory: ClientHttpRequestFactory,
+        @Qualifier("offerServiceClientHttpRequestFactory") requestFactory: ClientHttpRequestFactory,
     ): RestClient {
         val oauth2Interceptor =
             OAuth2ClientHttpRequestInterceptor(authorizedClientManager).apply {

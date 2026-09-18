@@ -8,6 +8,7 @@ plugins {
 }
 
 group = "com.example.foodrescue"
+
 version = "0.0.1-SNAPSHOT"
 
 java {
