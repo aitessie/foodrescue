@@ -10,4 +10,6 @@ data class OfferKafkaProperties(
     @field:NotBlank val partnerEventsTopic: String,
     @field:NotBlank val partnerEventsDltTopic: String,
     @field:NotBlank val offerEventsTopic: String,
+    @field:NotBlank val orderCommandsTopic: String,
+    @field:NotBlank val orderCommandsConsumerGroup: String,
 )

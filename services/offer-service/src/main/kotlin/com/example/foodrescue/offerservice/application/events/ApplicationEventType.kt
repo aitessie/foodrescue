@@ -36,6 +36,10 @@ enum class ApplicationEventType(
         "offer.reserved",
         "Наборы еды зарезервированы",
     ),
+    OFFER_RESERVATION_REJECTED(
+        "offer.reservation-rejected",
+        "Резервирование наборов еды отклонено",
+    ),
     OFFER_RESERVATION_RELEASED(
         "offer.reservation-released",
         "Резервирование наборов еды освобождено",

@@ -34,14 +34,27 @@ class ReserveFoodBagsUseCase(
     private val clock: Clock,
 ) {
     @Transactional
-    fun execute(
+    fun executeForCustomer(
         offerId: OfferId,
         reservationId: ReservationId,
         quantity: Int,
     ): OfferReservation {
         validateRole()
 
-        val customerId = currentUserPort.getUserId()
+        return executeForCustomer(
+            offerId = offerId,
+            reservationId = reservationId,
+            customerId = currentUserPort.getUserId(),
+            quantity = quantity,
+        )
+    }
+
+    fun executeForCustomer(
+        offerId: OfferId,
+        reservationId: ReservationId,
+        customerId: String,
+        quantity: Int,
+    ): OfferReservation {
         val existingReservation = reservationDBPort.findById(reservationId)
 
         if (existingReservation != null) {

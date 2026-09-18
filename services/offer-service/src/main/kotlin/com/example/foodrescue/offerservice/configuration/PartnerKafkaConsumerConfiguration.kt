@@ -14,6 +14,7 @@ import org.springframework.kafka.listener.DeadLetterPublishingRecoverer
 import org.springframework.kafka.listener.DefaultErrorHandler
 import org.springframework.util.backoff.FixedBackOff
 
+@Suppress("UsePropertyAccessSyntax")
 @Configuration
 class PartnerKafkaConsumerConfiguration {
     @Bean("partnerEventConsumerFactory")
@@ -46,7 +47,6 @@ class PartnerKafkaConsumerConfiguration {
             }
 
     @Bean("partnerEventKafkaListenerContainerFactory")
-    @Suppress("UsePropertyAccessSyntax")
     fun partnerEventKafkaListenerContainerFactory(
         @Qualifier("partnerEventConsumerFactory") consumerFactory: ConsumerFactory<String, String>,
         partnerEventErrorHandler: DefaultErrorHandler,

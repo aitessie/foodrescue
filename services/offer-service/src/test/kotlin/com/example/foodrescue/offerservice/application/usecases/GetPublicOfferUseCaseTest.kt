@@ -8,6 +8,7 @@ import com.example.foodrescue.offerservice.domain.entities.OfferSearchItem
 import com.example.foodrescue.offerservice.domain.entities.PickupWindow
 import com.example.foodrescue.offerservice.domain.entities.StoreId
 import com.example.foodrescue.offerservice.domain.`enum`.FoodBagCategory
+import com.example.foodrescue.offerservice.domain.enum.OfferStatus
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
@@ -122,5 +123,6 @@ class GetPublicOfferUseCaseTest {
             storeName = "Test store",
             storeAddress = "Test address",
             storeTimeZone = ZoneId.of("Europe/Moscow"),
+            status = OfferStatus.SCHEDULED,
         )
 }

@@ -3,6 +3,7 @@ package com.example.foodrescue.offerservice.adapter.out
 import com.example.foodrescue.offerservice.adapter.out.db.entities.OutboxEventJpaEntity
 import com.example.foodrescue.offerservice.adapter.out.db.persistence.OutboxEventJpaRepository
 import java.time.Clock
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
@@ -15,6 +16,8 @@ class OutboxBatchProcessor(
     private val clock: Clock,
     @Value("\${food-rescue.kafka.offer-events-topic}") private val offerEventsTopic: String,
 ) {
+    private val logger = LoggerFactory.getLogger(javaClass)
+
     @Transactional
     fun publishBatch(
         batchSize: Int,
@@ -40,12 +43,40 @@ class OutboxBatchProcessor(
                 publish(event)
                 event.markPublished(clock.instant())
                 publishedCount += 1
+
+                logger.info(
+                    "Kafka event published successfully: eventId={}, eventType={}, aggregateId={}, topic={}",
+                    event.id,
+                    event.eventType,
+                    event.aggregateId,
+                    offerEventsTopic,
+                )
             } catch (exception: InterruptedException) {
                 Thread.currentThread().interrupt()
-                event.markFailed(failureMessage(exception))
+                val failure = failureMessage(exception)
+                event.markFailed(failure)
+
+                logger.error(
+                    "Kafka event publication failed: eventId={}, eventType={}, aggregateId={}, topic={}, reason={}",
+                    event.id,
+                    event.eventType,
+                    event.aggregateId,
+                    offerEventsTopic,
+                    failure,
+                )
                 break
             } catch (exception: Exception) {
-                event.markFailed(failureMessage(exception))
+                val failure = failureMessage(exception)
+                event.markFailed(failure)
+
+                logger.error(
+                    "Kafka event publication failed: eventId={}, eventType={}, aggregateId={}, topic={}, reason={}",
+                    event.id,
+                    event.eventType,
+                    event.aggregateId,
+                    offerEventsTopic,
+                    failure,
+                )
             }
         }
 

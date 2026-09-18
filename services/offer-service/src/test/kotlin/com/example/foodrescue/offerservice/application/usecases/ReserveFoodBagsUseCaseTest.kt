@@ -59,7 +59,7 @@ class ReserveFoodBagsUseCaseTest {
     @InjectMocks private lateinit var useCase: ReserveFoodBagsUseCase
 
     @Test
-    fun whenCustomerReservesAvailableFoodBags_returnsSavedReservation() {
+    fun whenReservationIsCreatedForProvidedCustomer_returnsSavedReservation() {
         // Arrange
         val offer = createOffer()
         val reservationId = ReservationId(UUID.randomUUID())
@@ -78,6 +78,8 @@ class ReserveFoodBagsUseCaseTest {
             createReservation(
                 id = reservationId,
                 offerId = offer.id,
+                customerId = CURRENT_USER_ID,
+                quantity = 2,
                 createdAt = now,
                 updatedAt = now,
                 version = 1,
@@ -91,8 +93,6 @@ class ReserveFoodBagsUseCaseTest {
                 )
         var reservationToSave: OfferReservation? = null
 
-        `when`(currentUserPort.hasRole(ApplicationRole.CUSTOMER)).thenReturn(true)
-        `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(reservationDBPort.findById(reservationId)).thenReturn(null)
         `when`(offerDBPort.findById(offer.id)).thenReturn(offer)
         `when`(storeSnapshotDBPort.findById(offer.storeId)).thenReturn(snapshot)
@@ -115,9 +115,10 @@ class ReserveFoodBagsUseCaseTest {
 
         // Act
         val result =
-            useCase.execute(
+            useCase.executeForCustomer(
                 offerId = offer.id,
                 reservationId = reservationId,
+                customerId = CURRENT_USER_ID,
                 quantity = 2,
             )
 
@@ -140,9 +141,6 @@ class ReserveFoodBagsUseCaseTest {
         assertThat(createdReservation.updatedAt).isEqualTo(now)
         assertThat(createdReservation.version).isZero()
 
-        verify(currentUserPort).hasRole(ApplicationRole.CUSTOMER)
-        verify(currentUserPort, never()).hasRole(ApplicationRole.ADMIN)
-        verify(currentUserPort).getUserId()
         verify(reservationDBPort).findById(reservationId)
         verify(offerDBPort).findById(offer.id)
         verify(storeSnapshotDBPort).findById(offer.storeId)
@@ -156,14 +154,52 @@ class ReserveFoodBagsUseCaseTest {
                 occurredAt = now,
             )
         verify(eventPublisherPort).publish(event)
+        verifyNoInteractions(currentUserPort)
         verifyNoMoreInteractions(
             offerDBPort,
             reservationDBPort,
             storeSnapshotDBPort,
-            currentUserPort,
             eventFactory,
             eventPublisherPort,
             clock,
+        )
+    }
+
+    @Test
+    fun whenCustomerRepeatsSameReservation_returnsExistingReservation() {
+        // Arrange
+        val offerId = OfferId(UUID.randomUUID())
+        val reservation = createReservation(offerId = offerId)
+
+        `when`(currentUserPort.hasRole(ApplicationRole.CUSTOMER)).thenReturn(true)
+        `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
+        `when`(reservationDBPort.findById(reservation.id)).thenReturn(reservation)
+
+        // Act
+        val result =
+            useCase.executeForCustomer(
+                offerId = offerId,
+                reservationId = reservation.id,
+                quantity = reservation.quantity,
+            )
+
+        // Assert
+        assertThat(result).isSameAs(reservation)
+
+        verify(currentUserPort).hasRole(ApplicationRole.CUSTOMER)
+        verify(currentUserPort, never()).hasRole(ApplicationRole.ADMIN)
+        verify(currentUserPort).getUserId()
+        verify(reservationDBPort).findById(reservation.id)
+        verifyNoInteractions(
+            offerDBPort,
+            storeSnapshotDBPort,
+            eventFactory,
+            eventPublisherPort,
+            clock,
+        )
+        verifyNoMoreInteractions(
+            reservationDBPort,
+            currentUserPort,
         )
     }
 
@@ -180,7 +216,7 @@ class ReserveFoodBagsUseCaseTest {
 
         // Act
         val result =
-            useCase.execute(
+            useCase.executeForCustomer(
                 offerId = offerId,
                 reservationId = reservation.id,
                 quantity = reservation.quantity,
@@ -216,16 +252,15 @@ class ReserveFoodBagsUseCaseTest {
                 customerId = OTHER_USER_ID,
             )
 
-        `when`(currentUserPort.hasRole(ApplicationRole.CUSTOMER)).thenReturn(true)
-        `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(reservationDBPort.findById(reservation.id)).thenReturn(reservation)
 
         // Act
         val exception =
             assertThrows<OfferReservationNotFoundException> {
-                useCase.execute(
+                useCase.executeForCustomer(
                     offerId = offerId,
                     reservationId = reservation.id,
+                    customerId = CURRENT_USER_ID,
                     quantity = reservation.quantity,
                 )
             }
@@ -233,39 +268,33 @@ class ReserveFoodBagsUseCaseTest {
         // Assert
         assertThat(exception.message).contains(reservation.id.value.toString())
 
-        verify(currentUserPort).hasRole(ApplicationRole.CUSTOMER)
-        verify(currentUserPort, never()).hasRole(ApplicationRole.ADMIN)
-        verify(currentUserPort).getUserId()
         verify(reservationDBPort).findById(reservation.id)
         verifyNoInteractions(
             offerDBPort,
             storeSnapshotDBPort,
+            currentUserPort,
             eventFactory,
             eventPublisherPort,
             clock,
         )
-        verifyNoMoreInteractions(
-            reservationDBPort,
-            currentUserPort,
-        )
+        verifyNoMoreInteractions(reservationDBPort)
     }
 
     @Test
     fun whenExistingReservationBelongsToAnotherOffer_throwsInvalidStateException() {
         // Arrange
-        val offerId = OfferId(UUID.randomUUID())
+        val requestedOfferId = OfferId(UUID.randomUUID())
         val reservation = createReservation()
 
-        `when`(currentUserPort.hasRole(ApplicationRole.CUSTOMER)).thenReturn(true)
-        `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(reservationDBPort.findById(reservation.id)).thenReturn(reservation)
 
         // Act
         val exception =
             assertThrows<InvalidStateException> {
-                useCase.execute(
-                    offerId = offerId,
+                useCase.executeForCustomer(
+                    offerId = requestedOfferId,
                     reservationId = reservation.id,
+                    customerId = CURRENT_USER_ID,
                     quantity = reservation.quantity,
                 )
             }
@@ -273,21 +302,16 @@ class ReserveFoodBagsUseCaseTest {
         // Assert
         assertThat(exception.message).isEqualTo("Reservation already belongs to another Offer")
 
-        verify(currentUserPort).hasRole(ApplicationRole.CUSTOMER)
-        verify(currentUserPort, never()).hasRole(ApplicationRole.ADMIN)
-        verify(currentUserPort).getUserId()
         verify(reservationDBPort).findById(reservation.id)
         verifyNoInteractions(
             offerDBPort,
             storeSnapshotDBPort,
+            currentUserPort,
             eventFactory,
             eventPublisherPort,
             clock,
         )
-        verifyNoMoreInteractions(
-            reservationDBPort,
-            currentUserPort,
-        )
+        verifyNoMoreInteractions(reservationDBPort)
     }
 
     @Test
@@ -296,16 +320,15 @@ class ReserveFoodBagsUseCaseTest {
         val offerId = OfferId(UUID.randomUUID())
         val reservation = createReservation(offerId = offerId)
 
-        `when`(currentUserPort.hasRole(ApplicationRole.CUSTOMER)).thenReturn(true)
-        `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(reservationDBPort.findById(reservation.id)).thenReturn(reservation)
 
         // Act
         val exception =
             assertThrows<InvalidStateException> {
-                useCase.execute(
+                useCase.executeForCustomer(
                     offerId = offerId,
                     reservationId = reservation.id,
+                    customerId = CURRENT_USER_ID,
                     quantity = 3,
                 )
             }
@@ -314,21 +337,16 @@ class ReserveFoodBagsUseCaseTest {
         assertThat(exception.message)
             .isEqualTo("Reservation quantity does not match the existing reservation")
 
-        verify(currentUserPort).hasRole(ApplicationRole.CUSTOMER)
-        verify(currentUserPort, never()).hasRole(ApplicationRole.ADMIN)
-        verify(currentUserPort).getUserId()
         verify(reservationDBPort).findById(reservation.id)
         verifyNoInteractions(
             offerDBPort,
             storeSnapshotDBPort,
+            currentUserPort,
             eventFactory,
             eventPublisherPort,
             clock,
         )
-        verifyNoMoreInteractions(
-            reservationDBPort,
-            currentUserPort,
-        )
+        verifyNoMoreInteractions(reservationDBPort)
     }
 
     @Test
@@ -341,16 +359,15 @@ class ReserveFoodBagsUseCaseTest {
                 status = ReservationStatus.RELEASED,
             )
 
-        `when`(currentUserPort.hasRole(ApplicationRole.CUSTOMER)).thenReturn(true)
-        `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(reservationDBPort.findById(reservation.id)).thenReturn(reservation)
 
         // Act
         val exception =
             assertThrows<InvalidStateException> {
-                useCase.execute(
+                useCase.executeForCustomer(
                     offerId = offerId,
                     reservationId = reservation.id,
+                    customerId = CURRENT_USER_ID,
                     quantity = reservation.quantity,
                 )
             }
@@ -358,21 +375,16 @@ class ReserveFoodBagsUseCaseTest {
         // Assert
         assertThat(exception.message).isEqualTo("Released reservation cannot be reserved again")
 
-        verify(currentUserPort).hasRole(ApplicationRole.CUSTOMER)
-        verify(currentUserPort, never()).hasRole(ApplicationRole.ADMIN)
-        verify(currentUserPort).getUserId()
         verify(reservationDBPort).findById(reservation.id)
         verifyNoInteractions(
             offerDBPort,
             storeSnapshotDBPort,
+            currentUserPort,
             eventFactory,
             eventPublisherPort,
             clock,
         )
-        verifyNoMoreInteractions(
-            reservationDBPort,
-            currentUserPort,
-        )
+        verifyNoMoreInteractions(reservationDBPort)
     }
 
     @Test
@@ -381,17 +393,16 @@ class ReserveFoodBagsUseCaseTest {
         val offerId = OfferId(UUID.randomUUID())
         val reservationId = ReservationId(UUID.randomUUID())
 
-        `when`(currentUserPort.hasRole(ApplicationRole.CUSTOMER)).thenReturn(true)
-        `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(reservationDBPort.findById(reservationId)).thenReturn(null)
         `when`(offerDBPort.findById(offerId)).thenReturn(null)
 
         // Act
         val exception =
             assertThrows<OfferNotFoundException> {
-                useCase.execute(
+                useCase.executeForCustomer(
                     offerId = offerId,
                     reservationId = reservationId,
+                    customerId = CURRENT_USER_ID,
                     quantity = 2,
                 )
             }
@@ -399,13 +410,11 @@ class ReserveFoodBagsUseCaseTest {
         // Assert
         assertThat(exception.message).contains(offerId.value.toString())
 
-        verify(currentUserPort).hasRole(ApplicationRole.CUSTOMER)
-        verify(currentUserPort, never()).hasRole(ApplicationRole.ADMIN)
-        verify(currentUserPort).getUserId()
         verify(reservationDBPort).findById(reservationId)
         verify(offerDBPort).findById(offerId)
         verifyNoInteractions(
             storeSnapshotDBPort,
+            currentUserPort,
             eventFactory,
             eventPublisherPort,
             clock,
@@ -413,7 +422,6 @@ class ReserveFoodBagsUseCaseTest {
         verifyNoMoreInteractions(
             offerDBPort,
             reservationDBPort,
-            currentUserPort,
         )
     }
 
@@ -423,8 +431,6 @@ class ReserveFoodBagsUseCaseTest {
         val offer = createOffer()
         val reservationId = ReservationId(UUID.randomUUID())
 
-        `when`(currentUserPort.hasRole(ApplicationRole.CUSTOMER)).thenReturn(true)
-        `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(reservationDBPort.findById(reservationId)).thenReturn(null)
         `when`(offerDBPort.findById(offer.id)).thenReturn(offer)
         `when`(storeSnapshotDBPort.findById(offer.storeId)).thenReturn(null)
@@ -432,9 +438,10 @@ class ReserveFoodBagsUseCaseTest {
         // Act
         val exception =
             assertThrows<OfferNotFoundException> {
-                useCase.execute(
+                useCase.executeForCustomer(
                     offerId = offer.id,
                     reservationId = reservationId,
+                    customerId = CURRENT_USER_ID,
                     quantity = 2,
                 )
             }
@@ -442,13 +449,11 @@ class ReserveFoodBagsUseCaseTest {
         // Assert
         assertThat(exception.message).contains(offer.id.value.toString())
 
-        verify(currentUserPort).hasRole(ApplicationRole.CUSTOMER)
-        verify(currentUserPort, never()).hasRole(ApplicationRole.ADMIN)
-        verify(currentUserPort).getUserId()
         verify(reservationDBPort).findById(reservationId)
         verify(offerDBPort).findById(offer.id)
         verify(storeSnapshotDBPort).findById(offer.storeId)
         verifyNoInteractions(
+            currentUserPort,
             eventFactory,
             eventPublisherPort,
             clock,
@@ -457,7 +462,6 @@ class ReserveFoodBagsUseCaseTest {
             offerDBPort,
             reservationDBPort,
             storeSnapshotDBPort,
-            currentUserPort,
         )
     }
 
@@ -472,8 +476,6 @@ class ReserveFoodBagsUseCaseTest {
                 partnerStatus = PartnerStatus.SUSPENDED,
             )
 
-        `when`(currentUserPort.hasRole(ApplicationRole.CUSTOMER)).thenReturn(true)
-        `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(reservationDBPort.findById(reservationId)).thenReturn(null)
         `when`(offerDBPort.findById(offer.id)).thenReturn(offer)
         `when`(storeSnapshotDBPort.findById(offer.storeId)).thenReturn(snapshot)
@@ -481,9 +483,10 @@ class ReserveFoodBagsUseCaseTest {
         // Act
         val exception =
             assertThrows<OfferNotFoundException> {
-                useCase.execute(
+                useCase.executeForCustomer(
                     offerId = offer.id,
                     reservationId = reservationId,
+                    customerId = CURRENT_USER_ID,
                     quantity = 2,
                 )
             }
@@ -491,13 +494,11 @@ class ReserveFoodBagsUseCaseTest {
         // Assert
         assertThat(exception.message).contains(offer.id.value.toString())
 
-        verify(currentUserPort).hasRole(ApplicationRole.CUSTOMER)
-        verify(currentUserPort, never()).hasRole(ApplicationRole.ADMIN)
-        verify(currentUserPort).getUserId()
         verify(reservationDBPort).findById(reservationId)
         verify(offerDBPort).findById(offer.id)
         verify(storeSnapshotDBPort).findById(offer.storeId)
         verifyNoInteractions(
+            currentUserPort,
             eventFactory,
             eventPublisherPort,
             clock,
@@ -506,7 +507,6 @@ class ReserveFoodBagsUseCaseTest {
             offerDBPort,
             reservationDBPort,
             storeSnapshotDBPort,
-            currentUserPort,
         )
     }
 
@@ -521,8 +521,6 @@ class ReserveFoodBagsUseCaseTest {
                 storeStatus = StoreStatus.SUSPENDED,
             )
 
-        `when`(currentUserPort.hasRole(ApplicationRole.CUSTOMER)).thenReturn(true)
-        `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(reservationDBPort.findById(reservationId)).thenReturn(null)
         `when`(offerDBPort.findById(offer.id)).thenReturn(offer)
         `when`(storeSnapshotDBPort.findById(offer.storeId)).thenReturn(snapshot)
@@ -530,9 +528,10 @@ class ReserveFoodBagsUseCaseTest {
         // Act
         val exception =
             assertThrows<OfferNotFoundException> {
-                useCase.execute(
+                useCase.executeForCustomer(
                     offerId = offer.id,
                     reservationId = reservationId,
+                    customerId = CURRENT_USER_ID,
                     quantity = 2,
                 )
             }
@@ -540,13 +539,11 @@ class ReserveFoodBagsUseCaseTest {
         // Assert
         assertThat(exception.message).contains(offer.id.value.toString())
 
-        verify(currentUserPort).hasRole(ApplicationRole.CUSTOMER)
-        verify(currentUserPort, never()).hasRole(ApplicationRole.ADMIN)
-        verify(currentUserPort).getUserId()
         verify(reservationDBPort).findById(reservationId)
         verify(offerDBPort).findById(offer.id)
         verify(storeSnapshotDBPort).findById(offer.storeId)
         verifyNoInteractions(
+            currentUserPort,
             eventFactory,
             eventPublisherPort,
             clock,
@@ -555,7 +552,6 @@ class ReserveFoodBagsUseCaseTest {
             offerDBPort,
             reservationDBPort,
             storeSnapshotDBPort,
-            currentUserPort,
         )
     }
 
@@ -567,8 +563,6 @@ class ReserveFoodBagsUseCaseTest {
         val snapshot = createStoreSnapshot(storeId = offer.storeId)
         val now = Instant.parse("2026-08-20T11:00:00Z")
 
-        `when`(currentUserPort.hasRole(ApplicationRole.CUSTOMER)).thenReturn(true)
-        `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(reservationDBPort.findById(reservationId)).thenReturn(null)
         `when`(offerDBPort.findById(offer.id)).thenReturn(offer)
         `when`(storeSnapshotDBPort.findById(offer.storeId)).thenReturn(snapshot)
@@ -577,9 +571,10 @@ class ReserveFoodBagsUseCaseTest {
         // Act
         val exception =
             assertThrows<InvalidStateException> {
-                useCase.execute(
+                useCase.executeForCustomer(
                     offerId = offer.id,
                     reservationId = reservationId,
+                    customerId = CURRENT_USER_ID,
                     quantity = 0,
                 )
             }
@@ -589,14 +584,12 @@ class ReserveFoodBagsUseCaseTest {
         assertThat(offer.availableQuantity).isEqualTo(5)
         assertThat(offer.updatedAt).isEqualTo(Instant.parse("2026-08-20T10:00:00Z"))
 
-        verify(currentUserPort).hasRole(ApplicationRole.CUSTOMER)
-        verify(currentUserPort, never()).hasRole(ApplicationRole.ADMIN)
-        verify(currentUserPort).getUserId()
         verify(reservationDBPort).findById(reservationId)
         verify(offerDBPort).findById(offer.id)
         verify(storeSnapshotDBPort).findById(offer.storeId)
         verify(clock).instant()
         verifyNoInteractions(
+            currentUserPort,
             eventFactory,
             eventPublisherPort,
         )
@@ -604,7 +597,6 @@ class ReserveFoodBagsUseCaseTest {
             offerDBPort,
             reservationDBPort,
             storeSnapshotDBPort,
-            currentUserPort,
             clock,
         )
     }
@@ -617,8 +609,6 @@ class ReserveFoodBagsUseCaseTest {
         val snapshot = createStoreSnapshot(storeId = offer.storeId)
         val now = Instant.parse("2026-08-20T11:00:00Z")
 
-        `when`(currentUserPort.hasRole(ApplicationRole.CUSTOMER)).thenReturn(true)
-        `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(reservationDBPort.findById(reservationId)).thenReturn(null)
         `when`(offerDBPort.findById(offer.id)).thenReturn(offer)
         `when`(storeSnapshotDBPort.findById(offer.storeId)).thenReturn(snapshot)
@@ -627,9 +617,10 @@ class ReserveFoodBagsUseCaseTest {
         // Act
         val exception =
             assertThrows<InvalidStateException> {
-                useCase.execute(
+                useCase.executeForCustomer(
                     offerId = offer.id,
                     reservationId = reservationId,
+                    customerId = CURRENT_USER_ID,
                     quantity = 2,
                 )
             }
@@ -640,14 +631,12 @@ class ReserveFoodBagsUseCaseTest {
         assertThat(offer.availableQuantity).isEqualTo(5)
         assertThat(offer.updatedAt).isEqualTo(Instant.parse("2026-08-20T10:00:00Z"))
 
-        verify(currentUserPort).hasRole(ApplicationRole.CUSTOMER)
-        verify(currentUserPort, never()).hasRole(ApplicationRole.ADMIN)
-        verify(currentUserPort).getUserId()
         verify(reservationDBPort).findById(reservationId)
         verify(offerDBPort).findById(offer.id)
         verify(storeSnapshotDBPort).findById(offer.storeId)
         verify(clock).instant()
         verifyNoInteractions(
+            currentUserPort,
             eventFactory,
             eventPublisherPort,
         )
@@ -655,7 +644,6 @@ class ReserveFoodBagsUseCaseTest {
             offerDBPort,
             reservationDBPort,
             storeSnapshotDBPort,
-            currentUserPort,
             clock,
         )
     }
@@ -679,7 +667,7 @@ class ReserveFoodBagsUseCaseTest {
         // Act
         val exception =
             assertThrows<AccessDeniedException> {
-                useCase.execute(
+                useCase.executeForCustomer(
                     offerId = OfferId(UUID.randomUUID()),
                     reservationId = ReservationId(UUID.randomUUID()),
                     quantity = 2,
@@ -712,7 +700,7 @@ class ReserveFoodBagsUseCaseTest {
         // Act
         val exception =
             assertThrows<AccessDeniedException> {
-                useCase.execute(
+                useCase.executeForCustomer(
                     offerId = OfferId(UUID.randomUUID()),
                     reservationId = ReservationId(UUID.randomUUID()),
                     quantity = 2,

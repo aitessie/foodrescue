@@ -41,7 +41,7 @@ class OfferReservationController(
         @Valid @RequestBody dto: ReserveFoodBagsDto,
     ): OfferReservationDto {
         val reservation =
-            reserveFoodBagsUseCase.execute(
+            reserveFoodBagsUseCase.executeForCustomer(
                 offerId = OfferId(offerId),
                 reservationId = ReservationId(reservationId),
                 quantity = dto.quantity,

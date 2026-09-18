@@ -105,6 +105,8 @@ food-rescue:
     partner-events-topic: ${PARTNER_EVENTS_TOPIC:partner.events.v1}
     partner-events-dlt-topic: ${PARTNER_EVENTS_DLT_TOPIC:partner.events.v1.DLT}
     offer-events-topic: ${OFFER_EVENTS_TOPIC:offer.events.v1}
+    order-commands-topic: ${ORDER_COMMANDS_TOPIC:order.commands.v1}
+    order-commands-consumer-group: ${ORDER_COMMANDS_CONSUMER_GROUP:offer-service-order-commands-v1}
 
   scheduler:
     close-expired-enabled: ${CLOSE_EXPIRED_OFFERS_ENABLED:true}

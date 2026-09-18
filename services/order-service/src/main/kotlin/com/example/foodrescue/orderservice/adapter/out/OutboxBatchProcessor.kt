@@ -4,6 +4,7 @@ import com.example.foodrescue.orderservice.adapter.out.db.entities.OutboxEventJp
 import com.example.foodrescue.orderservice.adapter.out.db.persistence.OutboxEventJpaRepository
 import com.example.foodrescue.orderservice.configuration.OrderKafkaProperties
 import java.time.Clock
+import org.slf4j.LoggerFactory
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,6 +16,8 @@ class OutboxBatchProcessor(
     private val clock: Clock,
     private val kafkaProperties: OrderKafkaProperties,
 ) {
+    private val logger = LoggerFactory.getLogger(javaClass)
+
     @Transactional
     fun publishBatch(
         batchSize: Int,
@@ -40,12 +43,40 @@ class OutboxBatchProcessor(
                 publish(event)
                 event.markPublished(clock.instant())
                 publishedCount += 1
+
+                logger.info(
+                    "Kafka event published successfully: eventId={}, eventType={}, aggregateId={}, topic={}",
+                    event.id,
+                    event.eventType,
+                    event.aggregateId,
+                    kafkaProperties.orderCommandsTopic,
+                )
             } catch (exception: InterruptedException) {
                 Thread.currentThread().interrupt()
-                event.markFailed(failureMessage(exception))
+                val failure = failureMessage(exception)
+                event.markFailed(failure)
+
+                logger.error(
+                    "Kafka event publication failed: eventId={}, eventType={}, aggregateId={}, topic={}, reason={}",
+                    event.id,
+                    event.eventType,
+                    event.aggregateId,
+                    kafkaProperties.orderCommandsTopic,
+                    failure,
+                )
                 break
             } catch (exception: Exception) {
-                event.markFailed(failureMessage(exception))
+                val failure = failureMessage(exception)
+                event.markFailed(failure)
+
+                logger.error(
+                    "Kafka event publication failed: eventId={}, eventType={}, aggregateId={}, topic={}, reason={}",
+                    event.id,
+                    event.eventType,
+                    event.aggregateId,
+                    kafkaProperties.orderCommandsTopic,
+                    failure,
+                )
             }
         }
 

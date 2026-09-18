@@ -2,7 +2,9 @@ package com.example.foodrescue.offerservice.application.events
 
 import com.example.foodrescue.offerservice.domain.entities.FoodBag
 import com.example.foodrescue.offerservice.domain.entities.Offer
+import com.example.foodrescue.offerservice.domain.entities.OfferId
 import com.example.foodrescue.offerservice.domain.entities.OfferReservation
+import com.example.foodrescue.offerservice.domain.entities.ReservationId
 import java.time.Instant
 import java.util.UUID
 import org.springframework.stereotype.Component
@@ -89,6 +91,31 @@ class ApplicationEventFactory {
             offer = offer,
             reservation = reservation,
             occurredAt = occurredAt,
+        )
+
+    fun offerReservationRejected(
+        reservationId: ReservationId,
+        offerId: OfferId,
+        customerId: String,
+        quantity: Int,
+        reason: String,
+        occurredAt: Instant,
+    ): ApplicationEvent<OfferReservationRejectedEventPayload> =
+        ApplicationEvent(
+            eventId = UUID.randomUUID(),
+            eventType = ApplicationEventType.OFFER_RESERVATION_REJECTED.code,
+            schemaVersion = APPLICATION_EVENT_SCHEMA_VERSION,
+            aggregateId = reservationId.value,
+            aggregateVersion = 0,
+            occurredAt = occurredAt,
+            payload =
+                OfferReservationRejectedEventPayload(
+                    reservationId = reservationId,
+                    offerId = offerId,
+                    customerId = customerId,
+                    quantity = quantity,
+                    reason = reason,
+                ),
         )
 
     fun offerReservationReleased(
