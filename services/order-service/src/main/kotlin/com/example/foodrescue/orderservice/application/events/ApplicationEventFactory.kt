@@ -10,16 +10,47 @@ class ApplicationEventFactory {
     fun orderReservationRequested(
         order: Order,
         occurredAt: Instant,
-    ): ApplicationEvent<OrderReservationRequestedEventPayload> =
+    ): ApplicationEvent<OrderReservationEventPayload> =
+        createReservationEvent(
+            eventType = ApplicationEventType.ORDER_RESERVATION_REQUESTED,
+            order = order,
+            occurredAt = occurredAt,
+        )
+
+    fun orderReservationCommitRequested(
+        order: Order,
+        occurredAt: Instant,
+    ): ApplicationEvent<OrderReservationEventPayload> =
+        createReservationEvent(
+            eventType = ApplicationEventType.ORDER_RESERVATION_COMMIT_REQUESTED,
+            order = order,
+            occurredAt = occurredAt,
+        )
+
+    fun orderReservationReleaseRequested(
+        order: Order,
+        occurredAt: Instant,
+    ): ApplicationEvent<OrderReservationEventPayload> =
+        createReservationEvent(
+            eventType = ApplicationEventType.ORDER_RESERVATION_RELEASE_REQUESTED,
+            order = order,
+            occurredAt = occurredAt,
+        )
+
+    private fun createReservationEvent(
+        eventType: ApplicationEventType,
+        order: Order,
+        occurredAt: Instant,
+    ): ApplicationEvent<OrderReservationEventPayload> =
         ApplicationEvent(
             eventId = UUID.randomUUID(),
-            eventType = ApplicationEventType.ORDER_RESERVATION_REQUESTED.code,
+            eventType = eventType.code,
             schemaVersion = APPLICATION_EVENT_SCHEMA_VERSION,
             aggregateId = order.id.value,
             aggregateVersion = order.version,
             occurredAt = occurredAt,
             payload =
-                OrderReservationRequestedEventPayload(
+                OrderReservationEventPayload(
                     orderId = order.id,
                     offerId = order.offerId,
                     customerId = order.customerId,

@@ -6,9 +6,8 @@ import java.util.UUID
 import org.springframework.stereotype.Component
 
 @Component
-class InboxEventRepository(
-    private val inboxEventJpaRepository: InboxEventJpaRepository,
-) : InboxEventDBPort {
+class InboxEventRepository(private val inboxEventJpaRepository: InboxEventJpaRepository) :
+    InboxEventDBPort {
     override fun tryMarkProcessed(
         eventId: UUID,
         eventType: String,

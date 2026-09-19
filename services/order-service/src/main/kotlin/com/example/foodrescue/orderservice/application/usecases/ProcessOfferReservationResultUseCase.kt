@@ -5,6 +5,7 @@ import com.example.foodrescue.orderservice.application.exceptions.OrderConflictE
 import com.example.foodrescue.orderservice.application.exceptions.OrderNotFoundException
 import com.example.foodrescue.orderservice.application.ports.InboxEventDBPort
 import com.example.foodrescue.orderservice.application.ports.OrderDBPort
+import com.example.foodrescue.orderservice.application.ports.PaymentCommandPort
 import com.example.foodrescue.orderservice.domain.entities.OfferId
 import com.example.foodrescue.orderservice.domain.entities.OrderId
 import com.example.foodrescue.orderservice.domain.enum.OrderStatus
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 class ProcessOfferReservationResultUseCase(
     private val orderDBPort: OrderDBPort,
     private val inboxEventDBPort: InboxEventDBPort,
+    private val paymentCommandPort: PaymentCommandPort,
     private val clock: Clock,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -73,6 +75,11 @@ class ProcessOfferReservationResultUseCase(
                         "Offer reservation cannot be held for Order in status ${order.status}"
                     )
                 }
+
+                paymentCommandPort.requestAuthorization(
+                    orderId = order.id,
+                    amount = order.totalAmount,
+                )
             }
 
             OfferReservationResult.REJECTED -> {
@@ -98,11 +105,10 @@ class ProcessOfferReservationResultUseCase(
         }
 
         logger.info(
-            "Offer reservation result processed successfully: eventId={}, orderId={}, result={}, status={}",
+            "Offer reservation result processed successfully: eventId={}, orderId={}, result={}",
             eventId,
             order.id.value,
             result,
-            order.status,
         )
     }
 
