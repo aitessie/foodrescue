@@ -177,7 +177,7 @@ class ReserveFoodBagsUseCaseTest {
 
         // Act
         val result =
-            useCase.executeForCustomer(
+            useCase.execute(
                 offerId = offerId,
                 reservationId = reservation.id,
                 quantity = reservation.quantity,
@@ -216,7 +216,7 @@ class ReserveFoodBagsUseCaseTest {
 
         // Act
         val result =
-            useCase.executeForCustomer(
+            useCase.execute(
                 offerId = offerId,
                 reservationId = reservation.id,
                 quantity = reservation.quantity,
@@ -667,7 +667,7 @@ class ReserveFoodBagsUseCaseTest {
         // Act
         val exception =
             assertThrows<AccessDeniedException> {
-                useCase.executeForCustomer(
+                useCase.execute(
                     offerId = OfferId(UUID.randomUUID()),
                     reservationId = ReservationId(UUID.randomUUID()),
                     quantity = 2,
@@ -700,7 +700,7 @@ class ReserveFoodBagsUseCaseTest {
         // Act
         val exception =
             assertThrows<AccessDeniedException> {
-                useCase.executeForCustomer(
+                useCase.execute(
                     offerId = OfferId(UUID.randomUUID()),
                     reservationId = ReservationId(UUID.randomUUID()),
                     quantity = 2,

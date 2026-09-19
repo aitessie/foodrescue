@@ -107,9 +107,12 @@ class ReleaseFoodBagReservationUseCaseTest {
 
         // Assert
         assertThat(result).isSameAs(savedReservation)
+
+        assertThat(offer.totalQuantity).isEqualTo(5)
         assertThat(offer.availableQuantity).isEqualTo(5)
         assertThat(offer.reservedQuantity).isZero()
         assertThat(offer.updatedAt).isEqualTo(now)
+
         assertThat(reservation.status).isEqualTo(ReservationStatus.RELEASED)
         assertThat(reservation.updatedAt).isEqualTo(now)
 
@@ -195,8 +198,12 @@ class ReleaseFoodBagReservationUseCaseTest {
 
         // Assert
         assertThat(result).isSameAs(savedReservation)
+
+        assertThat(offer.totalQuantity).isEqualTo(5)
         assertThat(offer.availableQuantity).isEqualTo(5)
         assertThat(offer.reservedQuantity).isZero()
+        assertThat(offer.updatedAt).isEqualTo(now)
+
         assertThat(reservation.status).isEqualTo(ReservationStatus.RELEASED)
         assertThat(reservation.updatedAt).isEqualTo(now)
 
@@ -389,7 +396,10 @@ class ReleaseFoodBagReservationUseCaseTest {
         // Assert
         assertThat(exception.message).isEqualTo("Released quantity exceeds reserved Offer quantity")
         assertThat(offer.availableQuantity).isEqualTo(4)
+        assertThat(offer.reservedQuantity).isEqualTo(1)
+        assertThat(offer.updatedAt).isEqualTo(Instant.parse("2026-08-20T10:00:00Z"))
         assertThat(reservation.status).isEqualTo(ReservationStatus.RESERVED)
+        assertThat(reservation.updatedAt).isEqualTo(Instant.parse("2026-08-20T10:00:00Z"))
 
         verify(currentUserPort).hasRole(ApplicationRole.CUSTOMER)
         verify(reservationDBPort).findById(reservation.id)
@@ -407,6 +417,186 @@ class ReleaseFoodBagReservationUseCaseTest {
             currentUserPort,
             clock,
         )
+    }
+
+    @Test
+    fun whenOrderReleasesReservation_returnsSavedReservation() {
+        // Arrange
+        val reservation = createReservation(customerId = OTHER_USER_ID)
+        val offer =
+            createOffer(
+                id = reservation.offerId,
+                availableQuantity = 3,
+            )
+        val now = Instant.parse("2026-08-20T11:00:00Z")
+        val savedOffer =
+            createOffer(
+                id = offer.id,
+                storeId = offer.storeId,
+                foodBagId = offer.foodBagId,
+                updatedAt = now,
+                version = 1,
+            )
+        val savedReservation =
+            createReservation(
+                id = reservation.id,
+                offerId = reservation.offerId,
+                customerId = OTHER_USER_ID,
+                status = ReservationStatus.RELEASED,
+                createdAt = reservation.createdAt,
+                updatedAt = now,
+                version = 1,
+            )
+        val event =
+            ApplicationEventFactory()
+                .offerReservationReleased(
+                    offer = savedOffer,
+                    reservation = savedReservation,
+                    occurredAt = now,
+                )
+
+        `when`(reservationDBPort.findById(reservation.id)).thenReturn(reservation)
+        `when`(offerDBPort.findById(reservation.offerId)).thenReturn(offer)
+        `when`(clock.instant()).thenReturn(now)
+        `when`(offerDBPort.save(offer)).thenReturn(savedOffer)
+        `when`(reservationDBPort.save(reservation)).thenReturn(savedReservation)
+        `when`(
+                eventFactory.offerReservationReleased(
+                    offer = savedOffer,
+                    reservation = savedReservation,
+                    occurredAt = now,
+                )
+            )
+            .thenReturn(event)
+
+        // Act
+        val result =
+            useCase.executeForOrder(
+                reservationId = reservation.id,
+                offerId = reservation.offerId,
+            )
+
+        // Assert
+        assertThat(result).isSameAs(savedReservation)
+
+        assertThat(offer.totalQuantity).isEqualTo(5)
+        assertThat(offer.availableQuantity).isEqualTo(5)
+        assertThat(offer.reservedQuantity).isZero()
+        assertThat(offer.updatedAt).isEqualTo(now)
+
+        assertThat(reservation.status).isEqualTo(ReservationStatus.RELEASED)
+        assertThat(reservation.updatedAt).isEqualTo(now)
+
+        verify(reservationDBPort).findById(reservation.id)
+        verify(offerDBPort).findById(reservation.offerId)
+        verify(clock).instant()
+        verify(offerDBPort).save(offer)
+        verify(reservationDBPort).save(reservation)
+        verify(eventFactory)
+            .offerReservationReleased(
+                offer = savedOffer,
+                reservation = savedReservation,
+                occurredAt = now,
+            )
+        verify(eventPublisherPort).publish(event)
+        verifyNoInteractions(currentUserPort)
+        verifyNoMoreInteractions(
+            offerDBPort,
+            reservationDBPort,
+            eventFactory,
+            eventPublisherPort,
+            clock,
+        )
+    }
+
+    @Test
+    fun whenOrderReleasesAlreadyReleasedReservation_returnsExistingReservation() {
+        // Arrange
+        val reservation = createReservation(status = ReservationStatus.RELEASED)
+
+        `when`(reservationDBPort.findById(reservation.id)).thenReturn(reservation)
+
+        // Act
+        val result =
+            useCase.executeForOrder(
+                reservationId = reservation.id,
+                offerId = reservation.offerId,
+            )
+
+        // Assert
+        assertThat(result).isSameAs(reservation)
+
+        verify(reservationDBPort).findById(reservation.id)
+        verifyNoInteractions(
+            offerDBPort,
+            currentUserPort,
+            eventFactory,
+            eventPublisherPort,
+            clock,
+        )
+        verifyNoMoreInteractions(reservationDBPort)
+    }
+
+    @Test
+    fun whenOrderReservationDoesNotExist_throwsOfferReservationNotFoundException() {
+        // Arrange
+        val reservationId = ReservationId(UUID.randomUUID())
+        val offerId = OfferId(UUID.randomUUID())
+
+        `when`(reservationDBPort.findById(reservationId)).thenReturn(null)
+
+        // Act
+        val exception =
+            assertThrows<OfferReservationNotFoundException> {
+                useCase.executeForOrder(
+                    reservationId = reservationId,
+                    offerId = offerId,
+                )
+            }
+
+        // Assert
+        assertThat(exception.message).contains(reservationId.value.toString())
+
+        verify(reservationDBPort).findById(reservationId)
+        verifyNoInteractions(
+            offerDBPort,
+            currentUserPort,
+            eventFactory,
+            eventPublisherPort,
+            clock,
+        )
+        verifyNoMoreInteractions(reservationDBPort)
+    }
+
+    @Test
+    fun whenOrderReleasesReservationForAnotherOffer_throwsInvalidStateException() {
+        // Arrange
+        val reservation = createReservation()
+        val offerId = OfferId(UUID.randomUUID())
+
+        `when`(reservationDBPort.findById(reservation.id)).thenReturn(reservation)
+
+        // Act
+        val exception =
+            assertThrows<InvalidStateException> {
+                useCase.executeForOrder(
+                    reservationId = reservation.id,
+                    offerId = offerId,
+                )
+            }
+
+        // Assert
+        assertThat(exception.message).isEqualTo("Reservation belongs to another Offer")
+
+        verify(reservationDBPort).findById(reservation.id)
+        verifyNoInteractions(
+            offerDBPort,
+            currentUserPort,
+            eventFactory,
+            eventPublisherPort,
+            clock,
+        )
+        verifyNoMoreInteractions(reservationDBPort)
     }
 
     @ParameterizedTest
@@ -526,6 +716,7 @@ class ReleaseFoodBagReservationUseCaseTest {
 
     companion object {
         private const val CURRENT_USER_ID = "33333333-3333-3333-3333-333333333333"
+
         private const val OTHER_USER_ID = "88888888-8888-8888-8888-888888888888"
     }
 }

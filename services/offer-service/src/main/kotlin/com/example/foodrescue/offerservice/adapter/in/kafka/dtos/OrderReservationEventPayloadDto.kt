@@ -2,7 +2,7 @@ package com.example.foodrescue.offerservice.adapter.`in`.kafka.dtos
 
 import java.util.UUID
 
-data class OrderReservationRequestedPayloadDto(
+data class OrderReservationEventPayloadDto(
     val orderId: UUID,
     val offerId: UUID,
     val customerId: String,

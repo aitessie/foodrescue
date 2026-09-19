@@ -34,7 +34,7 @@ class ReserveFoodBagsUseCase(
     private val clock: Clock,
 ) {
     @Transactional
-    fun executeForCustomer(
+    fun execute(
         offerId: OfferId,
         reservationId: ReservationId,
         quantity: Int,
@@ -134,7 +134,7 @@ class ReserveFoodBagsUseCase(
             )
         }
 
-        if (reservation.status != ReservationStatus.RESERVED) {
+        if (reservation.status == ReservationStatus.RELEASED) {
             throw InvalidStateException("Released reservation cannot be reserved again")
         }
 

@@ -12,6 +12,9 @@ databaseChangeLog:
       file: db/changelog/changes/init-offer-reservations.yaml
 
   - include:
+      file: db/changelog/changes/allow-committed-offer-reservation-status.yaml
+
+  - include:
       file: db/changelog/changes/init-outbox.yaml
 
   - include:

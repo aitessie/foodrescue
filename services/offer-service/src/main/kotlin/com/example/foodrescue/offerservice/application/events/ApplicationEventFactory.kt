@@ -118,6 +118,18 @@ class ApplicationEventFactory {
                 ),
         )
 
+    fun offerReservationCommitted(
+        offer: Offer,
+        reservation: OfferReservation,
+        occurredAt: Instant,
+    ): ApplicationEvent<OfferReservationEventPayload> =
+        createReservationEvent(
+            eventType = ApplicationEventType.OFFER_RESERVATION_COMMITTED,
+            offer = offer,
+            reservation = reservation,
+            occurredAt = occurredAt,
+        )
+
     fun offerReservationReleased(
         offer: Offer,
         reservation: OfferReservation,

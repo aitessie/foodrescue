@@ -10,6 +10,7 @@ import com.example.foodrescue.offerservice.application.ports.DomainEventPublishe
 import com.example.foodrescue.offerservice.application.ports.OfferDBPort
 import com.example.foodrescue.offerservice.application.ports.OfferReservationDBPort
 import com.example.foodrescue.offerservice.domain.entities.Offer
+import com.example.foodrescue.offerservice.domain.entities.OfferId
 import com.example.foodrescue.offerservice.domain.entities.OfferReservation
 import com.example.foodrescue.offerservice.domain.entities.ReservationId
 import com.example.foodrescue.offerservice.domain.`enum`.ApplicationRole
@@ -31,12 +32,31 @@ class ReleaseFoodBagReservationUseCase(
     fun execute(reservationId: ReservationId): OfferReservation {
         validateRole()
 
-        val reservation =
-            reservationDBPort.findById(reservationId)
-                ?: throw OfferReservationNotFoundException(reservationId)
-
+        val reservation = findReservation(reservationId)
         validateOwnership(reservation)
 
+        return release(reservation)
+    }
+
+    @Transactional
+    fun executeForOrder(
+        reservationId: ReservationId,
+        offerId: OfferId,
+    ): OfferReservation {
+        val reservation = findReservation(reservationId)
+
+        if (reservation.offerId != offerId) {
+            throw InvalidStateException("Reservation belongs to another Offer")
+        }
+
+        return release(reservation)
+    }
+
+    private fun findReservation(reservationId: ReservationId): OfferReservation =
+        reservationDBPort.findById(reservationId)
+            ?: throw OfferReservationNotFoundException(reservationId)
+
+    private fun release(reservation: OfferReservation): OfferReservation {
         if (reservation.status == ReservationStatus.RELEASED) {
             return reservation
         }

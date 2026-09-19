@@ -2,6 +2,7 @@ package com.example.foodrescue.offerservice.adapter.`in`.kafka.dtos
 
 import java.time.Instant
 import java.util.UUID
+import tools.jackson.databind.JsonNode
 
 data class OrderReservationCommandEnvelopeDto(
     val eventId: UUID,
@@ -10,5 +11,5 @@ data class OrderReservationCommandEnvelopeDto(
     val aggregateId: UUID,
     val aggregateVersion: Long,
     val occurredAt: Instant,
-    val payload: OrderReservationRequestedPayloadDto,
+    val payload: JsonNode,
 )

@@ -29,6 +29,26 @@ class OfferReservation(
         )
     }
 
+    fun commit(updatedAt: Instant): Boolean {
+        validateUpdatedAt(
+            updatedAt = updatedAt,
+            earliestAllowed = this.updatedAt,
+        )
+
+        if (status == ReservationStatus.COMMITTED) {
+            return false
+        }
+
+        check(status == ReservationStatus.RESERVED) {
+            "Only a reserved reservation can be committed"
+        }
+
+        status = ReservationStatus.COMMITTED
+        this.updatedAt = updatedAt
+
+        return true
+    }
+
     fun release(updatedAt: Instant): Boolean {
         validateUpdatedAt(
             updatedAt = updatedAt,

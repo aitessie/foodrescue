@@ -1,0 +1,33 @@
+databaseChangeLog:
+  - changeSet:
+      id: offer-service-allow-committed-offer-reservation-status
+      author: foodrescue
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE offer_reservations
+              DROP CONSTRAINT chk_offer_reservations_status;
+
+        - sql:
+            sql: >
+              ALTER TABLE offer_reservations
+              ADD CONSTRAINT chk_offer_reservations_status
+              CHECK (status IN ('RESERVED', 'COMMITTED', 'RELEASED'));
+
+      rollback:
+        - sql:
+            sql: >
+              ALTER TABLE offer_reservations
+              DROP CONSTRAINT chk_offer_reservations_status;
+
+        - sql:
+            sql: >
+              UPDATE offer_reservations
+              SET status = 'RESERVED'
+              WHERE status = 'COMMITTED';
+
+        - sql:
+            sql: >
+              ALTER TABLE offer_reservations
+              ADD CONSTRAINT chk_offer_reservations_status
+              CHECK (status IN ('RESERVED', 'RELEASED'));

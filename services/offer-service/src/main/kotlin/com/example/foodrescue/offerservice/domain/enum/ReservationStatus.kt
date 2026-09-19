@@ -8,6 +8,10 @@ enum class ReservationStatus(
         "RESERVED",
         "Зарезервировано",
     ),
+    COMMITTED(
+        "COMMITTED",
+        "Подтверждено заказом",
+    ),
     RELEASED(
         "RELEASED",
         "Освобождено",
