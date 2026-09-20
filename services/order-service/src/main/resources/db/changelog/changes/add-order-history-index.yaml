@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-order-history-index
+      author: foodrescue
+      changes:
+        - createIndex:
+            tableName: orders
+            indexName: idx_orders_customer_created_id
+            columns:
+              - column:
+                  name: customer_id
+              - column:
+                  name: created_at
+              - column:
+                  name: id
+      rollback:
+        - dropIndex:
+            tableName: orders
+            indexName: idx_orders_customer_created_id

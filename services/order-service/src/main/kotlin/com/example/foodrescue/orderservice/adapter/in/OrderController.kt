@@ -2,8 +2,10 @@ package com.example.foodrescue.orderservice.adapter.`in`
 
 import com.example.foodrescue.orderservice.adapter.`in`.dtos.CreateOrderDto
 import com.example.foodrescue.orderservice.adapter.`in`.dtos.OrderDto
+import com.example.foodrescue.orderservice.adapter.`in`.dtos.OrderPageDto
 import com.example.foodrescue.orderservice.adapter.`in`.mappers.OrderRestMapper
 import com.example.foodrescue.orderservice.application.usecases.CreateOrderUseCase
+import com.example.foodrescue.orderservice.application.usecases.GetCustomerOrdersUseCase
 import com.example.foodrescue.orderservice.application.usecases.GetOrderUseCase
 import jakarta.validation.Valid
 import java.util.UUID
@@ -13,15 +15,29 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/orders")
 class OrderController(
     private val getOrderUseCase: GetOrderUseCase,
+    private val getCustomerOrdersUseCase: GetCustomerOrdersUseCase,
     private val createOrderUseCase: CreateOrderUseCase,
     private val orderRestMapper: OrderRestMapper,
 ) {
+    @GetMapping
+    fun getOrders(
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int,
+    ): OrderPageDto =
+        orderRestMapper.toPageDto(
+            getCustomerOrdersUseCase.execute(
+                page = page,
+                size = size,
+            )
+        )
+
     @GetMapping("/{orderId}")
     fun getOrder(@PathVariable orderId: UUID): OrderDto {
         val order = getOrderUseCase.execute(orderRestMapper.toOrderId(orderId))

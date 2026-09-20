@@ -4,6 +4,9 @@ import com.example.foodrescue.orderservice.adapter.out.db.mappers.OrderJpaMapper
 import com.example.foodrescue.orderservice.application.ports.OrderDBPort
 import com.example.foodrescue.orderservice.domain.entities.Order
 import com.example.foodrescue.orderservice.domain.entities.OrderId
+import com.example.foodrescue.orderservice.domain.entities.OrderPage
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
 
 @Component
@@ -13,6 +16,31 @@ class OrderRepository(
 ) : OrderDBPort {
     override fun findById(orderId: OrderId): Order? =
         orderJpaRepository.findById(orderId.value)?.let(orderJpaMapper::toDomain)
+
+    override fun findByCustomerId(
+        customerId: String,
+        page: Int,
+        size: Int,
+    ): OrderPage {
+        val pageable =
+            PageRequest.of(
+                page,
+                size,
+                Sort.by(
+                    Sort.Order.desc("createdAt"),
+                    Sort.Order.desc("id"),
+                ),
+            )
+        val result = orderJpaRepository.findAllByCustomerId(customerId, pageable)
+
+        return OrderPage(
+            content = result.content.map(orderJpaMapper::toDomain),
+            pageNumber = result.number,
+            pageSize = result.size,
+            totalElements = result.totalElements,
+            totalPages = result.totalPages,
+        )
+    }
 
     override fun save(order: Order): Order =
         orderJpaRepository.save(orderJpaMapper.toJpaEntity(order)).let(orderJpaMapper::toDomain)

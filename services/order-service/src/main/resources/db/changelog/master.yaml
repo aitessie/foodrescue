@@ -6,4 +6,6 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/init-inbox.yaml
   - include:
+      file: db/changelog/changes/add-order-history-index.yaml
+  - include:
       file: db/changelog/changes/dev-test-data.yaml
