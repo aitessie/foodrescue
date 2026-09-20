@@ -46,6 +46,13 @@ class SecurityConfiguration(private val keycloakRealmRoleConverter: KeycloakReal
                 authorization
                     .requestMatchers(
                         HttpMethod.GET,
+                        "/api/v1/orders/*/pickup-token",
+                    )
+                    .hasRole(ApplicationRole.CUSTOMER.code)
+
+                authorization
+                    .requestMatchers(
+                        HttpMethod.GET,
                         "/api/v1/orders/*",
                     )
                     .hasAnyRole(

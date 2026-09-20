@@ -1,0 +1,79 @@
+databaseChangeLog:
+  - changeSet:
+      id: order-service-init-pickup-tokens
+      author: foodrescue
+      changes:
+        - createTable:
+            tableName: pickup_tokens
+            columns:
+              - column:
+                  name: order_id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_pickup_tokens
+                    nullable: false
+
+              - column:
+                  name: token_hash
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk_pickup_tokens_token_hash
+
+              - column:
+                  name: used_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+              - column:
+                  name: version
+                  type: BIGINT
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: pickup_tokens
+            baseColumnNames: order_id
+            referencedTableName: orders
+            referencedColumnNames: id
+            constraintName: fk_pickup_tokens_order
+            onDelete: CASCADE
+
+        - sql:
+            sql: >
+              ALTER TABLE pickup_tokens
+              ADD CONSTRAINT chk_pickup_tokens_hash_length
+              CHECK (length(token_hash) = 64);
+
+        - sql:
+            sql: >
+              ALTER TABLE pickup_tokens
+              ADD CONSTRAINT chk_pickup_tokens_timestamps
+              CHECK (
+                  updated_at >= created_at
+                  AND (used_at IS NULL OR used_at >= created_at)
+              );
+
+        - sql:
+            sql: >
+              ALTER TABLE pickup_tokens
+              ADD CONSTRAINT chk_pickup_tokens_version
+              CHECK (version >= 0);
+
+      rollback:
+        - dropTable:
+            tableName: pickup_tokens

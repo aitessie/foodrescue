@@ -3,10 +3,12 @@ package com.example.foodrescue.orderservice.adapter.`in`
 import com.example.foodrescue.orderservice.adapter.`in`.dtos.CreateOrderDto
 import com.example.foodrescue.orderservice.adapter.`in`.dtos.OrderDto
 import com.example.foodrescue.orderservice.adapter.`in`.dtos.OrderPageDto
+import com.example.foodrescue.orderservice.adapter.`in`.dtos.PickupTokenDto
 import com.example.foodrescue.orderservice.adapter.`in`.mappers.OrderRestMapper
 import com.example.foodrescue.orderservice.application.usecases.CreateOrderUseCase
 import com.example.foodrescue.orderservice.application.usecases.GetCustomerOrdersUseCase
 import com.example.foodrescue.orderservice.application.usecases.GetOrderUseCase
+import com.example.foodrescue.orderservice.application.usecases.GetPickupTokenUseCase
 import jakarta.validation.Valid
 import java.util.UUID
 import org.springframework.http.ResponseEntity
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController
 class OrderController(
     private val getOrderUseCase: GetOrderUseCase,
     private val getCustomerOrdersUseCase: GetCustomerOrdersUseCase,
+    private val getPickupTokenUseCase: GetPickupTokenUseCase,
     private val createOrderUseCase: CreateOrderUseCase,
     private val orderRestMapper: OrderRestMapper,
 ) {
@@ -36,6 +39,12 @@ class OrderController(
                 page = page,
                 size = size,
             )
+        )
+
+    @GetMapping("/{orderId}/pickup-token")
+    fun getPickupToken(@PathVariable orderId: UUID): PickupTokenDto =
+        orderRestMapper.toPickupTokenDto(
+            getPickupTokenUseCase.execute(orderRestMapper.toOrderId(orderId))
         )
 
     @GetMapping("/{orderId}")

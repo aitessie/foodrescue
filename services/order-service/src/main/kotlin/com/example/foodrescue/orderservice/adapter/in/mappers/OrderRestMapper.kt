@@ -2,6 +2,7 @@ package com.example.foodrescue.orderservice.adapter.`in`.mappers
 
 import com.example.foodrescue.orderservice.adapter.`in`.dtos.OrderDto
 import com.example.foodrescue.orderservice.adapter.`in`.dtos.OrderPageDto
+import com.example.foodrescue.orderservice.adapter.`in`.dtos.PickupTokenDto
 import com.example.foodrescue.orderservice.domain.entities.OfferId
 import com.example.foodrescue.orderservice.domain.entities.Order
 import com.example.foodrescue.orderservice.domain.entities.OrderId
@@ -29,6 +30,8 @@ class OrderRestMapper {
             createdAt = order.createdAt,
             updatedAt = order.updatedAt,
         )
+
+    fun toPickupTokenDto(token: String): PickupTokenDto = PickupTokenDto(token)
 
     fun toPageDto(page: OrderPage): OrderPageDto =
         OrderPageDto(
