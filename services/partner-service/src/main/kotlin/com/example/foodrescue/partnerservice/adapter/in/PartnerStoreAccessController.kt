@@ -22,10 +22,16 @@ class PartnerStoreAccessController(
     fun checkAccess(
         @Valid @RequestBody request: PartnerStoreAccessRequestDto
     ): PartnerStoreAccessResponseDto {
+        val storeId = StoreId(request.storeId)
         val snapshot =
-            checkPartnerStoreAccessUseCase.execute(
-                partnerId = request.partnerId?.let(::PartnerId),
-                storeId = StoreId(request.storeId),
+            request.partnerId?.let { partnerId ->
+                checkPartnerStoreAccessUseCase.execute(
+                    partnerId = PartnerId(partnerId),
+                    storeId = storeId,
+                    userId = request.userId,
+                )
+            } ?: checkPartnerStoreAccessUseCase.execute(
+                storeId = storeId,
                 userId = request.userId,
             )
 

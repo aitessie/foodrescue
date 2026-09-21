@@ -32,19 +32,19 @@ class CheckPartnerStoreAccessUseCaseTest {
     @InjectMocks private lateinit var useCase: CheckPartnerStoreAccessUseCase
 
     @Test
-    fun whenManagerChecksStoreAccess_returnsManagerAccessSnapshot() {
+    fun whenManagerChecksStoreAccessByPartnerAndStore_returnsManagerAccessSnapshot() {
         // Arrange
         val partnerId = PartnerId(UUID.randomUUID())
         val storeId = StoreId(UUID.randomUUID())
         val partner = mock(Partner::class.java)
         val store = mock(Store::class.java)
 
-        `when`(store.partnerId).thenReturn(partnerId)
-        `when`(store.status).thenReturn(StoreStatus.ACTIVE)
         `when`(partner.status).thenReturn(PartnerStatus.ACTIVE)
         `when`(partner.managerId).thenReturn(CURRENT_USER_ID)
-        `when`(storeDBPort.findById(storeId)).thenReturn(store)
+        `when`(store.partnerId).thenReturn(partnerId)
+        `when`(store.status).thenReturn(StoreStatus.ACTIVE)
         `when`(partnerDBPort.findById(partnerId)).thenReturn(partner)
+        `when`(storeDBPort.findById(storeId)).thenReturn(store)
         `when`(
             storeStaffDBPort.isStaffAssignedToStore(
                 userId = CURRENT_USER_ID,
@@ -67,6 +67,201 @@ class CheckPartnerStoreAccessUseCaseTest {
         assertThat(result.userIsStoreManager).isTrue()
         assertThat(result.userIsStoreStaff).isFalse()
 
+        verify(partnerDBPort).findById(partnerId)
+        verify(storeDBPort).findById(storeId)
+        verify(storeStaffDBPort)
+            .isStaffAssignedToStore(
+                userId = CURRENT_USER_ID,
+                storeId = storeId,
+            )
+        verifyNoMoreInteractions(
+            partnerDBPort,
+            storeDBPort,
+            storeStaffDBPort,
+        )
+    }
+
+    @Test
+    fun whenStaffChecksStoreAccessByPartnerAndStore_returnsStaffAccessSnapshot() {
+        // Arrange
+        val partnerId = PartnerId(UUID.randomUUID())
+        val storeId = StoreId(UUID.randomUUID())
+        val partner = mock(Partner::class.java)
+        val store = mock(Store::class.java)
+
+        `when`(partner.status).thenReturn(PartnerStatus.ACTIVE)
+        `when`(partner.managerId).thenReturn(OTHER_USER_ID)
+        `when`(store.partnerId).thenReturn(partnerId)
+        `when`(store.status).thenReturn(StoreStatus.ACTIVE)
+        `when`(partnerDBPort.findById(partnerId)).thenReturn(partner)
+        `when`(storeDBPort.findById(storeId)).thenReturn(store)
+        `when`(
+            storeStaffDBPort.isStaffAssignedToStore(
+                userId = CURRENT_USER_ID,
+                storeId = storeId,
+            )
+        )
+            .thenReturn(true)
+
+        // Act
+        val result =
+            useCase.execute(
+                partnerId = partnerId,
+                storeId = storeId,
+                userId = CURRENT_USER_ID,
+            )
+
+        // Assert
+        assertThat(result.partnerStatus).isEqualTo(PartnerStatus.ACTIVE)
+        assertThat(result.storeStatus).isEqualTo(StoreStatus.ACTIVE)
+        assertThat(result.userIsStoreManager).isFalse()
+        assertThat(result.userIsStoreStaff).isTrue()
+
+        verify(partnerDBPort).findById(partnerId)
+        verify(storeDBPort).findById(storeId)
+        verify(storeStaffDBPort)
+            .isStaffAssignedToStore(
+                userId = CURRENT_USER_ID,
+                storeId = storeId,
+            )
+        verifyNoMoreInteractions(
+            partnerDBPort,
+            storeDBPort,
+            storeStaffDBPort,
+        )
+    }
+
+    @Test
+    fun whenPartnerDoesNotExist_throwsPartnerNotFoundException() {
+        // Arrange
+        val partnerId = PartnerId(UUID.randomUUID())
+        val storeId = StoreId(UUID.randomUUID())
+
+        `when`(partnerDBPort.findById(partnerId)).thenReturn(null)
+
+        // Act
+        val exception =
+            assertThrows<PartnerNotFoundException> {
+                useCase.execute(
+                    partnerId = partnerId,
+                    storeId = storeId,
+                    userId = CURRENT_USER_ID,
+                )
+            }
+
+        // Assert
+        assertThat(exception.message).contains(partnerId.value.toString())
+
+        verify(partnerDBPort).findById(partnerId)
+        verifyNoInteractions(
+            storeDBPort,
+            storeStaffDBPort,
+        )
+        verifyNoMoreInteractions(partnerDBPort)
+    }
+
+    @Test
+    fun whenStoreDoesNotExistForPartnerAndStoreCheck_throwsStoreNotFoundException() {
+        // Arrange
+        val partnerId = PartnerId(UUID.randomUUID())
+        val storeId = StoreId(UUID.randomUUID())
+        val partner = mock(Partner::class.java)
+
+        `when`(partnerDBPort.findById(partnerId)).thenReturn(partner)
+        `when`(storeDBPort.findById(storeId)).thenReturn(null)
+
+        // Act
+        val exception =
+            assertThrows<StoreNotFoundException> {
+                useCase.execute(
+                    partnerId = partnerId,
+                    storeId = storeId,
+                    userId = CURRENT_USER_ID,
+                )
+            }
+
+        // Assert
+        assertThat(exception.message).contains(storeId.value.toString())
+
+        verify(partnerDBPort).findById(partnerId)
+        verify(storeDBPort).findById(storeId)
+        verifyNoInteractions(storeStaffDBPort)
+        verifyNoMoreInteractions(
+            partnerDBPort,
+            storeDBPort,
+        )
+    }
+
+    @Test
+    fun whenStoreBelongsToAnotherPartner_throwsStoreNotFoundException() {
+        // Arrange
+        val partnerId = PartnerId(UUID.randomUUID())
+        val actualPartnerId = PartnerId(UUID.randomUUID())
+        val storeId = StoreId(UUID.randomUUID())
+        val partner = mock(Partner::class.java)
+        val store = mock(Store::class.java)
+
+        `when`(store.partnerId).thenReturn(actualPartnerId)
+        `when`(partnerDBPort.findById(partnerId)).thenReturn(partner)
+        `when`(storeDBPort.findById(storeId)).thenReturn(store)
+
+        // Act
+        val exception =
+            assertThrows<StoreNotFoundException> {
+                useCase.execute(
+                    partnerId = partnerId,
+                    storeId = storeId,
+                    userId = CURRENT_USER_ID,
+                )
+            }
+
+        // Assert
+        assertThat(exception.message).contains(storeId.value.toString())
+
+        verify(partnerDBPort).findById(partnerId)
+        verify(storeDBPort).findById(storeId)
+        verifyNoInteractions(storeStaffDBPort)
+        verifyNoMoreInteractions(
+            partnerDBPort,
+            storeDBPort,
+        )
+    }
+
+    @Test
+    fun whenManagerChecksStoreAccessByStore_returnsManagerAccessSnapshot() {
+        // Arrange
+        val partnerId = PartnerId(UUID.randomUUID())
+        val storeId = StoreId(UUID.randomUUID())
+        val partner = mock(Partner::class.java)
+        val store = mock(Store::class.java)
+
+        `when`(store.partnerId).thenReturn(partnerId)
+        `when`(store.status).thenReturn(StoreStatus.SUSPENDED)
+        `when`(partner.status).thenReturn(PartnerStatus.SUSPENDED)
+        `when`(partner.managerId).thenReturn(CURRENT_USER_ID)
+        `when`(storeDBPort.findById(storeId)).thenReturn(store)
+        `when`(partnerDBPort.findById(partnerId)).thenReturn(partner)
+        `when`(
+            storeStaffDBPort.isStaffAssignedToStore(
+                userId = CURRENT_USER_ID,
+                storeId = storeId,
+            )
+        )
+            .thenReturn(false)
+
+        // Act
+        val result =
+            useCase.execute(
+                storeId = storeId,
+                userId = CURRENT_USER_ID,
+            )
+
+        // Assert
+        assertThat(result.partnerStatus).isEqualTo(PartnerStatus.SUSPENDED)
+        assertThat(result.storeStatus).isEqualTo(StoreStatus.SUSPENDED)
+        assertThat(result.userIsStoreManager).isTrue()
+        assertThat(result.userIsStoreStaff).isFalse()
+
         verify(storeDBPort).findById(storeId)
         verify(partnerDBPort).findById(partnerId)
         verify(storeStaffDBPort)
@@ -82,7 +277,7 @@ class CheckPartnerStoreAccessUseCaseTest {
     }
 
     @Test
-    fun whenStaffChecksStoreAccess_returnsStaffAccessSnapshot() {
+    fun whenStaffChecksStoreAccessByStore_returnsStaffAccessSnapshot() {
         // Arrange
         val partnerId = PartnerId(UUID.randomUUID())
         val storeId = StoreId(UUID.randomUUID())
@@ -106,7 +301,6 @@ class CheckPartnerStoreAccessUseCaseTest {
         // Act
         val result =
             useCase.execute(
-                partnerId = partnerId,
                 storeId = storeId,
                 userId = CURRENT_USER_ID,
             )
@@ -132,58 +326,8 @@ class CheckPartnerStoreAccessUseCaseTest {
     }
 
     @Test
-    fun whenPartnerIdIsNotProvided_usesStorePartnerAndReturnsAccessSnapshot() {
+    fun whenStoreDoesNotExistForStoreCheck_throwsStoreNotFoundException() {
         // Arrange
-        val partnerId = PartnerId(UUID.randomUUID())
-        val storeId = StoreId(UUID.randomUUID())
-        val partner = mock(Partner::class.java)
-        val store = mock(Store::class.java)
-
-        `when`(store.partnerId).thenReturn(partnerId)
-        `when`(store.status).thenReturn(StoreStatus.SUSPENDED)
-        `when`(partner.status).thenReturn(PartnerStatus.SUSPENDED)
-        `when`(partner.managerId).thenReturn(OTHER_USER_ID)
-        `when`(storeDBPort.findById(storeId)).thenReturn(store)
-        `when`(partnerDBPort.findById(partnerId)).thenReturn(partner)
-        `when`(
-            storeStaffDBPort.isStaffAssignedToStore(
-                userId = CURRENT_USER_ID,
-                storeId = storeId,
-            )
-        )
-            .thenReturn(false)
-
-        // Act
-        val result =
-            useCase.execute(
-                storeId = storeId,
-                userId = CURRENT_USER_ID,
-            )
-
-        // Assert
-        assertThat(result.partnerStatus).isEqualTo(PartnerStatus.SUSPENDED)
-        assertThat(result.storeStatus).isEqualTo(StoreStatus.SUSPENDED)
-        assertThat(result.userIsStoreManager).isFalse()
-        assertThat(result.userIsStoreStaff).isFalse()
-
-        verify(storeDBPort).findById(storeId)
-        verify(partnerDBPort).findById(partnerId)
-        verify(storeStaffDBPort)
-            .isStaffAssignedToStore(
-                userId = CURRENT_USER_ID,
-                storeId = storeId,
-            )
-        verifyNoMoreInteractions(
-            partnerDBPort,
-            storeDBPort,
-            storeStaffDBPort,
-        )
-    }
-
-    @Test
-    fun whenStoreDoesNotExist_throwsStoreNotFoundException() {
-        // Arrange
-        val partnerId = PartnerId(UUID.randomUUID())
         val storeId = StoreId(UUID.randomUUID())
 
         `when`(storeDBPort.findById(storeId)).thenReturn(null)
@@ -192,39 +336,6 @@ class CheckPartnerStoreAccessUseCaseTest {
         val exception =
             assertThrows<StoreNotFoundException> {
                 useCase.execute(
-                    partnerId = partnerId,
-                    storeId = storeId,
-                    userId = CURRENT_USER_ID,
-                )
-            }
-
-        // Assert
-        assertThat(exception.message).contains(storeId.value.toString())
-
-        verify(storeDBPort).findById(storeId)
-        verifyNoInteractions(
-            partnerDBPort,
-            storeStaffDBPort,
-        )
-        verifyNoMoreInteractions(storeDBPort)
-    }
-
-    @Test
-    fun whenStoreBelongsToAnotherPartner_throwsStoreNotFoundException() {
-        // Arrange
-        val requestedPartnerId = PartnerId(UUID.randomUUID())
-        val actualPartnerId = PartnerId(UUID.randomUUID())
-        val storeId = StoreId(UUID.randomUUID())
-        val store = mock(Store::class.java)
-
-        `when`(store.partnerId).thenReturn(actualPartnerId)
-        `when`(storeDBPort.findById(storeId)).thenReturn(store)
-
-        // Act
-        val exception =
-            assertThrows<StoreNotFoundException> {
-                useCase.execute(
-                    partnerId = requestedPartnerId,
                     storeId = storeId,
                     userId = CURRENT_USER_ID,
                 )
@@ -256,7 +367,6 @@ class CheckPartnerStoreAccessUseCaseTest {
         val exception =
             assertThrows<PartnerNotFoundException> {
                 useCase.execute(
-                    partnerId = partnerId,
                     storeId = storeId,
                     userId = CURRENT_USER_ID,
                 )
@@ -267,38 +377,6 @@ class CheckPartnerStoreAccessUseCaseTest {
 
         verify(storeDBPort).findById(storeId)
         verify(partnerDBPort).findById(partnerId)
-        verifyNoInteractions(storeStaffDBPort)
-        verifyNoMoreInteractions(
-            partnerDBPort,
-            storeDBPort,
-        )
-    }
-
-    @Test
-    fun whenPartnerIdIsNotProvidedAndStorePartnerDoesNotExist_throwsPartnerNotFoundException() {
-        // Arrange
-        val actualPartnerId = PartnerId(UUID.randomUUID())
-        val storeId = StoreId(UUID.randomUUID())
-        val store = mock(Store::class.java)
-
-        `when`(store.partnerId).thenReturn(actualPartnerId)
-        `when`(storeDBPort.findById(storeId)).thenReturn(store)
-        `when`(partnerDBPort.findById(actualPartnerId)).thenReturn(null)
-
-        // Act
-        val exception =
-            assertThrows<PartnerNotFoundException> {
-                useCase.execute(
-                    storeId = storeId,
-                    userId = CURRENT_USER_ID,
-                )
-            }
-
-        // Assert
-        assertThat(exception.message).contains(actualPartnerId.value.toString())
-
-        verify(storeDBPort).findById(storeId)
-        verify(partnerDBPort).findById(actualPartnerId)
         verifyNoInteractions(storeStaffDBPort)
         verifyNoMoreInteractions(
             partnerDBPort,

@@ -5,8 +5,10 @@ import com.example.foodrescue.partnerservice.application.exceptions.StoreNotFoun
 import com.example.foodrescue.partnerservice.application.ports.PartnerDBPort
 import com.example.foodrescue.partnerservice.application.ports.StoreDBPort
 import com.example.foodrescue.partnerservice.application.ports.StoreStaffDBPort
+import com.example.foodrescue.partnerservice.domain.entities.Partner
 import com.example.foodrescue.partnerservice.domain.entities.PartnerId
 import com.example.foodrescue.partnerservice.domain.entities.PartnerStoreAccessSnapshot
+import com.example.foodrescue.partnerservice.domain.entities.Store
 import com.example.foodrescue.partnerservice.domain.entities.StoreId
 import org.springframework.stereotype.Service
 
@@ -17,21 +19,48 @@ class CheckPartnerStoreAccessUseCase(
     private val storeStaffDBPort: StoreStaffDBPort,
 ) {
     fun execute(
-        partnerId: PartnerId? = null,
+        partnerId: PartnerId,
+        storeId: StoreId,
+        userId: String,
+    ): PartnerStoreAccessSnapshot {
+        val partner = partnerDBPort.findById(partnerId) ?: throw PartnerNotFoundException(partnerId)
+        val store = storeDBPort.findById(storeId) ?: throw StoreNotFoundException(storeId)
+
+        if (store.partnerId != partnerId) {
+            throw StoreNotFoundException(storeId)
+        }
+
+        return createSnapshot(
+            partner = partner,
+            store = store,
+            storeId = storeId,
+            userId = userId,
+        )
+    }
+
+    fun execute(
         storeId: StoreId,
         userId: String,
     ): PartnerStoreAccessSnapshot {
         val store = storeDBPort.findById(storeId) ?: throw StoreNotFoundException(storeId)
-
-        if (partnerId != null && store.partnerId != partnerId) {
-            throw StoreNotFoundException(storeId)
-        }
-
-        val actualPartnerId = store.partnerId
         val partner =
-            partnerDBPort.findById(actualPartnerId) ?: throw PartnerNotFoundException(actualPartnerId)
+            partnerDBPort.findById(store.partnerId) ?: throw PartnerNotFoundException(store.partnerId)
 
-        return PartnerStoreAccessSnapshot(
+        return createSnapshot(
+            partner = partner,
+            store = store,
+            storeId = storeId,
+            userId = userId,
+        )
+    }
+
+    private fun createSnapshot(
+        partner: Partner,
+        store: Store,
+        storeId: StoreId,
+        userId: String,
+    ): PartnerStoreAccessSnapshot =
+        PartnerStoreAccessSnapshot(
             partnerStatus = partner.status,
             storeStatus = store.status,
             userIsStoreManager = partner.managerId == userId,
@@ -41,5 +70,4 @@ class CheckPartnerStoreAccessUseCase(
                     storeId = storeId,
                 ),
         )
-    }
 }
