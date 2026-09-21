@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank
 import java.util.UUID
 
 data class PartnerStoreAccessRequestDto(
-    val partnerId: UUID,
+    val partnerId: UUID? = null,
     val storeId: UUID,
     @field:NotBlank val userId: String,
 )

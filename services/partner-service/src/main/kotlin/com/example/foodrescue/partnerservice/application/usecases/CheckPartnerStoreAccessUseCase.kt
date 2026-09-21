@@ -17,17 +17,19 @@ class CheckPartnerStoreAccessUseCase(
     private val storeStaffDBPort: StoreStaffDBPort,
 ) {
     fun execute(
-        partnerId: PartnerId,
+        partnerId: PartnerId? = null,
         storeId: StoreId,
         userId: String,
     ): PartnerStoreAccessSnapshot {
-        val partner = partnerDBPort.findById(partnerId) ?: throw PartnerNotFoundException(partnerId)
-
         val store = storeDBPort.findById(storeId) ?: throw StoreNotFoundException(storeId)
 
-        if (store.partnerId != partnerId) {
+        if (partnerId != null && store.partnerId != partnerId) {
             throw StoreNotFoundException(storeId)
         }
+
+        val actualPartnerId = store.partnerId
+        val partner =
+            partnerDBPort.findById(actualPartnerId) ?: throw PartnerNotFoundException(actualPartnerId)
 
         return PartnerStoreAccessSnapshot(
             partnerStatus = partner.status,

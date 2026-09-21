@@ -24,7 +24,7 @@ class PartnerStoreAccessController(
     ): PartnerStoreAccessResponseDto {
         val snapshot =
             checkPartnerStoreAccessUseCase.execute(
-                partnerId = PartnerId(request.partnerId),
+                partnerId = request.partnerId?.let(::PartnerId),
                 storeId = StoreId(request.storeId),
                 userId = request.userId,
             )
