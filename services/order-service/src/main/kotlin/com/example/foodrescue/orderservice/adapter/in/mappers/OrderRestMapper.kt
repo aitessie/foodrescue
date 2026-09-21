@@ -7,6 +7,7 @@ import com.example.foodrescue.orderservice.domain.entities.OfferId
 import com.example.foodrescue.orderservice.domain.entities.Order
 import com.example.foodrescue.orderservice.domain.entities.OrderId
 import com.example.foodrescue.orderservice.domain.entities.OrderPage
+import com.example.foodrescue.orderservice.domain.entities.StoreId
 import java.util.UUID
 import org.springframework.stereotype.Component
 
@@ -15,6 +16,8 @@ class OrderRestMapper {
     fun toOrderId(orderId: UUID): OrderId = OrderId(orderId)
 
     fun toOfferId(offerId: UUID): OfferId = OfferId(offerId)
+
+    fun toStoreId(storeId: UUID): StoreId = StoreId(storeId)
 
     fun toDto(order: Order): OrderDto =
         OrderDto(

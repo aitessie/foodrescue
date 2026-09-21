@@ -17,6 +17,9 @@ class PickupTokenRepository(
             .orElse(null)
             ?.let(pickupTokenJpaMapper::toDomain)
 
+    override fun findByTokenHash(tokenHash: String): PickupToken? =
+        pickupTokenJpaRepository.findByTokenHash(tokenHash)?.let(pickupTokenJpaMapper::toDomain)
+
     override fun save(pickupToken: PickupToken): PickupToken =
         pickupTokenJpaRepository
             .saveAndFlush(pickupTokenJpaMapper.toJpaEntity(pickupToken))

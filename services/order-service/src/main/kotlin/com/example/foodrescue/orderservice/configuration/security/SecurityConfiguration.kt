@@ -60,6 +60,17 @@ class SecurityConfiguration(private val keycloakRealmRoleConverter: KeycloakReal
                         ApplicationRole.ADMIN.code,
                     )
 
+                authorization
+                    .requestMatchers(
+                        HttpMethod.POST,
+                        "/api/v1/pickups/confirm",
+                    )
+                    .hasAnyRole(
+                        ApplicationRole.STAFF.code,
+                        ApplicationRole.MANAGER.code,
+                        ApplicationRole.ADMIN.code,
+                    )
+
                 authorization.anyRequest().authenticated()
             }
             .oauth2ResourceServer { resourceServer ->

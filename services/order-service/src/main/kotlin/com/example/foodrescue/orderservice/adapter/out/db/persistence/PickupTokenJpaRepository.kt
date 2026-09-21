@@ -4,4 +4,6 @@ import com.example.foodrescue.orderservice.adapter.out.db.entities.PickupTokenJp
 import java.util.UUID
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface PickupTokenJpaRepository : JpaRepository<PickupTokenJpaEntity, UUID>
+interface PickupTokenJpaRepository : JpaRepository<PickupTokenJpaEntity, UUID> {
+    fun findByTokenHash(tokenHash: String): PickupTokenJpaEntity?
+}

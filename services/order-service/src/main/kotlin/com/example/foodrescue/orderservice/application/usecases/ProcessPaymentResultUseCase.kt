@@ -34,8 +34,7 @@ class ProcessPaymentResultUseCase(
             result.status,
         )
 
-        val order =
-            orderDBPort.findById(result.orderId) ?: throw OrderNotFoundException(result.orderId)
+        val order = orderDBPort.findById(result.orderId) ?: throw OrderNotFoundException(result.orderId)
         validateAmount(
             order = order,
             amount = result.amount,
@@ -44,14 +43,18 @@ class ProcessPaymentResultUseCase(
         val now = clock.instant()
 
         when (result.operation) {
-            PaymentOperation.AUTHORIZATION ->
-                processAuthorization(
-                    order = order,
-                    resultStatus = result.status,
-                    now = now,
-                )
+            PaymentOperation.AUTHORIZATION -> processAuthorization(
+                order = order,
+                resultStatus = result.status,
+                now = now,
+            )
 
-            PaymentOperation.CAPTURE,
+            PaymentOperation.CAPTURE -> processCapture(
+                order = order,
+                resultStatus = result.status,
+                now = now,
+            )
+
             PaymentOperation.VOID,
             PaymentOperation.REFUND ->
                 throw OrderConflictException(
@@ -103,6 +106,44 @@ class ProcessPaymentResultUseCase(
                 occurredAt = now,
             )
         )
+    }
+
+    private fun processCapture(
+        order: Order,
+        resultStatus: PaymentResultStatus,
+        now: Instant,
+    ) {
+        when (resultStatus) {
+            PaymentResultStatus.SUCCEEDED -> captureSuccessfully(order, now)
+            PaymentResultStatus.FAILED -> handleCaptureFailure(order)
+        }
+    }
+
+    private fun captureSuccessfully(
+        order: Order,
+        now: Instant,
+    ) {
+        if (order.status == OrderStatus.COMPLETED) {
+            return
+        }
+
+        if (order.status != OrderStatus.PICKED_UP) {
+            throw OrderConflictException(
+                "Payment capture cannot succeed for Order in status ${order.status}"
+            )
+        }
+
+        order.status = OrderStatus.COMPLETED
+        order.updatedAt = now
+        orderDBPort.save(order)
+    }
+
+    private fun handleCaptureFailure(order: Order) {
+        if (order.status != OrderStatus.PICKED_UP) {
+            throw OrderConflictException(
+                "Payment capture cannot fail for Order in status ${order.status}"
+            )
+        }
     }
 
     private fun failAuthorization(

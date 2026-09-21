@@ -63,6 +63,13 @@ spring:
             client-id: ${ORDER_SERVICE_CLIENT_ID}
             client-secret: ${ORDER_SERVICE_CLIENT_SECRET}
 
+          partner-service:
+            provider: keycloak
+            authorization-grant-type: client_credentials
+            client-authentication-method: client_secret_post
+            client-id: ${ORDER_SERVICE_CLIENT_ID}
+            client-secret: ${ORDER_SERVICE_CLIENT_SECRET}
+
   mvc:
     problemdetails:
       enabled: true
@@ -93,6 +100,11 @@ food-rescue:
     base-url: "${OFFER_SERVICE_URL:http://localhost:8083}"
     timeout: ${OFFER_HTTP_TIMEOUT:5000ms}
     oauth2-registration-id: ${OFFER_OAUTH2_REGISTRATION_ID:offer-service}
+
+  partner-http:
+    base-url: "${PARTNER_SERVICE_URL:http://localhost:8082}"
+    timeout: ${PARTNER_HTTP_TIMEOUT:5000ms}
+    oauth2-registration-id: ${PARTNER_OAUTH2_REGISTRATION_ID:partner-service}
 
   kafka:
     order-commands-topic: ${ORDER_COMMANDS_TOPIC:order.commands.v1}
