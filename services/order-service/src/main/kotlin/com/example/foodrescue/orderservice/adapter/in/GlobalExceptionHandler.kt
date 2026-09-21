@@ -34,11 +34,17 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(OrderNotFoundException::class)
     fun handleOrderNotFound(exception: OrderNotFoundException): ProblemDetail =
-        ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.message ?: "Order not found")
+        ProblemDetail.forStatusAndDetail(
+            HttpStatus.NOT_FOUND,
+            exception.message ?: "Order not found",
+        )
 
     @ExceptionHandler(OfferNotFoundException::class)
     fun handleOfferNotFound(exception: OfferNotFoundException): ProblemDetail =
-        ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.message ?: "Offer not found")
+        ProblemDetail.forStatusAndDetail(
+            HttpStatus.NOT_FOUND,
+            exception.message ?: "Offer not found",
+        )
 
     @ExceptionHandler(OrderConflictException::class)
     fun handleOrderConflict(exception: OrderConflictException): ProblemDetail =
@@ -55,7 +61,9 @@ class GlobalExceptionHandler {
         )
 
     @ExceptionHandler(OfferServiceAuthenticationException::class)
-    fun handleOfferServiceAuthentication(exception: OfferServiceAuthenticationException): ProblemDetail =
+    fun handleOfferServiceAuthentication(
+        exception: OfferServiceAuthenticationException
+    ): ProblemDetail =
         ProblemDetail.forStatusAndDetail(
             HttpStatus.SERVICE_UNAVAILABLE,
             exception.message ?: "Offer Service authentication is unavailable",
@@ -87,7 +95,9 @@ class GlobalExceptionHandler {
         )
 
     @ExceptionHandler(PartnerServiceUnavailableException::class)
-    fun handlePartnerServiceUnavailable(exception: PartnerServiceUnavailableException): ProblemDetail =
+    fun handlePartnerServiceUnavailable(
+        exception: PartnerServiceUnavailableException
+    ): ProblemDetail =
         ProblemDetail.forStatusAndDetail(
             HttpStatus.SERVICE_UNAVAILABLE,
             exception.message ?: "Partner Service is unavailable",

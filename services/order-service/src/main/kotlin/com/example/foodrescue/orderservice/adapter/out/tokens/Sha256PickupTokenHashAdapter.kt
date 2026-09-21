@@ -9,10 +9,11 @@ import org.springframework.stereotype.Component
 @Component
 class Sha256PickupTokenHashAdapter : PickupTokenHashPort {
     override fun hash(token: String): String =
-        HexFormat.of().formatHex(
-            MessageDigest.getInstance(HASH_ALGORITHM)
-                .digest(token.toByteArray(StandardCharsets.UTF_8))
-        )
+        HexFormat.of()
+            .formatHex(
+                MessageDigest.getInstance(HASH_ALGORITHM)
+                    .digest(token.toByteArray(StandardCharsets.UTF_8))
+            )
 
     private companion object {
         private const val HASH_ALGORITHM = "SHA-256"

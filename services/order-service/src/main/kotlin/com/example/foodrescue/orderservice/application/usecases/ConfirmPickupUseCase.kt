@@ -99,7 +99,8 @@ class ConfirmPickupUseCase(
             amount = pickedUpOrder.totalAmount,
         )
 
-        val result = orderDBPort.findById(pickedUpOrder.id) ?: throw OrderNotFoundException(pickedUpOrder.id)
+        val result =
+            orderDBPort.findById(pickedUpOrder.id) ?: throw OrderNotFoundException(pickedUpOrder.id)
 
         logger.info(
             "Pickup confirmed successfully: orderId={}, storeId={}, status={}",
@@ -115,7 +116,9 @@ class ConfirmPickupUseCase(
         now: Instant,
     ) {
         if (now.isBefore(order.pickupStart) || now.isAfter(order.pickupEnd)) {
-            throw OrderConflictException("Pickup can be confirmed only during the Order pickup window")
+            throw OrderConflictException(
+                "Pickup can be confirmed only during the Order pickup window"
+            )
         }
     }
 }

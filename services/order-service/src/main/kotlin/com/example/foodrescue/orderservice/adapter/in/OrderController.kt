@@ -5,6 +5,7 @@ import com.example.foodrescue.orderservice.adapter.`in`.dtos.OrderDto
 import com.example.foodrescue.orderservice.adapter.`in`.dtos.OrderPageDto
 import com.example.foodrescue.orderservice.adapter.`in`.dtos.PickupTokenDto
 import com.example.foodrescue.orderservice.adapter.`in`.mappers.OrderRestMapper
+import com.example.foodrescue.orderservice.application.usecases.CancelOrderUseCase
 import com.example.foodrescue.orderservice.application.usecases.CreateOrderUseCase
 import com.example.foodrescue.orderservice.application.usecases.GetCustomerOrdersUseCase
 import com.example.foodrescue.orderservice.application.usecases.GetOrderUseCase
@@ -14,6 +15,7 @@ import java.util.UUID
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -27,6 +29,7 @@ class OrderController(
     private val getCustomerOrdersUseCase: GetCustomerOrdersUseCase,
     private val getPickupTokenUseCase: GetPickupTokenUseCase,
     private val createOrderUseCase: CreateOrderUseCase,
+    private val cancelOrderUseCase: CancelOrderUseCase,
     private val orderRestMapper: OrderRestMapper,
 ) {
     @GetMapping
@@ -52,6 +55,10 @@ class OrderController(
         val order = getOrderUseCase.execute(orderRestMapper.toOrderId(orderId))
         return orderRestMapper.toDto(order)
     }
+
+    @PostMapping("/{orderId}/cancel")
+    fun cancelOrder(@PathVariable orderId: UUID): OrderDto =
+        orderRestMapper.toDto(cancelOrderUseCase.execute(orderRestMapper.toOrderId(orderId)))
 
     @PutMapping("/{orderId}")
     fun createOrder(

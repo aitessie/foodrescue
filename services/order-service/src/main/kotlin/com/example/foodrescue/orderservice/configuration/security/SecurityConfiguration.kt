@@ -63,6 +63,18 @@ class SecurityConfiguration(private val keycloakRealmRoleConverter: KeycloakReal
                 authorization
                     .requestMatchers(
                         HttpMethod.POST,
+                        "/api/v1/orders/*/cancel",
+                    )
+                    .hasAnyRole(
+                        ApplicationRole.CUSTOMER.code,
+                        ApplicationRole.STAFF.code,
+                        ApplicationRole.MANAGER.code,
+                        ApplicationRole.ADMIN.code,
+                    )
+
+                authorization
+                    .requestMatchers(
+                        HttpMethod.POST,
                         "/api/v1/pickups/confirm",
                     )
                     .hasAnyRole(

@@ -106,6 +106,9 @@ food-rescue:
     timeout: ${PARTNER_HTTP_TIMEOUT:5000ms}
     oauth2-registration-id: ${PARTNER_OAUTH2_REGISTRATION_ID:partner-service}
 
+  order-cancellation:
+    customer-deadline-before-pickup-start: ${ORDER_CUSTOMER_CANCELLATION_DEADLINE:2h}
+
   kafka:
     order-commands-topic: ${ORDER_COMMANDS_TOPIC:order.commands.v1}
     offer-events-topic: ${OFFER_EVENTS_TOPIC:offer.events.v1}

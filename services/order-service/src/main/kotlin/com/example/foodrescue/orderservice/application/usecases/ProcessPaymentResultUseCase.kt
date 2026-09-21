@@ -34,7 +34,8 @@ class ProcessPaymentResultUseCase(
             result.status,
         )
 
-        val order = orderDBPort.findById(result.orderId) ?: throw OrderNotFoundException(result.orderId)
+        val order =
+            orderDBPort.findById(result.orderId) ?: throw OrderNotFoundException(result.orderId)
         validateAmount(
             order = order,
             amount = result.amount,
@@ -43,19 +44,22 @@ class ProcessPaymentResultUseCase(
         val now = clock.instant()
 
         when (result.operation) {
-            PaymentOperation.AUTHORIZATION -> processAuthorization(
-                order = order,
-                resultStatus = result.status,
-                now = now,
-            )
+            PaymentOperation.AUTHORIZATION ->
+                processAuthorization(
+                    order = order,
+                    resultStatus = result.status,
+                    now = now,
+                )
 
-            PaymentOperation.CAPTURE -> processCapture(
-                order = order,
-                resultStatus = result.status,
-                now = now,
-            )
+            PaymentOperation.CAPTURE ->
+                processCapture(
+                    order = order,
+                    resultStatus = result.status,
+                    now = now,
+                )
 
-            PaymentOperation.VOID,
+            PaymentOperation.VOID -> processVoid(order)
+
             PaymentOperation.REFUND ->
                 throw OrderConflictException(
                     "Payment operation ${result.operation} cannot be processed for Order in status ${order.status}"
@@ -142,6 +146,14 @@ class ProcessPaymentResultUseCase(
         if (order.status != OrderStatus.PICKED_UP) {
             throw OrderConflictException(
                 "Payment capture cannot fail for Order in status ${order.status}"
+            )
+        }
+    }
+
+    private fun processVoid(order: Order) {
+        if (order.status != OrderStatus.CANCELLED) {
+            throw OrderConflictException(
+                "Payment void cannot be processed for Order in status ${order.status}"
             )
         }
     }

@@ -17,9 +17,7 @@ class PickupController(
     private val orderRestMapper: OrderRestMapper,
 ) {
     @PostMapping("/confirm")
-    fun confirmPickup(
-        @Valid @RequestBody request: ConfirmPickupDto
-    ): OrderDto =
+    fun confirmPickup(@Valid @RequestBody request: ConfirmPickupDto): OrderDto =
         orderRestMapper.toDto(
             confirmPickupUseCase.execute(
                 storeId = orderRestMapper.toStoreId(request.storeId),

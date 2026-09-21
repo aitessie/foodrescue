@@ -1,5 +1,6 @@
 package com.example.foodrescue.orderservice.application.access
 
+import com.example.foodrescue.orderservice.application.exceptions.OrderAccessDeniedException
 import com.example.foodrescue.orderservice.application.exceptions.OrderConflictException
 import com.example.foodrescue.orderservice.application.exceptions.PickupAccessDeniedException
 import com.example.foodrescue.orderservice.application.ports.CurrentUserPort
@@ -16,6 +17,18 @@ class PartnerStoreAccessPolicy(
     private val partnerStoreAccessPort: PartnerStoreAccessPort,
 ) {
     fun checkAccess(storeId: StoreId) {
+        if (!hasAccess(storeId)) {
+            throw PickupAccessDeniedException()
+        }
+    }
+
+    fun checkCancellationAccess(storeId: StoreId) {
+        if (!hasAccess(storeId)) {
+            throw OrderAccessDeniedException()
+        }
+    }
+
+    private fun hasAccess(storeId: StoreId): Boolean {
         val userId = currentUserPort.getUserId()
         val access =
             partnerStoreAccessPort.checkAccess(
@@ -30,13 +43,8 @@ class PartnerStoreAccessPolicy(
             throw OrderConflictException("Store is not active")
         }
 
-        val accessAllowed =
-            currentUserPort.hasRole(ApplicationRole.ADMIN) ||
-                (currentUserPort.hasRole(ApplicationRole.MANAGER) && access.userIsStoreManager) ||
-                (currentUserPort.hasRole(ApplicationRole.STAFF) && access.userIsStoreStaff)
-
-        if (!accessAllowed) {
-            throw PickupAccessDeniedException()
-        }
+        return currentUserPort.hasRole(ApplicationRole.ADMIN) ||
+            (currentUserPort.hasRole(ApplicationRole.MANAGER) && access.userIsStoreManager) ||
+            (currentUserPort.hasRole(ApplicationRole.STAFF) && access.userIsStoreStaff)
     }
 }

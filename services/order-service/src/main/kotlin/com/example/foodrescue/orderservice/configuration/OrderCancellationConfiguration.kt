@@ -1,0 +1,8 @@
+package com.example.foodrescue.orderservice.configuration
+
+import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.context.annotation.Configuration
+
+@Configuration
+@EnableConfigurationProperties(OrderCancellationProperties::class)
+class OrderCancellationConfiguration

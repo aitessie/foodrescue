@@ -1,8 +1,10 @@
 package com.example.foodrescue.orderservice.application.usecases
 
+import com.example.foodrescue.orderservice.application.events.ApplicationEventFactory
 import com.example.foodrescue.orderservice.application.events.OfferReservationResult
 import com.example.foodrescue.orderservice.application.exceptions.OrderConflictException
 import com.example.foodrescue.orderservice.application.exceptions.OrderNotFoundException
+import com.example.foodrescue.orderservice.application.ports.DomainEventPublisherPort
 import com.example.foodrescue.orderservice.application.ports.InboxEventDBPort
 import com.example.foodrescue.orderservice.application.ports.OrderDBPort
 import com.example.foodrescue.orderservice.application.ports.PaymentCommandPort
@@ -20,6 +22,8 @@ class ProcessOfferReservationResultUseCase(
     private val orderDBPort: OrderDBPort,
     private val inboxEventDBPort: InboxEventDBPort,
     private val paymentCommandPort: PaymentCommandPort,
+    private val eventFactory: ApplicationEventFactory,
+    private val eventPublisherPort: DomainEventPublisherPort,
     private val clock: Clock,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -70,6 +74,20 @@ class ProcessOfferReservationResultUseCase(
 
         when (result) {
             OfferReservationResult.HELD -> {
+                if (order.status == OrderStatus.CANCELLED) {
+                    eventPublisherPort.publish(
+                        eventFactory.orderReservationReleaseRequested(
+                            order = order,
+                            occurredAt = now,
+                        )
+                    )
+                    logger.info(
+                        "Release requested for cancelled Order after Offer reservation was held: orderId={}",
+                        order.id.value,
+                    )
+                    return
+                }
+
                 if (order.status != OrderStatus.PENDING) {
                     throw OrderConflictException(
                         "Offer reservation cannot be held for Order in status ${order.status}"
@@ -83,6 +101,14 @@ class ProcessOfferReservationResultUseCase(
             }
 
             OfferReservationResult.REJECTED -> {
+                if (order.status == OrderStatus.CANCELLED) {
+                    logger.info(
+                        "Offer reservation rejection ignored for cancelled Order: orderId={}",
+                        order.id.value,
+                    )
+                    return
+                }
+
                 if (order.status == OrderStatus.FAILED) {
                     logger.info(
                         "Offer reservation rejection already reflected in Order: orderId={}, status={}",
