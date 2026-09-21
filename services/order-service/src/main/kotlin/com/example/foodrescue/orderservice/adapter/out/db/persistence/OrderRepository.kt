@@ -5,6 +5,8 @@ import com.example.foodrescue.orderservice.application.ports.OrderDBPort
 import com.example.foodrescue.orderservice.domain.entities.Order
 import com.example.foodrescue.orderservice.domain.entities.OrderId
 import com.example.foodrescue.orderservice.domain.entities.OrderPage
+import com.example.foodrescue.orderservice.domain.enum.OrderStatus
+import java.time.Instant
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
@@ -41,6 +43,26 @@ class OrderRepository(
             totalPages = result.totalPages,
         )
     }
+
+    override fun findNoShowCandidates(
+        pickupEndedAt: Instant,
+        batchSize: Int,
+    ): List<Order> =
+        orderJpaRepository
+            .findAllByStatusAndPickupEndLessThanEqual(
+                status = OrderStatus.RESERVED,
+                pickupEnd = pickupEndedAt,
+                pageable =
+                    PageRequest.of(
+                        0,
+                        batchSize,
+                        Sort.by(
+                            Sort.Order.asc("pickupEnd"),
+                            Sort.Order.asc("id"),
+                        ),
+                    ),
+            )
+            .map(orderJpaMapper::toDomain)
 
     override fun save(order: Order): Order =
         orderJpaRepository.save(orderJpaMapper.toJpaEntity(order)).let(orderJpaMapper::toDomain)

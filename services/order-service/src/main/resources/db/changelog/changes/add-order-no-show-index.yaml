@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-order-no-show-index
+      author: foodrescue
+      changes:
+        - createIndex:
+            tableName: orders
+            indexName: idx_orders_status_pickup_end_id
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: pickup_end
+              - column:
+                  name: id
+      rollback:
+        - dropIndex:
+            tableName: orders
+            indexName: idx_orders_status_pickup_end_id

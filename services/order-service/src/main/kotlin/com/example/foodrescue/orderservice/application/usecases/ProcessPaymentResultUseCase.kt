@@ -127,7 +127,7 @@ class ProcessPaymentResultUseCase(
         order: Order,
         now: Instant,
     ) {
-        if (order.status == OrderStatus.COMPLETED) {
+        if (order.status == OrderStatus.COMPLETED || order.status == OrderStatus.NO_SHOW) {
             return
         }
 
@@ -143,7 +143,7 @@ class ProcessPaymentResultUseCase(
     }
 
     private fun handleCaptureFailure(order: Order) {
-        if (order.status != OrderStatus.PICKED_UP) {
+        if (order.status != OrderStatus.PICKED_UP && order.status != OrderStatus.NO_SHOW) {
             throw OrderConflictException(
                 "Payment capture cannot fail for Order in status ${order.status}"
             )
@@ -151,7 +151,7 @@ class ProcessPaymentResultUseCase(
     }
 
     private fun processVoid(order: Order) {
-        if (order.status != OrderStatus.CANCELLED) {
+        if (order.status != OrderStatus.CANCELLED && order.status != OrderStatus.NO_SHOW) {
             throw OrderConflictException(
                 "Payment void cannot be processed for Order in status ${order.status}"
             )

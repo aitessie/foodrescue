@@ -119,3 +119,9 @@ food-rescue:
     max-attempts: ${ORDER_OUTBOX_MAX_ATTEMPTS:10}
     fixed-delay: ${ORDER_OUTBOX_FIXED_DELAY:1s}
     initial-delay: ${ORDER_OUTBOX_INITIAL_DELAY:10s}
+
+  scheduler:
+    no-show-cron: "${ORDER_NO_SHOW_CRON:0 */1 * * * *}"
+    no-show-zone: ${ORDER_NO_SHOW_ZONE:UTC}
+    no-show-batch-size: ${ORDER_NO_SHOW_BATCH_SIZE:100}
+    no-show-payment-action: ${ORDER_NO_SHOW_PAYMENT_ACTION:CAPTURE}
