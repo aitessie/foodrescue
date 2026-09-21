@@ -59,8 +59,8 @@ class OfferReservation(
             return false
         }
 
-        check(status == ReservationStatus.RESERVED) {
-            "Only a reserved reservation can be released"
+        check(status == ReservationStatus.RESERVED || status == ReservationStatus.COMMITTED) {
+            "Only a reserved or committed reservation can be released"
         }
 
         status = ReservationStatus.RELEASED

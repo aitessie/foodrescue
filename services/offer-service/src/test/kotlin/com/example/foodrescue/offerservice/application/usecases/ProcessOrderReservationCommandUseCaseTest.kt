@@ -37,13 +37,13 @@ class ProcessOrderReservationCommandUseCaseTest {
         val reservation = createReservation()
 
         `when`(
-            reserveFoodBagsUseCase.executeForCustomer(
-                offerId = reservation.offerId,
-                reservationId = reservation.id,
-                customerId = CUSTOMER_ID,
-                quantity = reservation.quantity,
+                reserveFoodBagsUseCase.executeForCustomer(
+                    offerId = reservation.offerId,
+                    reservationId = reservation.id,
+                    customerId = CUSTOMER_ID,
+                    quantity = reservation.quantity,
+                )
             )
-        )
             .thenReturn(reservation)
 
         // Act
@@ -91,25 +91,25 @@ class ProcessOrderReservationCommandUseCaseTest {
                 )
 
         `when`(
-            reserveFoodBagsUseCase.executeForCustomer(
-                offerId = offerId,
-                reservationId = reservationId,
-                customerId = CUSTOMER_ID,
-                quantity = quantity,
+                reserveFoodBagsUseCase.executeForCustomer(
+                    offerId = offerId,
+                    reservationId = reservationId,
+                    customerId = CUSTOMER_ID,
+                    quantity = quantity,
+                )
             )
-        )
             .thenThrow(exception)
         `when`(clock.instant()).thenReturn(occurredAt)
         `when`(
-            eventFactory.offerReservationRejected(
-                reservationId = reservationId,
-                offerId = offerId,
-                customerId = CUSTOMER_ID,
-                quantity = quantity,
-                reason = reason,
-                occurredAt = occurredAt,
+                eventFactory.offerReservationRejected(
+                    reservationId = reservationId,
+                    offerId = offerId,
+                    customerId = CUSTOMER_ID,
+                    quantity = quantity,
+                    reason = reason,
+                    occurredAt = occurredAt,
+                )
             )
-        )
             .thenReturn(event)
 
         // Act
@@ -168,25 +168,25 @@ class ProcessOrderReservationCommandUseCaseTest {
                 )
 
         `when`(
-            reserveFoodBagsUseCase.executeForCustomer(
-                offerId = offerId,
-                reservationId = reservationId,
-                customerId = CUSTOMER_ID,
-                quantity = quantity,
+                reserveFoodBagsUseCase.executeForCustomer(
+                    offerId = offerId,
+                    reservationId = reservationId,
+                    customerId = CUSTOMER_ID,
+                    quantity = quantity,
+                )
             )
-        )
             .thenThrow(exception)
         `when`(clock.instant()).thenReturn(occurredAt)
         `when`(
-            eventFactory.offerReservationRejected(
-                reservationId = reservationId,
-                offerId = offerId,
-                customerId = CUSTOMER_ID,
-                quantity = quantity,
-                reason = reason,
-                occurredAt = occurredAt,
+                eventFactory.offerReservationRejected(
+                    reservationId = reservationId,
+                    offerId = offerId,
+                    customerId = CUSTOMER_ID,
+                    quantity = quantity,
+                    reason = reason,
+                    occurredAt = occurredAt,
+                )
             )
-        )
             .thenReturn(event)
 
         // Act
@@ -245,25 +245,25 @@ class ProcessOrderReservationCommandUseCaseTest {
                 )
 
         `when`(
-            reserveFoodBagsUseCase.executeForCustomer(
-                offerId = offerId,
-                reservationId = reservationId,
-                customerId = CUSTOMER_ID,
-                quantity = quantity,
+                reserveFoodBagsUseCase.executeForCustomer(
+                    offerId = offerId,
+                    reservationId = reservationId,
+                    customerId = CUSTOMER_ID,
+                    quantity = quantity,
+                )
             )
-        )
             .thenThrow(exception)
         `when`(clock.instant()).thenReturn(occurredAt)
         `when`(
-            eventFactory.offerReservationRejected(
-                reservationId = reservationId,
-                offerId = offerId,
-                customerId = CUSTOMER_ID,
-                quantity = quantity,
-                reason = reason,
-                occurredAt = occurredAt,
+                eventFactory.offerReservationRejected(
+                    reservationId = reservationId,
+                    offerId = offerId,
+                    customerId = CUSTOMER_ID,
+                    quantity = quantity,
+                    reason = reason,
+                    occurredAt = occurredAt,
+                )
             )
-        )
             .thenReturn(event)
 
         // Act
