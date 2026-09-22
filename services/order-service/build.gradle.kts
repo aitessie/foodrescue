@@ -48,6 +48,9 @@ val springBootVersion = "4.1.0"
 val jacksonVersion = "3.1.4"
 val kotlinVersion = "2.3.21"
 val postgresqlVersion = "42.7.11"
+val springSecurityVersion = "7.1.0"
+val mockitoVersion = "5.23.0"
+val testcontainersVersion = "2.0.5"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
@@ -67,6 +70,16 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
 
     runtimeOnly("org.postgresql:postgresql:$postgresqlVersion")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
+    testImplementation("org.springframework.security:spring-security-test:$springSecurityVersion")
+    testImplementation("org.springframework.boot:spring-boot-starter-kafka-test:$springBootVersion")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test:4.1.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:$mockitoVersion")
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter:$testcontainersVersion")
+    testImplementation("org.testcontainers:testcontainers-postgresql:$testcontainersVersion")
+    testImplementation("org.testcontainers:testcontainers-kafka:$testcontainersVersion")
+    testImplementation("com.squareup.okhttp3:mockwebserver:5.4.0")
 }
 
 kotlin {
