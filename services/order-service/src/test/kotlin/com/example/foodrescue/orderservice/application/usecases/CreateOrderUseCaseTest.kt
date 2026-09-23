@@ -81,17 +81,17 @@ class CreateOrderUseCaseTest {
         `when`(clock.instant()).thenReturn(now)
         `when`(offerQueryPort.getOffer(offer.offerId)).thenReturn(offer)
         doAnswer { invocation ->
-            orderToSave = invocation.getArgument(0)
-            savedOrder
-        }
+                orderToSave = invocation.getArgument(0)
+                savedOrder
+            }
             .`when`(orderDBPort)
             .save(anyOrder())
         `when`(
-            eventFactory.orderReservationRequested(
-                order = savedOrder,
-                occurredAt = now,
+                eventFactory.orderReservationRequested(
+                    order = savedOrder,
+                    occurredAt = now,
+                )
             )
-        )
             .thenReturn(event)
 
         // Act
@@ -265,8 +265,7 @@ class CreateOrderUseCaseTest {
             }
 
         // Assert
-        assertThat(exception.message)
-            .isEqualTo("Order quantity does not match the existing Order")
+        assertThat(exception.message).isEqualTo("Order quantity does not match the existing Order")
 
         verify(currentUserPort).getUserId()
         verify(orderDBPort).findById(order.id)
@@ -408,10 +407,7 @@ class CreateOrderUseCaseTest {
         // Arrange
         val orderId = OrderId(UUID.randomUUID())
         val now = Instant.parse("2026-08-20T14:00:00Z")
-        val offer =
-            createOfferSnapshot(
-                pickupEnd = now,
-            )
+        val offer = createOfferSnapshot(pickupEnd = now)
 
         `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(orderDBPort.findById(orderId)).thenReturn(null)
@@ -512,9 +508,7 @@ class CreateOrderUseCaseTest {
             )
 
         `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
-        `when`(orderDBPort.findById(orderId))
-            .thenReturn(null)
-            .thenReturn(existingOrder)
+        `when`(orderDBPort.findById(orderId)).thenReturn(null).thenReturn(existingOrder)
         `when`(clock.instant()).thenReturn(now)
         `when`(offerQueryPort.getOffer(offer.offerId)).thenReturn(offer)
         doThrow(DataIntegrityViolationException("duplicate order"))
@@ -563,9 +557,7 @@ class CreateOrderUseCaseTest {
         val now = Instant.parse("2026-08-20T11:00:00Z")
 
         `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
-        `when`(orderDBPort.findById(orderId))
-            .thenReturn(null)
-            .thenReturn(existingOrder)
+        `when`(orderDBPort.findById(orderId)).thenReturn(null).thenReturn(existingOrder)
         `when`(clock.instant()).thenReturn(now)
         `when`(offerQueryPort.getOffer(offer.offerId)).thenReturn(offer)
         doThrow(DataIntegrityViolationException("duplicate order"))
@@ -614,9 +606,7 @@ class CreateOrderUseCaseTest {
         `when`(orderDBPort.findById(orderId)).thenReturn(null)
         `when`(clock.instant()).thenReturn(now)
         `when`(offerQueryPort.getOffer(offer.offerId)).thenReturn(offer)
-        doThrow(saveException)
-            .`when`(orderDBPort)
-            .save(anyOrder())
+        doThrow(saveException).`when`(orderDBPort).save(anyOrder())
 
         // Act
         val exception =
@@ -698,8 +688,7 @@ class CreateOrderUseCaseTest {
             updatedAt = updatedAt,
         )
 
-    private fun anyOrder(): Order =
-        any(Order::class.java) ?: createOrder()
+    private fun anyOrder(): Order = any(Order::class.java) ?: createOrder()
 
     companion object {
         private const val CURRENT_USER_ID = "33333333-3333-3333-3333-333333333333"

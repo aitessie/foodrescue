@@ -40,12 +40,12 @@ class GetCustomerOrdersUseCaseTest {
 
         `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(
-            orderDBPort.findByCustomerId(
-                customerId = CURRENT_USER_ID,
-                page = page,
-                size = size,
+                orderDBPort.findByCustomerId(
+                    customerId = CURRENT_USER_ID,
+                    page = page,
+                    size = size,
+                )
             )
-        )
             .thenReturn(orderPage)
 
         // Act
@@ -92,12 +92,12 @@ class GetCustomerOrdersUseCaseTest {
 
         `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(
-            orderDBPort.findByCustomerId(
-                customerId = CURRENT_USER_ID,
-                page = page,
-                size = size,
+                orderDBPort.findByCustomerId(
+                    customerId = CURRENT_USER_ID,
+                    page = page,
+                    size = size,
+                )
             )
-        )
             .thenReturn(orderPage)
 
         // Act

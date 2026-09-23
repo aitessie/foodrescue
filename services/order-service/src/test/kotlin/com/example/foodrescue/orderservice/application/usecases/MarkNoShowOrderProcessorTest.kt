@@ -35,10 +35,7 @@ class MarkNoShowOrderProcessorTest {
     fun whenReservedOrderIsExpiredAndPaymentActionIsCapture_marksOrderAsNoShowAndRequestsCapture() {
         // Arrange
         val now = Instant.parse("2026-08-20T14:00:00Z")
-        val order =
-            createOrder(
-                pickupEnd = Instant.parse("2026-08-20T13:00:00Z"),
-            )
+        val order = createOrder(pickupEnd = Instant.parse("2026-08-20T13:00:00Z"))
         val savedOrder =
             createOrder(
                 id = order.id,
@@ -58,8 +55,7 @@ class MarkNoShowOrderProcessorTest {
 
         `when`(orderDBPort.findById(order.id)).thenReturn(order)
         `when`(orderDBPort.save(order)).thenReturn(savedOrder)
-        `when`(schedulerProperties.noShowPaymentAction)
-            .thenReturn(NoShowPaymentAction.CAPTURE)
+        `when`(schedulerProperties.noShowPaymentAction).thenReturn(NoShowPaymentAction.CAPTURE)
 
         // Act
         val result =
@@ -97,10 +93,7 @@ class MarkNoShowOrderProcessorTest {
     fun whenReservedOrderIsExpiredAndPaymentActionIsVoid_marksOrderAsNoShowAndRequestsVoid() {
         // Arrange
         val now = Instant.parse("2026-08-20T14:00:00Z")
-        val order =
-            createOrder(
-                pickupEnd = Instant.parse("2026-08-20T13:00:00Z"),
-            )
+        val order = createOrder(pickupEnd = Instant.parse("2026-08-20T13:00:00Z"))
         val savedOrder =
             createOrder(
                 id = order.id,
@@ -120,8 +113,7 @@ class MarkNoShowOrderProcessorTest {
 
         `when`(orderDBPort.findById(order.id)).thenReturn(order)
         `when`(orderDBPort.save(order)).thenReturn(savedOrder)
-        `when`(schedulerProperties.noShowPaymentAction)
-            .thenReturn(NoShowPaymentAction.VOID)
+        `when`(schedulerProperties.noShowPaymentAction).thenReturn(NoShowPaymentAction.VOID)
 
         // Act
         val result =
@@ -159,10 +151,7 @@ class MarkNoShowOrderProcessorTest {
     fun whenPickupWindowEndsAtCurrentTime_marksOrderAsNoShow() {
         // Arrange
         val now = Instant.parse("2026-08-20T14:00:00Z")
-        val order =
-            createOrder(
-                pickupEnd = now,
-            )
+        val order = createOrder(pickupEnd = now)
         val savedOrder =
             createOrder(
                 id = order.id,
@@ -182,8 +171,7 @@ class MarkNoShowOrderProcessorTest {
 
         `when`(orderDBPort.findById(order.id)).thenReturn(order)
         `when`(orderDBPort.save(order)).thenReturn(savedOrder)
-        `when`(schedulerProperties.noShowPaymentAction)
-            .thenReturn(NoShowPaymentAction.CAPTURE)
+        `when`(schedulerProperties.noShowPaymentAction).thenReturn(NoShowPaymentAction.CAPTURE)
 
         // Act
         val result =
@@ -279,10 +267,7 @@ class MarkNoShowOrderProcessorTest {
     fun whenReservedOrderPickupWindowHasNotEnded_returnsFalse() {
         // Arrange
         val now = Instant.parse("2026-08-20T13:00:00Z")
-        val order =
-            createOrder(
-                pickupEnd = Instant.parse("2026-08-20T14:00:00Z"),
-            )
+        val order = createOrder(pickupEnd = Instant.parse("2026-08-20T14:00:00Z"))
 
         `when`(orderDBPort.findById(order.id)).thenReturn(order)
 

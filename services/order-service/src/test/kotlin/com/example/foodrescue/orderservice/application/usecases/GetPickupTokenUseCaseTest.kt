@@ -57,9 +57,9 @@ class GetPickupTokenUseCaseTest {
         `when`(clock.instant()).thenReturn(now)
         `when`(pickupTokenHashPort.hash(RAW_TOKEN)).thenReturn(TOKEN_HASH)
         doAnswer { invocation ->
-            tokenToSave = invocation.getArgument(0)
-            invocation.getArgument<PickupToken>(0)
-        }
+                tokenToSave = invocation.getArgument(0)
+                invocation.getArgument<PickupToken>(0)
+            }
             .`when`(pickupTokenDBPort)
             .save(anyPickupToken())
 
@@ -115,9 +115,9 @@ class GetPickupTokenUseCaseTest {
         `when`(clock.instant()).thenReturn(now)
         `when`(pickupTokenHashPort.hash(RAW_TOKEN)).thenReturn(TOKEN_HASH)
         doAnswer { invocation ->
-            tokenToSave = invocation.getArgument(0)
-            invocation.getArgument<PickupToken>(0)
-        }
+                tokenToSave = invocation.getArgument(0)
+                invocation.getArgument<PickupToken>(0)
+            }
             .`when`(pickupTokenDBPort)
             .save(anyPickupToken())
 
@@ -185,9 +185,7 @@ class GetPickupTokenUseCaseTest {
         val order = createOrder()
 
         `when`(orderDBPort.findById(order.id)).thenReturn(order)
-        doThrow(OrderAccessDeniedException())
-            .`when`(orderAccessPolicy)
-            .checkReadAccess(order)
+        doThrow(OrderAccessDeniedException()).`when`(orderAccessPolicy).checkReadAccess(order)
 
         // Act
         val exception =
@@ -333,8 +331,7 @@ class GetPickupTokenUseCaseTest {
             updatedAt = updatedAt,
         )
 
-    private fun anyPickupToken(): PickupToken =
-        any(PickupToken::class.java) ?: createPickupToken()
+    private fun anyPickupToken(): PickupToken = any(PickupToken::class.java) ?: createPickupToken()
 
     companion object {
         private const val CUSTOMER_ID = "33333333-3333-3333-3333-333333333333"

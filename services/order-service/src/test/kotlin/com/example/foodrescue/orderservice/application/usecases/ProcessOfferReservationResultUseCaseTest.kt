@@ -53,13 +53,13 @@ class ProcessOfferReservationResultUseCaseTest {
 
         `when`(clock.instant()).thenReturn(now)
         `when`(
-            inboxEventDBPort.tryMarkProcessed(
-                eventId = eventId,
-                eventType = EVENT_TYPE,
-                aggregateId = aggregateId,
-                processedAt = now,
+                inboxEventDBPort.tryMarkProcessed(
+                    eventId = eventId,
+                    eventType = EVENT_TYPE,
+                    aggregateId = aggregateId,
+                    processedAt = now,
+                )
             )
-        )
             .thenReturn(true)
         `when`(orderDBPort.findById(order.id)).thenReturn(order)
 
@@ -117,21 +117,21 @@ class ProcessOfferReservationResultUseCaseTest {
 
         `when`(clock.instant()).thenReturn(now)
         `when`(
-            inboxEventDBPort.tryMarkProcessed(
-                eventId = eventId,
-                eventType = EVENT_TYPE,
-                aggregateId = aggregateId,
-                processedAt = now,
+                inboxEventDBPort.tryMarkProcessed(
+                    eventId = eventId,
+                    eventType = EVENT_TYPE,
+                    aggregateId = aggregateId,
+                    processedAt = now,
+                )
             )
-        )
             .thenReturn(true)
         `when`(orderDBPort.findById(order.id)).thenReturn(order)
         `when`(
-            eventFactory.orderReservationReleaseRequested(
-                order = order,
-                occurredAt = now,
+                eventFactory.orderReservationReleaseRequested(
+                    order = order,
+                    occurredAt = now,
+                )
             )
-        )
             .thenReturn(event)
 
         // Act
@@ -188,13 +188,13 @@ class ProcessOfferReservationResultUseCaseTest {
 
         `when`(clock.instant()).thenReturn(now)
         `when`(
-            inboxEventDBPort.tryMarkProcessed(
-                eventId = eventId,
-                eventType = EVENT_TYPE,
-                aggregateId = aggregateId,
-                processedAt = now,
+                inboxEventDBPort.tryMarkProcessed(
+                    eventId = eventId,
+                    eventType = EVENT_TYPE,
+                    aggregateId = aggregateId,
+                    processedAt = now,
+                )
             )
-        )
             .thenReturn(true)
         `when`(orderDBPort.findById(order.id)).thenReturn(order)
 
@@ -247,13 +247,13 @@ class ProcessOfferReservationResultUseCaseTest {
 
         `when`(clock.instant()).thenReturn(now)
         `when`(
-            inboxEventDBPort.tryMarkProcessed(
-                eventId = eventId,
-                eventType = EVENT_TYPE,
-                aggregateId = aggregateId,
-                processedAt = now,
+                inboxEventDBPort.tryMarkProcessed(
+                    eventId = eventId,
+                    eventType = EVENT_TYPE,
+                    aggregateId = aggregateId,
+                    processedAt = now,
+                )
             )
-        )
             .thenReturn(true)
         `when`(orderDBPort.findById(order.id)).thenReturn(order)
         `when`(orderDBPort.save(order)).thenReturn(order)
@@ -305,13 +305,13 @@ class ProcessOfferReservationResultUseCaseTest {
 
         `when`(clock.instant()).thenReturn(now)
         `when`(
-            inboxEventDBPort.tryMarkProcessed(
-                eventId = eventId,
-                eventType = EVENT_TYPE,
-                aggregateId = aggregateId,
-                processedAt = now,
+                inboxEventDBPort.tryMarkProcessed(
+                    eventId = eventId,
+                    eventType = EVENT_TYPE,
+                    aggregateId = aggregateId,
+                    processedAt = now,
+                )
             )
-        )
             .thenReturn(true)
         `when`(orderDBPort.findById(order.id)).thenReturn(order)
 
@@ -360,13 +360,13 @@ class ProcessOfferReservationResultUseCaseTest {
 
         `when`(clock.instant()).thenReturn(now)
         `when`(
-            inboxEventDBPort.tryMarkProcessed(
-                eventId = eventId,
-                eventType = EVENT_TYPE,
-                aggregateId = aggregateId,
-                processedAt = now,
+                inboxEventDBPort.tryMarkProcessed(
+                    eventId = eventId,
+                    eventType = EVENT_TYPE,
+                    aggregateId = aggregateId,
+                    processedAt = now,
+                )
             )
-        )
             .thenReturn(true)
         `when`(orderDBPort.findById(order.id)).thenReturn(order)
 
@@ -422,13 +422,13 @@ class ProcessOfferReservationResultUseCaseTest {
 
         `when`(clock.instant()).thenReturn(now)
         `when`(
-            inboxEventDBPort.tryMarkProcessed(
-                eventId = eventId,
-                eventType = EVENT_TYPE,
-                aggregateId = aggregateId,
-                processedAt = now,
+                inboxEventDBPort.tryMarkProcessed(
+                    eventId = eventId,
+                    eventType = EVENT_TYPE,
+                    aggregateId = aggregateId,
+                    processedAt = now,
+                )
             )
-        )
             .thenReturn(true)
         `when`(orderDBPort.findById(order.id)).thenReturn(order)
 
@@ -482,13 +482,13 @@ class ProcessOfferReservationResultUseCaseTest {
 
         `when`(clock.instant()).thenReturn(now)
         `when`(
-            inboxEventDBPort.tryMarkProcessed(
-                eventId = eventId,
-                eventType = EVENT_TYPE,
-                aggregateId = aggregateId,
-                processedAt = now,
+                inboxEventDBPort.tryMarkProcessed(
+                    eventId = eventId,
+                    eventType = EVENT_TYPE,
+                    aggregateId = aggregateId,
+                    processedAt = now,
+                )
             )
-        )
             .thenReturn(false)
 
         // Act
@@ -534,13 +534,13 @@ class ProcessOfferReservationResultUseCaseTest {
 
         `when`(clock.instant()).thenReturn(now)
         `when`(
-            inboxEventDBPort.tryMarkProcessed(
-                eventId = eventId,
-                eventType = EVENT_TYPE,
-                aggregateId = aggregateId,
-                processedAt = now,
+                inboxEventDBPort.tryMarkProcessed(
+                    eventId = eventId,
+                    eventType = EVENT_TYPE,
+                    aggregateId = aggregateId,
+                    processedAt = now,
+                )
             )
-        )
             .thenReturn(true)
         `when`(orderDBPort.findById(orderId)).thenReturn(null)
 
@@ -593,13 +593,13 @@ class ProcessOfferReservationResultUseCaseTest {
 
         `when`(clock.instant()).thenReturn(now)
         `when`(
-            inboxEventDBPort.tryMarkProcessed(
-                eventId = eventId,
-                eventType = EVENT_TYPE,
-                aggregateId = aggregateId,
-                processedAt = now,
+                inboxEventDBPort.tryMarkProcessed(
+                    eventId = eventId,
+                    eventType = EVENT_TYPE,
+                    aggregateId = aggregateId,
+                    processedAt = now,
+                )
             )
-        )
             .thenReturn(true)
         `when`(orderDBPort.findById(order.id)).thenReturn(order)
 
@@ -618,8 +618,7 @@ class ProcessOfferReservationResultUseCaseTest {
             }
 
         // Assert
-        assertThat(exception.message)
-            .isEqualTo("Offer reservation result belongs to another Offer")
+        assertThat(exception.message).isEqualTo("Offer reservation result belongs to another Offer")
 
         verify(clock).instant()
         verify(inboxEventDBPort)
@@ -653,13 +652,13 @@ class ProcessOfferReservationResultUseCaseTest {
 
         `when`(clock.instant()).thenReturn(now)
         `when`(
-            inboxEventDBPort.tryMarkProcessed(
-                eventId = eventId,
-                eventType = EVENT_TYPE,
-                aggregateId = aggregateId,
-                processedAt = now,
+                inboxEventDBPort.tryMarkProcessed(
+                    eventId = eventId,
+                    eventType = EVENT_TYPE,
+                    aggregateId = aggregateId,
+                    processedAt = now,
+                )
             )
-        )
             .thenReturn(true)
         `when`(orderDBPort.findById(order.id)).thenReturn(order)
 

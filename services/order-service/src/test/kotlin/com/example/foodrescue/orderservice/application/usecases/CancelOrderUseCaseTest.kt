@@ -148,11 +148,11 @@ class CancelOrderUseCaseTest {
         `when`(clock.instant()).thenReturn(now)
         `when`(orderDBPort.save(order)).thenReturn(savedOrder)
         `when`(
-            eventFactory.orderReservationReleaseRequested(
-                order = savedOrder,
-                occurredAt = now,
+                eventFactory.orderReservationReleaseRequested(
+                    order = savedOrder,
+                    occurredAt = now,
+                )
             )
-        )
             .thenReturn(event)
 
         // Act
@@ -522,8 +522,7 @@ class CancelOrderUseCaseTest {
         `when`(currentUserPort.hasRole(ApplicationRole.CUSTOMER)).thenReturn(true)
         `when`(currentUserPort.getUserId()).thenReturn(CURRENT_USER_ID)
         `when`(clock.instant()).thenReturn(now)
-        `when`(properties.customerDeadlineBeforePickupStart)
-            .thenReturn(deadlineBeforePickupStart)
+        `when`(properties.customerDeadlineBeforePickupStart).thenReturn(deadlineBeforePickupStart)
 
         // Act
         val exception =

@@ -41,11 +41,11 @@ class MarkNoShowOrdersUseCaseTest {
 
         `when`(clock.instant()).thenReturn(now)
         `when`(
-            orderDBPort.findNoShowCandidates(
-                pickupEndedAt = now,
-                batchSize = 3,
+                orderDBPort.findNoShowCandidates(
+                    pickupEndedAt = now,
+                    batchSize = 3,
+                )
             )
-        )
             .thenReturn(
                 listOf(
                     firstOrder,
@@ -54,25 +54,25 @@ class MarkNoShowOrdersUseCaseTest {
                 )
             )
         `when`(
-            processor.markIfExpired(
-                orderId = firstOrder.id,
-                now = now,
+                processor.markIfExpired(
+                    orderId = firstOrder.id,
+                    now = now,
+                )
             )
-        )
             .thenReturn(true)
         `when`(
-            processor.markIfExpired(
-                orderId = secondOrder.id,
-                now = now,
+                processor.markIfExpired(
+                    orderId = secondOrder.id,
+                    now = now,
+                )
             )
-        )
             .thenReturn(false)
         `when`(
-            processor.markIfExpired(
-                orderId = thirdOrder.id,
-                now = now,
+                processor.markIfExpired(
+                    orderId = thirdOrder.id,
+                    now = now,
+                )
             )
-        )
             .thenReturn(true)
 
         // Act
@@ -116,11 +116,11 @@ class MarkNoShowOrdersUseCaseTest {
 
         `when`(clock.instant()).thenReturn(now)
         `when`(
-            orderDBPort.findNoShowCandidates(
-                pickupEndedAt = now,
-                batchSize = 10,
+                orderDBPort.findNoShowCandidates(
+                    pickupEndedAt = now,
+                    batchSize = 10,
+                )
             )
-        )
             .thenReturn(emptyList())
 
         // Act
@@ -151,11 +151,11 @@ class MarkNoShowOrdersUseCaseTest {
 
         `when`(clock.instant()).thenReturn(now)
         `when`(
-            orderDBPort.findNoShowCandidates(
-                pickupEndedAt = now,
-                batchSize = 2,
+                orderDBPort.findNoShowCandidates(
+                    pickupEndedAt = now,
+                    batchSize = 2,
+                )
             )
-        )
             .thenReturn(
                 listOf(
                     firstOrder,
@@ -163,18 +163,18 @@ class MarkNoShowOrdersUseCaseTest {
                 )
             )
         `when`(
-            processor.markIfExpired(
-                orderId = firstOrder.id,
-                now = now,
+                processor.markIfExpired(
+                    orderId = firstOrder.id,
+                    now = now,
+                )
             )
-        )
             .thenReturn(false)
         `when`(
-            processor.markIfExpired(
-                orderId = secondOrder.id,
-                now = now,
+                processor.markIfExpired(
+                    orderId = secondOrder.id,
+                    now = now,
+                )
             )
-        )
             .thenReturn(false)
 
         // Act
@@ -216,11 +216,11 @@ class MarkNoShowOrdersUseCaseTest {
 
         `when`(clock.instant()).thenReturn(now)
         `when`(
-            orderDBPort.findNoShowCandidates(
-                pickupEndedAt = now,
-                batchSize = 3,
+                orderDBPort.findNoShowCandidates(
+                    pickupEndedAt = now,
+                    batchSize = 3,
+                )
             )
-        )
             .thenReturn(
                 listOf(
                     firstOrder,
@@ -229,11 +229,11 @@ class MarkNoShowOrdersUseCaseTest {
                 )
             )
         `when`(
-            processor.markIfExpired(
-                orderId = firstOrder.id,
-                now = now,
+                processor.markIfExpired(
+                    orderId = firstOrder.id,
+                    now = now,
+                )
             )
-        )
             .thenReturn(true)
         doThrow(RuntimeException("Processing failed"))
             .`when`(processor)
@@ -242,11 +242,11 @@ class MarkNoShowOrdersUseCaseTest {
                 now = now,
             )
         `when`(
-            processor.markIfExpired(
-                orderId = thirdOrder.id,
-                now = now,
+                processor.markIfExpired(
+                    orderId = thirdOrder.id,
+                    now = now,
+                )
             )
-        )
             .thenReturn(true)
 
         // Act
@@ -292,11 +292,11 @@ class MarkNoShowOrdersUseCaseTest {
 
         `when`(clock.instant()).thenReturn(now)
         `when`(
-            orderDBPort.findNoShowCandidates(
-                pickupEndedAt = now,
-                batchSize = 2,
+                orderDBPort.findNoShowCandidates(
+                    pickupEndedAt = now,
+                    batchSize = 2,
+                )
             )
-        )
             .thenReturn(
                 listOf(
                     firstOrder,
@@ -357,8 +357,7 @@ class MarkNoShowOrdersUseCaseTest {
             }
 
         // Assert
-        assertThat(exception.message)
-            .isEqualTo("No-show batchSize must be greater than zero")
+        assertThat(exception.message).isEqualTo("No-show batchSize must be greater than zero")
 
         verifyNoInteractions(
             orderDBPort,

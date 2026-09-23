@@ -87,14 +87,12 @@ class ConfirmPickupUseCaseTest {
 
         `when`(pickupTokenHashPort.hash(RAW_TOKEN)).thenReturn(TOKEN_HASH)
         `when`(pickupTokenDBPort.findByTokenHash(TOKEN_HASH)).thenReturn(pickupToken)
-        `when`(orderDBPort.findById(order.id))
-            .thenReturn(order)
-            .thenReturn(reloadedOrder)
+        `when`(orderDBPort.findById(order.id)).thenReturn(order).thenReturn(reloadedOrder)
         `when`(clock.instant()).thenReturn(now)
         doAnswer { invocation ->
-            pickupTokenToSave = invocation.getArgument(0)
-            invocation.getArgument<PickupToken>(0)
-        }
+                pickupTokenToSave = invocation.getArgument(0)
+                invocation.getArgument<PickupToken>(0)
+            }
             .`when`(pickupTokenDBPort)
             .save(anyPickupToken())
         `when`(orderDBPort.save(order)).thenReturn(pickedUpOrder)
@@ -324,9 +322,7 @@ class ConfirmPickupUseCaseTest {
         value = OrderStatus::class,
         names = ["PICKED_UP", "COMPLETED"],
     )
-    fun whenUsedPickupTokenIsUsedForAlreadyPickedUpOrder_returnsExistingOrder(
-        status: OrderStatus
-    ) {
+    fun whenUsedPickupTokenIsUsedForAlreadyPickedUpOrder_returnsExistingOrder(status: OrderStatus) {
         // Arrange
         val order = createOrder(status = status)
         val pickupToken =
@@ -567,9 +563,7 @@ class ConfirmPickupUseCaseTest {
 
         `when`(pickupTokenHashPort.hash(RAW_TOKEN)).thenReturn(TOKEN_HASH)
         `when`(pickupTokenDBPort.findByTokenHash(TOKEN_HASH)).thenReturn(pickupToken)
-        `when`(orderDBPort.findById(order.id))
-            .thenReturn(order)
-            .thenReturn(null)
+        `when`(orderDBPort.findById(order.id)).thenReturn(order).thenReturn(null)
         `when`(clock.instant()).thenReturn(now)
         doAnswer { invocation -> invocation.getArgument<PickupToken>(0) }
             .`when`(pickupTokenDBPort)
@@ -660,8 +654,7 @@ class ConfirmPickupUseCaseTest {
             updatedAt = updatedAt,
         )
 
-    private fun anyPickupToken(): PickupToken =
-        any(PickupToken::class.java) ?: createPickupToken()
+    private fun anyPickupToken(): PickupToken = any(PickupToken::class.java) ?: createPickupToken()
 
     companion object {
         private const val CUSTOMER_ID = "33333333-3333-3333-3333-333333333333"

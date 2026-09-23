@@ -79,11 +79,11 @@ class ProcessPaymentResultUseCaseTest {
         `when`(clock.instant()).thenReturn(now)
         `when`(orderDBPort.save(order)).thenReturn(savedOrder)
         `when`(
-            eventFactory.orderReservationCommitRequested(
-                order = savedOrder,
-                occurredAt = now,
+                eventFactory.orderReservationCommitRequested(
+                    order = savedOrder,
+                    occurredAt = now,
+                )
             )
-        )
             .thenReturn(event)
 
         // Act
@@ -229,11 +229,11 @@ class ProcessPaymentResultUseCaseTest {
         `when`(clock.instant()).thenReturn(now)
         `when`(orderDBPort.save(order)).thenReturn(savedOrder)
         `when`(
-            eventFactory.orderReservationReleaseRequested(
-                order = savedOrder,
-                occurredAt = now,
+                eventFactory.orderReservationReleaseRequested(
+                    order = savedOrder,
+                    occurredAt = now,
+                )
             )
-        )
             .thenReturn(event)
 
         // Act
@@ -422,9 +422,7 @@ class ProcessPaymentResultUseCaseTest {
         mode = EnumSource.Mode.EXCLUDE,
         names = ["PICKED_UP", "COMPLETED", "NO_SHOW"],
     )
-    fun whenCaptureSucceedsForInvalidOrderStatus_throwsOrderConflictException(
-        status: OrderStatus
-    ) {
+    fun whenCaptureSucceedsForInvalidOrderStatus_throwsOrderConflictException(status: OrderStatus) {
         // Arrange
         val order = createOrder(status = status)
         val paymentResult =
@@ -506,9 +504,7 @@ class ProcessPaymentResultUseCaseTest {
         mode = EnumSource.Mode.EXCLUDE,
         names = ["PICKED_UP", "NO_SHOW"],
     )
-    fun whenCaptureFailsForInvalidOrderStatus_throwsOrderConflictException(
-        status: OrderStatus
-    ) {
+    fun whenCaptureFailsForInvalidOrderStatus_throwsOrderConflictException(status: OrderStatus) {
         // Arrange
         val order = createOrder(status = status)
         val paymentResult =
@@ -619,9 +615,7 @@ class ProcessPaymentResultUseCaseTest {
         mode = EnumSource.Mode.EXCLUDE,
         names = ["CANCELLED", "NO_SHOW"],
     )
-    fun whenVoidIsProcessedForInvalidOrderStatus_throwsOrderConflictException(
-        status: OrderStatus
-    ) {
+    fun whenVoidIsProcessedForInvalidOrderStatus_throwsOrderConflictException(status: OrderStatus) {
         // Arrange
         val order = createOrder(status = status)
         val paymentResult =
@@ -784,8 +778,7 @@ class ProcessPaymentResultUseCaseTest {
             }
 
         // Assert
-        assertThat(exception.message)
-            .isEqualTo("Payment amount does not match Order total amount")
+        assertThat(exception.message).isEqualTo("Payment amount does not match Order total amount")
 
         verify(orderDBPort).findById(order.id)
         verifyNoInteractions(

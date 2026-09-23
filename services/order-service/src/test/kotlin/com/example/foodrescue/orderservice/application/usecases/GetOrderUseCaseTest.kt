@@ -76,9 +76,7 @@ class GetOrderUseCaseTest {
         val order = createOrder()
 
         `when`(orderDBPort.findById(order.id)).thenReturn(order)
-        doThrow(OrderAccessDeniedException())
-            .`when`(orderAccessPolicy)
-            .checkReadAccess(order)
+        doThrow(OrderAccessDeniedException()).`when`(orderAccessPolicy).checkReadAccess(order)
 
         // Act
         val exception =
