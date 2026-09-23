@@ -3,7 +3,6 @@ package com.example.foodrescue.offerservice.adapter.`in`.mappers
 import com.example.foodrescue.offerservice.adapter.`in`.kafka.dtos.PartnerEventEnvelope
 import com.example.foodrescue.offerservice.adapter.`in`.kafka.dtos.PartnerEventPayloadV1
 import com.example.foodrescue.offerservice.adapter.`in`.kafka.dtos.StoreEventPayloadV1
-import com.example.foodrescue.offerservice.application.exceptions.InvalidPartnerEventException
 import com.example.foodrescue.offerservice.application.exceptions.UnsupportedPartnerStatusException
 import com.example.foodrescue.offerservice.application.exceptions.UnsupportedStoreStatusException
 import com.example.foodrescue.offerservice.domain.entities.PartnerId
@@ -12,8 +11,6 @@ import com.example.foodrescue.offerservice.domain.entities.StoreId
 import com.example.foodrescue.offerservice.domain.entities.StoreSnapshotUpdate
 import com.example.foodrescue.offerservice.domain.`enum`.PartnerStatus
 import com.example.foodrescue.offerservice.domain.`enum`.StoreStatus
-import java.time.DateTimeException
-import java.time.ZoneId
 import org.springframework.stereotype.Component
 
 @Component
@@ -29,7 +26,6 @@ class PartnerEventMapper {
             storeStatus = resolveStoreStatus(payload.storeStatus),
             name = payload.name,
             address = payload.address,
-            timeZone = resolveTimeZone(payload.timeZone),
             storeVersion = envelope.aggregateVersion,
         )
 
@@ -52,13 +48,4 @@ class PartnerEventMapper {
         StoreStatus.entries.firstOrNull { status ->
             status.code == statusCode
         } ?: throw UnsupportedStoreStatusException(statusCode)
-
-    private fun resolveTimeZone(timeZone: String): ZoneId =
-        try {
-            ZoneId.of(timeZone)
-        } catch (exception: DateTimeException) {
-            throw InvalidPartnerEventException(
-                message = "Partner event contains invalid store timeZone: $timeZone"
-            )
-        }
 }

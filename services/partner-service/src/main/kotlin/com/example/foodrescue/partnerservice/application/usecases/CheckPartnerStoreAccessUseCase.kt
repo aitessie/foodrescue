@@ -44,7 +44,8 @@ class CheckPartnerStoreAccessUseCase(
     ): PartnerStoreAccessSnapshot {
         val store = storeDBPort.findById(storeId) ?: throw StoreNotFoundException(storeId)
         val partner =
-            partnerDBPort.findById(store.partnerId) ?: throw PartnerNotFoundException(store.partnerId)
+            partnerDBPort.findById(store.partnerId)
+                ?: throw PartnerNotFoundException(store.partnerId)
 
         return createSnapshot(
             partner = partner,

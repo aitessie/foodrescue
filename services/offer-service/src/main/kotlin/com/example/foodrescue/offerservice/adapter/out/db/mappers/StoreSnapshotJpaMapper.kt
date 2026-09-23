@@ -4,7 +4,6 @@ import com.example.foodrescue.offerservice.adapter.`out`.db.entities.StoreSnapsh
 import com.example.foodrescue.offerservice.domain.entities.PartnerId
 import com.example.foodrescue.offerservice.domain.entities.StoreId
 import com.example.foodrescue.offerservice.domain.entities.StoreSnapshot
-import java.time.ZoneId
 import org.springframework.stereotype.Component
 
 @Component
@@ -17,7 +16,6 @@ class StoreSnapshotJpaMapper {
             storeStatus = entity.storeStatus,
             name = entity.name,
             address = entity.address,
-            timeZone = ZoneId.of(entity.timeZone),
             storeVersion = entity.storeVersion,
             partnerVersion = entity.partnerVersion,
         )
@@ -30,7 +28,6 @@ class StoreSnapshotJpaMapper {
             storeStatus = snapshot.storeStatus,
             name = snapshot.name,
             address = snapshot.address,
-            timeZone = snapshot.timeZone.id,
             storeVersion = snapshot.storeVersion,
             partnerVersion = snapshot.partnerVersion,
         )

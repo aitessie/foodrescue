@@ -17,3 +17,6 @@ databaseChangeLog:
   - include:
       file: changes/dev-test-data.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changes/update-outbox-for-kafka.yaml
+      relativeToChangelogFile: true

@@ -3,7 +3,6 @@ package com.example.foodrescue.offerservice.domain.entities
 import com.example.foodrescue.offerservice.domain.`enum`.Allergen
 import com.example.foodrescue.offerservice.domain.`enum`.FoodBagCategory
 import com.example.foodrescue.offerservice.domain.enum.OfferStatus
-import java.time.ZoneId
 
 class OfferSearchItem(
     val offerId: OfferId,
@@ -20,7 +19,6 @@ class OfferSearchItem(
     val pickupWindow: PickupWindow,
     val storeName: String,
     val storeAddress: String,
-    val storeTimeZone: ZoneId,
 ) {
     private val allergenValues: Set<Allergen> = allergens.toSet()
 

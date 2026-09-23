@@ -4,7 +4,6 @@ import com.example.foodrescue.offerservice.domain.`enum`.Allergen
 import com.example.foodrescue.offerservice.domain.`enum`.FoodBagCategory
 import com.example.foodrescue.offerservice.domain.enum.OfferStatus
 import java.time.Instant
-import java.time.ZoneId
 import java.util.UUID
 
 data class OfferSearchItemDto(
@@ -23,5 +22,4 @@ data class OfferSearchItemDto(
     val pickupEnd: Instant,
     val storeName: String,
     val storeAddress: String,
-    val storeTimeZone: ZoneId,
 )

@@ -42,6 +42,7 @@ dependencies {
     implementation(
         "org.springframework.boot:" + "spring-boot-starter-security-oauth2-resource-server"
     )
+    implementation("org.springframework.boot:spring-boot-starter-kafka:4.1.0")
     implementation("org.springframework.data:spring-data-jpa:4.1.0")
     implementation("org.springframework:spring-tx:7.0.8")
 

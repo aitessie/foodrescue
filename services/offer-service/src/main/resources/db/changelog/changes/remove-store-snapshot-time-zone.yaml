@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: remove-store-snapshot-time-zone
+      author: foodrescue
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE store_snapshots
+              DROP CONSTRAINT chk_store_snapshots_time_zone;
+
+        - dropColumn:
+            tableName: store_snapshots
+            columnName: time_zone

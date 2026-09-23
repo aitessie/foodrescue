@@ -53,12 +53,6 @@ class StoreSnapshotJpaEntity(
     )
     var address: String,
     @Column(
-        name = "time_zone",
-        nullable = false,
-        length = 64,
-    )
-    var timeZone: String,
-    @Column(
         name = "store_version",
         nullable = false,
     )

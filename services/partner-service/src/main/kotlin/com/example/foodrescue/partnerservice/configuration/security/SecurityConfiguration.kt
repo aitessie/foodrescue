@@ -32,7 +32,7 @@ class SecurityConfiguration(private val keycloakRealmRoleConverter: KeycloakReal
                 authorization
                     .requestMatchers(
                         HttpMethod.GET,
-                        "/api/v1/stores/**",
+                        "/api/v1/partners/*/stores/**",
                     )
                     .hasAnyRole(
                         ApplicationRole.STAFF.code,
@@ -43,8 +43,7 @@ class SecurityConfiguration(private val keycloakRealmRoleConverter: KeycloakReal
                 authorization
                     .requestMatchers(
                         HttpMethod.PUT,
-                        "/api/v1/stores",
-                        "/api/v1/stores/**",
+                        "/api/v1/partners/*/stores/**",
                     )
                     .hasAnyRole(
                         ApplicationRole.MANAGER.code,

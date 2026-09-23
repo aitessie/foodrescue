@@ -1,6 +1,7 @@
-package com.example.foodrescue.offerservice.adapter.`out`.db.persistence
+package com.example.foodrescue.offerservice.adapter.out.db
 
 import com.example.foodrescue.offerservice.adapter.`out`.db.mappers.StoreSnapshotJpaMapper
+import com.example.foodrescue.offerservice.adapter.out.db.persistence.StoreSnapshotJpaRepository
 import com.example.foodrescue.offerservice.application.ports.StoreSnapshotDBPort
 import com.example.foodrescue.offerservice.domain.entities.PartnerStatusSnapshotUpdate
 import com.example.foodrescue.offerservice.domain.entities.StoreId
@@ -30,7 +31,6 @@ class StoreSnapshotRepository(
             storeStatus = update.storeStatus.code,
             name = update.name,
             address = update.address,
-            timeZone = update.timeZone.id,
             storeVersion = update.storeVersion,
         )
     }

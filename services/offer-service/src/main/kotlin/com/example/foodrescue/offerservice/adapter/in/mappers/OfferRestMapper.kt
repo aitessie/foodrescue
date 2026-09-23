@@ -86,6 +86,5 @@ class OfferRestMapper {
             pickupEnd = item.pickupWindow.end,
             storeName = item.storeName,
             storeAddress = item.storeAddress,
-            storeTimeZone = item.storeTimeZone,
         )
 }

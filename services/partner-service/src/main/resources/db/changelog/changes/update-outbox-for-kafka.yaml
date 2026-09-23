@@ -1,0 +1,59 @@
+databaseChangeLog:
+  - changeSet:
+      id: update-outbox-for-kafka
+      author: food-rescue
+      changes:
+        - dropIndex:
+            tableName: outbox_events
+            indexName: idx_outbox_events_status_created_at
+
+        - dropIndex:
+            tableName: outbox_events
+            indexName: idx_outbox_events_aggregate
+
+        - addColumn:
+            tableName: outbox_events
+            columns:
+              - column:
+                  name: schema_version
+                  type: INTEGER
+                  defaultValueNumeric: "1"
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: aggregate_version
+                  type: BIGINT
+                  defaultValueNumeric: "0"
+                  constraints:
+                    nullable: false
+
+        - dropDefaultValue:
+            tableName: outbox_events
+            columnName: schema_version
+            columnDataType: INTEGER
+
+        - dropDefaultValue:
+            tableName: outbox_events
+            columnName: aggregate_version
+            columnDataType: BIGINT
+
+        - dropColumn:
+            tableName: outbox_events
+            columnName: aggregate_type
+
+        - dropColumn:
+            tableName: outbox_events
+            columnName: created_at
+
+        - createIndex:
+            tableName: outbox_events
+            indexName: idx_outbox_events_status_occurred_at
+            columns:
+              - column:
+                  name: status
+              - column:
+                  name: occurred_at
+              - column:
+                  name: id
+

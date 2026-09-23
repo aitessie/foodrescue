@@ -1,9 +1,11 @@
 package com.example.foodrescue.partnerservice.application.usecases
 
 import com.example.foodrescue.partnerservice.application.access.PartnerAccessPolicy
+import com.example.foodrescue.partnerservice.application.events.ApplicationEventFactory
 import com.example.foodrescue.partnerservice.application.exceptions.EntityVersionConflictException
 import com.example.foodrescue.partnerservice.application.exceptions.PartnerAccessDeniedException
 import com.example.foodrescue.partnerservice.application.exceptions.PartnerManagerChangeNotAllowedException
+import com.example.foodrescue.partnerservice.application.ports.DomainEventPublisherPort
 import com.example.foodrescue.partnerservice.application.ports.PartnerDBPort
 import com.example.foodrescue.partnerservice.domain.entities.Partner
 import com.example.foodrescue.partnerservice.domain.entities.PartnerId
@@ -11,201 +13,282 @@ import com.example.foodrescue.partnerservice.domain.enum.AccessAction
 import com.example.foodrescue.partnerservice.domain.enum.PartnerStatus
 import java.time.Clock
 import java.time.Instant
-import java.time.ZoneOffset
-import java.util.*
-import org.assertj.core.api.AssertionsForClassTypes.assertThat
-import org.junit.jupiter.api.Assertions.assertEquals
+import java.util.UUID
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
+import org.mockito.Mock
 import org.mockito.Mockito.*
+import org.mockito.junit.jupiter.MockitoExtension
 
+@ExtendWith(MockitoExtension::class)
 class CreateOrUpdatePartnerUseCaseTest {
+    @Mock private lateinit var partnerDBPort: PartnerDBPort
 
-    private val partnerDBPort = mock(PartnerDBPort::class.java)
-    private val partnerAccessPolicy = mock(PartnerAccessPolicy::class.java)
+    @Mock private lateinit var partnerAccessPolicy: PartnerAccessPolicy
 
-    private val updatedAt = Instant.parse("2026-01-02T10:00:00Z")
+    @Mock private lateinit var eventFactory: ApplicationEventFactory
 
-    private val clock =
-        Clock.fixed(
-            updatedAt,
-            ZoneOffset.UTC,
-        )
+    @Mock private lateinit var eventPublisherPort: DomainEventPublisherPort
 
-    private val createOrUpdatePartnerUseCase =
-        CreateOrUpdatePartnerUseCase(
-            partnerDBPort = partnerDBPort,
-            partnerAccessPolicy = partnerAccessPolicy,
-            clock = clock,
-        )
+    @Mock private lateinit var clock: Clock
 
-    private val partnerId = PartnerId(UUID.randomUUID())
+    @InjectMocks private lateinit var useCase: CreateOrUpdatePartnerUseCase
 
     @Test
-    fun whenPartnerDoesNotExistCreatesPartner() {
-        // arrange
+    fun whenNewPartnerIsCreated_returnsSavedPartner() {
+        // Arrange
         val source = createPartner()
+        val savedPartner =
+            createPartner(
+                id = source.id,
+                managerId = source.managerId,
+                name = source.name,
+                status = source.status,
+                createdAt = source.createdAt,
+                updatedAt = source.updatedAt,
+                version = 1,
+            )
 
-        // act
-        `when`(partnerDBPort.findById(partnerId)).thenReturn(null)
+        `when`(partnerDBPort.findById(source.id)).thenReturn(null)
+        `when`(partnerDBPort.save(source)).thenReturn(savedPartner)
 
-        `when`(partnerDBPort.save(source)).thenReturn(source)
+        // Act
+        val result = useCase.createOrUpdatePartner(source)
 
-        val result = createOrUpdatePartnerUseCase.createOrUpdatePartner(source)
+        // Assert
+        assertThat(result).isSameAs(savedPartner)
 
-        // assert
-        assertThat(source).isEqualTo(result)
-
-        verify(partnerDBPort).findById(partnerId)
-
+        verify(partnerDBPort).findById(source.id)
         verify(partnerAccessPolicy)
             .checkAccess(
                 action = AccessAction.CREATE_OR_UPDATE,
                 resource = source,
             )
-
         verify(partnerDBPort).save(source)
+        verifyNoInteractions(
+            eventFactory,
+            eventPublisherPort,
+            clock,
+        )
+        verifyNoMoreInteractions(
+            partnerDBPort,
+            partnerAccessPolicy,
+        )
     }
 
     @Test
-    fun whenManagerIdIsChangedThrowsPartnerManagerChangeNotAllowedException() {
-        // arrange
-        val existingPartner =
-            createPartner(
-                managerId = "existing-manager-id",
-                name = "Existing partner",
-                version = 2,
+    fun whenCreatingPartnerAndAccessIsDenied_throwsPartnerAccessDeniedException() {
+        // Arrange
+        val source = createPartner()
+
+        `when`(partnerDBPort.findById(source.id)).thenReturn(null)
+        doThrow(PartnerAccessDeniedException())
+            .`when`(partnerAccessPolicy)
+            .checkAccess(
+                action = AccessAction.CREATE_OR_UPDATE,
+                resource = source,
             )
 
-        val source =
-            createPartner(
-                managerId = "another-manager-id",
-                name = "Updated partner",
-                version = 2,
-            )
-
-        `when`(partnerDBPort.findById(partnerId)).thenReturn(existingPartner)
-
-        // act
+        // Act
         val exception =
-            assertThrows<PartnerManagerChangeNotAllowedException> {
-                createOrUpdatePartnerUseCase.createOrUpdatePartner(source)
+            assertThrows<PartnerAccessDeniedException> {
+                useCase.createOrUpdatePartner(source)
             }
 
-        // assert
-        assertThat(exception.partnerId).isEqualTo(partnerId)
+        // Assert
+        assertThat(exception.message).isEqualTo("Current user has no access to this partner")
 
-        assertThat(existingPartner.managerId).isEqualTo("existing-manager-id")
-
-        assertThat(existingPartner.name).isEqualTo("Existing partner")
-
+        verify(partnerDBPort).findById(source.id)
         verify(partnerAccessPolicy)
             .checkAccess(
                 action = AccessAction.CREATE_OR_UPDATE,
-                resource = existingPartner,
+                resource = source,
             )
-
-        verify(partnerDBPort, never()).save(existingPartner)
-
-        verify(partnerDBPort, never()).save(source)
+        verifyNoInteractions(
+            eventFactory,
+            eventPublisherPort,
+            clock,
+        )
+        verifyNoMoreInteractions(
+            partnerDBPort,
+            partnerAccessPolicy,
+        )
     }
 
     @Test
-    fun whenVersionsMatchUpdatesExistingPartner() {
-        // arrange
+    fun whenExistingActivePartnerIsUpdated_returnsSavedPartnerAndPublishesUpdatedEvent() {
+        // Arrange
         val existingPartner =
             createPartner(
-                name = "Old name",
-                version = 3,
+                name = "Old Partner",
+                status = PartnerStatus.ACTIVE,
+                version = 2,
             )
-
         val source =
             createPartner(
-                name = "Updated name",
-                status = PartnerStatus.entries.last(),
+                id = existingPartner.id,
+                managerId = existingPartner.managerId,
+                name = "Updated Partner",
+                status = PartnerStatus.ACTIVE,
+                createdAt = existingPartner.createdAt,
+                updatedAt = existingPartner.updatedAt,
+                version = existingPartner.version,
+            )
+        val now = Instant.parse("2026-08-20T11:00:00Z")
+        val savedPartner =
+            createPartner(
+                id = existingPartner.id,
+                managerId = existingPartner.managerId,
+                name = source.name,
+                status = PartnerStatus.ACTIVE,
+                createdAt = existingPartner.createdAt,
+                updatedAt = now,
                 version = 3,
             )
+        val event =
+            ApplicationEventFactory()
+                .partnerUpdated(
+                    partner = savedPartner,
+                    occurredAt = now,
+                )
 
-        // act
-        `when`(partnerDBPort.findById(partnerId)).thenReturn(existingPartner)
-        `when`(partnerDBPort.save(existingPartner)).thenReturn(existingPartner)
+        `when`(partnerDBPort.findById(source.id)).thenReturn(existingPartner)
+        `when`(clock.instant()).thenReturn(now)
+        `when`(partnerDBPort.save(existingPartner)).thenReturn(savedPartner)
+        `when`(
+                eventFactory.partnerUpdated(
+                    partner = savedPartner,
+                    occurredAt = now,
+                )
+            )
+            .thenReturn(event)
 
-        val result = createOrUpdatePartnerUseCase.createOrUpdatePartner(source)
+        // Act
+        val result = useCase.createOrUpdatePartner(source)
 
-        // assert
-        assertThat(existingPartner).isEqualTo(result)
-        assertThat(existingPartner).isEqualTo(result)
-        assertThat("Updated name").isEqualTo(result.name)
-        assertThat(source.status).isEqualTo(result.status)
-        assertThat(updatedAt).isEqualTo(result.updatedAt)
-        assertThat(3).isEqualTo(result.version)
+        // Assert
+        assertThat(result).isSameAs(savedPartner)
+        assertThat(existingPartner.name).isEqualTo(source.name)
+        assertThat(existingPartner.status).isEqualTo(PartnerStatus.ACTIVE)
+        assertThat(existingPartner.updatedAt).isEqualTo(now)
 
+        verify(partnerDBPort).findById(source.id)
         verify(partnerAccessPolicy)
             .checkAccess(
                 action = AccessAction.CREATE_OR_UPDATE,
                 resource = existingPartner,
             )
-
+        verify(clock).instant()
         verify(partnerDBPort).save(existingPartner)
+        verify(eventFactory)
+            .partnerUpdated(
+                partner = savedPartner,
+                occurredAt = now,
+            )
+        verify(eventPublisherPort).publish(event)
+        verifyNoMoreInteractions(
+            partnerDBPort,
+            partnerAccessPolicy,
+            eventFactory,
+            eventPublisherPort,
+            clock,
+        )
     }
 
     @Test
-    fun whenVersionsDifferThrowsEntityVersionConflictException() {
-        // arrange
+    fun whenExistingPartnerIsSuspended_returnsSavedPartnerAndPublishesSuspendedEvent() {
+        // Arrange
         val existingPartner =
             createPartner(
-                name = "Existing name",
-                version = 5,
+                name = "Partner",
+                status = PartnerStatus.ACTIVE,
+                version = 2,
             )
-
         val source =
             createPartner(
-                name = "Updated name",
-                version = 4,
+                id = existingPartner.id,
+                managerId = existingPartner.managerId,
+                name = existingPartner.name,
+                status = PartnerStatus.SUSPENDED,
+                createdAt = existingPartner.createdAt,
+                updatedAt = existingPartner.updatedAt,
+                version = existingPartner.version,
             )
+        val now = Instant.parse("2026-08-20T11:00:00Z")
+        val savedPartner =
+            createPartner(
+                id = existingPartner.id,
+                managerId = existingPartner.managerId,
+                name = source.name,
+                status = PartnerStatus.SUSPENDED,
+                createdAt = existingPartner.createdAt,
+                updatedAt = now,
+                version = 3,
+            )
+        val event =
+            ApplicationEventFactory()
+                .partnerSuspended(
+                    partner = savedPartner,
+                    occurredAt = now,
+                )
 
-        // act
-        `when`(partnerDBPort.findById(partnerId)).thenReturn(existingPartner)
+        `when`(partnerDBPort.findById(source.id)).thenReturn(existingPartner)
+        `when`(clock.instant()).thenReturn(now)
+        `when`(partnerDBPort.save(existingPartner)).thenReturn(savedPartner)
+        `when`(
+                eventFactory.partnerSuspended(
+                    partner = savedPartner,
+                    occurredAt = now,
+                )
+            )
+            .thenReturn(event)
 
-        val exception =
-            assertThrows<EntityVersionConflictException> {
-                createOrUpdatePartnerUseCase.createOrUpdatePartner(source)
-            }
+        // Act
+        val result = useCase.createOrUpdatePartner(source)
 
-        // assert
-        assertThat(Partner::class.simpleName).isEqualTo(exception.entityType)
-        assertThat(partnerId.value.toString()).isEqualTo(exception.entityId)
-        assertThat(4).isEqualTo(exception.expectedVersion)
-        assertThat(5).isEqualTo(exception.actualVersion)
-        assertThat("Existing name").isEqualTo(existingPartner.name)
+        // Assert
+        assertThat(result).isSameAs(savedPartner)
+        assertThat(existingPartner.status).isEqualTo(PartnerStatus.SUSPENDED)
+        assertThat(existingPartner.updatedAt).isEqualTo(now)
 
+        verify(partnerDBPort).findById(source.id)
         verify(partnerAccessPolicy)
             .checkAccess(
                 action = AccessAction.CREATE_OR_UPDATE,
                 resource = existingPartner,
             )
-
-        verify(partnerDBPort, never()).save(existingPartner)
+        verify(clock).instant()
+        verify(partnerDBPort).save(existingPartner)
+        verify(eventFactory)
+            .partnerSuspended(
+                partner = savedPartner,
+                occurredAt = now,
+            )
+        verify(eventPublisherPort).publish(event)
+        verifyNoMoreInteractions(
+            partnerDBPort,
+            partnerAccessPolicy,
+            eventFactory,
+            eventPublisherPort,
+            clock,
+        )
     }
 
     @Test
-    fun whenAccessIsDeniedDoNotUpdatePartner() {
-        // arrange
-        val existingPartner =
-            createPartner(
-                name = "Existing name",
-                version = 2,
-            )
-
+    fun whenUpdatingPartnerAndAccessIsDenied_throwsPartnerAccessDeniedException() {
+        // Arrange
+        val existingPartner = createPartner(version = 2)
         val source =
             createPartner(
-                name = "Updated name",
-                version = 2,
+                id = existingPartner.id,
+                managerId = existingPartner.managerId,
+                version = existingPartner.version,
             )
 
-        // act
-        `when`(partnerDBPort.findById(partnerId)).thenReturn(existingPartner)
-
+        `when`(partnerDBPort.findById(source.id)).thenReturn(existingPartner)
         doThrow(PartnerAccessDeniedException())
             .`when`(partnerAccessPolicy)
             .checkAccess(
@@ -213,33 +296,145 @@ class CreateOrUpdatePartnerUseCaseTest {
                 resource = existingPartner,
             )
 
-        // assert
-        assertThrows<PartnerAccessDeniedException> {
-            createOrUpdatePartnerUseCase.createOrUpdatePartner(source)
-        }
+        // Act
+        val exception =
+            assertThrows<PartnerAccessDeniedException> {
+                useCase.createOrUpdatePartner(source)
+            }
 
-        assertEquals("Existing name", existingPartner.name)
+        // Assert
+        assertThat(exception.message).isEqualTo("Current user has no access to this partner")
 
-        verify(partnerDBPort, never()).save(existingPartner)
+        verify(partnerDBPort).findById(source.id)
+        verify(partnerAccessPolicy)
+            .checkAccess(
+                action = AccessAction.CREATE_OR_UPDATE,
+                resource = existingPartner,
+            )
+        verifyNoInteractions(
+            eventFactory,
+            eventPublisherPort,
+            clock,
+        )
+        verifyNoMoreInteractions(
+            partnerDBPort,
+            partnerAccessPolicy,
+        )
+    }
+
+    @Test
+    fun whenUpdatedPartnerHasDifferentManager_throwsPartnerManagerChangeNotAllowedException() {
+        // Arrange
+        val existingPartner =
+            createPartner(
+                managerId = MANAGER_ID,
+                version = 2,
+            )
+        val source =
+            createPartner(
+                id = existingPartner.id,
+                managerId = OTHER_MANAGER_ID,
+                version = existingPartner.version,
+            )
+
+        `when`(partnerDBPort.findById(source.id)).thenReturn(existingPartner)
+
+        // Act
+        val exception =
+            assertThrows<PartnerManagerChangeNotAllowedException> {
+                useCase.createOrUpdatePartner(source)
+            }
+
+        // Assert
+        assertThat(exception.message)
+            .isEqualTo("Partner ${existingPartner.id.value} manager cannot be changed")
+        assertThat(exception.partnerId).isEqualTo(existingPartner.id)
+
+        verify(partnerDBPort).findById(source.id)
+        verify(partnerAccessPolicy)
+            .checkAccess(
+                action = AccessAction.CREATE_OR_UPDATE,
+                resource = existingPartner,
+            )
+        verifyNoInteractions(
+            eventFactory,
+            eventPublisherPort,
+            clock,
+        )
+        verifyNoMoreInteractions(
+            partnerDBPort,
+            partnerAccessPolicy,
+        )
+    }
+
+    @Test
+    fun whenUpdatedPartnerVersionDoesNotMatchCurrentVersion_throwsEntityVersionConflictException() {
+        // Arrange
+        val existingPartner = createPartner(version = 2)
+        val source =
+            createPartner(
+                id = existingPartner.id,
+                managerId = existingPartner.managerId,
+                version = 1,
+            )
+
+        `when`(partnerDBPort.findById(source.id)).thenReturn(existingPartner)
+
+        // Act
+        val exception =
+            assertThrows<EntityVersionConflictException> {
+                useCase.createOrUpdatePartner(source)
+            }
+
+        // Assert
+        assertThat(exception.message)
+            .isEqualTo(
+                "Partner ${existingPartner.id.value} version conflict: " +
+                    "expected=${source.version}, actual=${existingPartner.version}"
+            )
+        assertThat(exception.entityType).isEqualTo("Partner")
+        assertThat(exception.entityId).isEqualTo(existingPartner.id.value.toString())
+        assertThat(exception.expectedVersion).isEqualTo(source.version)
+        assertThat(exception.actualVersion).isEqualTo(existingPartner.version)
+
+        verify(partnerDBPort).findById(source.id)
+        verify(partnerAccessPolicy)
+            .checkAccess(
+                action = AccessAction.CREATE_OR_UPDATE,
+                resource = existingPartner,
+            )
+        verifyNoInteractions(
+            eventFactory,
+            eventPublisherPort,
+            clock,
+        )
+        verifyNoMoreInteractions(
+            partnerDBPort,
+            partnerAccessPolicy,
+        )
     }
 
     private fun createPartner(
-        id: PartnerId = partnerId,
-        managerId: String = "manager-1",
-        name: String = "Test partner",
+        id: PartnerId = PartnerId(UUID.randomUUID()),
+        managerId: String = MANAGER_ID,
+        name: String = "Partner",
         status: PartnerStatus = PartnerStatus.ACTIVE,
+        createdAt: Instant = Instant.parse("2026-08-20T10:00:00Z"),
+        updatedAt: Instant = Instant.parse("2026-08-20T10:00:00Z"),
         version: Long = 0,
-    ): Partner {
-        val createdAt = Instant.parse("2026-01-01T10:00:00Z")
-
-        return Partner(
+    ): Partner =
+        Partner(
             id = id,
             managerId = managerId,
             name = name,
             status = status,
             createdAt = createdAt,
-            updatedAt = createdAt,
+            updatedAt = updatedAt,
             version = version,
         )
+
+    companion object {
+        private const val MANAGER_ID = "33333333-3333-3333-3333-333333333333"
+        private const val OTHER_MANAGER_ID = "88888888-8888-8888-8888-888888888888"
     }
 }

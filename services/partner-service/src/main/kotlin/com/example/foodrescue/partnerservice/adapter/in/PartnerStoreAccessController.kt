@@ -30,10 +30,11 @@ class PartnerStoreAccessController(
                     storeId = storeId,
                     userId = request.userId,
                 )
-            } ?: checkPartnerStoreAccessUseCase.execute(
-                storeId = storeId,
-                userId = request.userId,
-            )
+            }
+                ?: checkPartnerStoreAccessUseCase.execute(
+                    storeId = storeId,
+                    userId = request.userId,
+                )
 
         return partnerStoreAccessRestMapper.toDto(snapshot)
     }

@@ -20,9 +20,20 @@ spring:
     hibernate:
       ddl-auto: validate
 
+  jackson:
+    datatype:
+      datetime:
+        write-dates-as-timestamps: false
+
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
-    partner-events-topic: ${PARTNER_EVENTS_TOPIC:partner.events.v1}
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      properties:
+        enable.idempotence: true
 
   security:
     oauth2:
@@ -58,3 +69,13 @@ management:
   tracing:
     sampling:
       probability: ${TRACING_SAMPLING_PROBABILITY:0.1}
+
+food-rescue:
+  kafka:
+    partner-events-topic: ${PARTNER_EVENTS_TOPIC:partner.events.v1}
+
+  outbox:
+    batch-size: ${PARTNER_OUTBOX_BATCH_SIZE:100}
+    max-attempts: ${PARTNER_OUTBOX_MAX_ATTEMPTS:10}
+    fixed-delay: ${PARTNER_OUTBOX_FIXED_DELAY:1s}
+    initial-delay: ${PARTNER_OUTBOX_INITIAL_DELAY:10s}

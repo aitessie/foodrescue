@@ -1,13 +1,15 @@
 package com.example.foodrescue.partnerservice.application.usecases
 
 import com.example.foodrescue.partnerservice.application.access.PartnerAccessPolicy
+import com.example.foodrescue.partnerservice.application.events.ApplicationEventFactory
 import com.example.foodrescue.partnerservice.application.exceptions.EntityVersionConflictException
 import com.example.foodrescue.partnerservice.application.exceptions.PartnerManagerChangeNotAllowedException
+import com.example.foodrescue.partnerservice.application.ports.DomainEventPublisherPort
 import com.example.foodrescue.partnerservice.application.ports.PartnerDBPort
 import com.example.foodrescue.partnerservice.domain.entities.Partner
 import com.example.foodrescue.partnerservice.domain.enum.AccessAction
+import com.example.foodrescue.partnerservice.domain.enum.PartnerStatus
 import java.time.Clock
-import java.time.Instant
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional
 class CreateOrUpdatePartnerUseCase(
     private val partnerDBPort: PartnerDBPort,
     private val partnerAccessPolicy: PartnerAccessPolicy,
+    private val eventFactory: ApplicationEventFactory,
+    private val eventPublisherPort: DomainEventPublisherPort,
     private val clock: Clock,
 ) {
 
@@ -59,12 +63,31 @@ class CreateOrUpdatePartnerUseCase(
             existingPartner = existingPartner,
         )
 
+        val now = clock.instant()
+
         existingPartner.updateFrom(
             source = source,
-            updatedAt = Instant.now(clock),
+            updatedAt = now,
         )
 
-        return partnerDBPort.save(existingPartner)
+        val saved = partnerDBPort.save(existingPartner)
+
+        val event =
+            if (saved.status == PartnerStatus.SUSPENDED) {
+                eventFactory.partnerSuspended(
+                    partner = saved,
+                    occurredAt = now,
+                )
+            } else {
+                eventFactory.partnerUpdated(
+                    partner = saved,
+                    occurredAt = now,
+                )
+            }
+
+        eventPublisherPort.publish(event)
+
+        return saved
     }
 
     private fun checkVersion(

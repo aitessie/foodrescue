@@ -22,7 +22,6 @@ interface StoreSnapshotJpaRepository : JpaRepository<StoreSnapshotJpaEntity, UUI
                 store_status,
                 name,
                 address,
-                time_zone,
                 store_version,
                 partner_version
             )
@@ -33,7 +32,6 @@ interface StoreSnapshotJpaRepository : JpaRepository<StoreSnapshotJpaEntity, UUI
                 :storeStatus,
                 :name,
                 :address,
-                :timeZone,
                 :storeVersion,
                 0
             )
@@ -42,7 +40,6 @@ interface StoreSnapshotJpaRepository : JpaRepository<StoreSnapshotJpaEntity, UUI
                 store_status = excluded.store_status,
                 name = excluded.name,
                 address = excluded.address,
-                time_zone = excluded.time_zone,
                 store_version = excluded.store_version
             where store_snapshots.partner_id =
                     excluded.partner_id
@@ -58,7 +55,6 @@ interface StoreSnapshotJpaRepository : JpaRepository<StoreSnapshotJpaEntity, UUI
         @Param("storeStatus") storeStatus: String,
         @Param("name") name: String,
         @Param("address") address: String,
-        @Param("timeZone") timeZone: String,
         @Param("storeVersion") storeVersion: Long,
     )
 
