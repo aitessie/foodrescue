@@ -9,16 +9,6 @@
 связи Partner/Store и назначения пользователя, а также публикует изменения Partner и Store в Kafka через Transactional
 Outbox.
 
-## Технологии
-
-- Kotlin 2.3.21, Java 21 и Gradle Kotlin DSL.
-- Spring Boot 4.1.0: Spring MVC, Validation, Data JPA, Security, OAuth2 Resource Server, Actuator и Spring Kafka.
-- PostgreSQL, Hibernate ORM 7.4.5 и Liquibase.
-- Apache Kafka и Spring Kafka для публикации событий Partner и Store.
-- Jackson для JSON-сериализации.
-- JUnit 5, Spring Boot Test и Testcontainers PostgreSQL для тестирования.
-- Spotless и ktfmt для форматирования кода; Zipkin и Micrometer Tracing для распределённой трассировки.
-
 ## Доменная модель
 
 ### Основные сущности

@@ -12,16 +12,6 @@
 изменение резерва выполняет асинхронно через Kafka. Для проверки STAFF/MANAGER при выдаче и отмене используется внутренний
 Partner Store Access API.
 
-## Технологии
-
-- Kotlin 2.3.21, Java 21 и Gradle Kotlin DSL.
-- Spring Boot 4.1.0: Spring MVC, Validation, Data JPA, Security, OAuth2 Resource Server и OAuth2 Client, RestClient,
-  Actuator и Scheduling.
-- PostgreSQL и Liquibase; Hibernate работает с `ddl-auto=validate`.
-- Apache Kafka и Spring Kafka для команд резервирования и обработки событий Offer Service.
-- Jackson 3.1.4 для JSON-сериализации.
-- Spotless и ktfmt для форматирования кода.
-
 ## Доменная модель
 
 ### Основные сущности
