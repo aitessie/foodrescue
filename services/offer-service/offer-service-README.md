@@ -11,17 +11,6 @@
 Данные о партнёрах и магазинах не принадлежат сервису. Для проверки управленческого доступа он обращается в
 `partner-service`, а для публичной видимости и резервирования использует локальные снимки состояния магазинов.
 
-## Технологии
-
-- Kotlin 2.3.21, Java 21 и Gradle Kotlin DSL.
-- Spring Boot 4.1.0: Spring MVC, Validation, Data JPA, Security, OAuth2 Resource Server и OAuth2 Client, RestClient,
-  Actuator.
-- PostgreSQL, Hibernate ORM 7.4.1, Hibernate Spatial и Liquibase.
-- Apache Kafka и Spring Kafka для обмена событиями.
-- Jackson 3.1.4 для JSON-сериализации.
-- JUnit 5, Mockito, Testcontainers и MockWebServer для тестирования.
-- Spotless и ktfmt для форматирования кода; Zipkin для распределённой трассировки.
-
 ## Доменная модель
 
 ### Основные сущности
