@@ -1,4 +1,4 @@
-package com.example.foodrescue.orderservice.configuration.scheduler
+package com.example.foodrescue.orderservice.adapter.`in`.scheduler
 
 import com.example.foodrescue.orderservice.application.usecases.MarkNoShowOrdersUseCase
 import com.example.foodrescue.orderservice.configuration.OrderSchedulerProperties

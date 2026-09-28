@@ -1,4 +1,4 @@
-package com.example.foodrescue.orderservice.adapter.`in`.dtos
+package com.example.foodrescue.orderservice.adapter.`in`.rest.dtos
 
 class OrderPageDto(
     val items: List<OrderDto>,

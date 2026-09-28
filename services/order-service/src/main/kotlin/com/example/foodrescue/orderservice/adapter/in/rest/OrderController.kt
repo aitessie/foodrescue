@@ -1,10 +1,10 @@
-package com.example.foodrescue.orderservice.adapter.`in`
+package com.example.foodrescue.orderservice.adapter.`in`.rest
 
-import com.example.foodrescue.orderservice.adapter.`in`.dtos.CreateOrderDto
-import com.example.foodrescue.orderservice.adapter.`in`.dtos.OrderDto
-import com.example.foodrescue.orderservice.adapter.`in`.dtos.OrderPageDto
-import com.example.foodrescue.orderservice.adapter.`in`.dtos.PickupTokenDto
-import com.example.foodrescue.orderservice.adapter.`in`.mappers.OrderRestMapper
+import com.example.foodrescue.orderservice.adapter.`in`.rest.dtos.CreateOrderDto
+import com.example.foodrescue.orderservice.adapter.`in`.rest.dtos.OrderDto
+import com.example.foodrescue.orderservice.adapter.`in`.rest.dtos.OrderPageDto
+import com.example.foodrescue.orderservice.adapter.`in`.rest.dtos.PickupTokenDto
+import com.example.foodrescue.orderservice.adapter.`in`.rest.mappers.OrderRestMapper
 import com.example.foodrescue.orderservice.application.usecases.CancelOrderUseCase
 import com.example.foodrescue.orderservice.application.usecases.CreateOrderUseCase
 import com.example.foodrescue.orderservice.application.usecases.GetCustomerOrdersUseCase
@@ -56,7 +56,7 @@ class OrderController(
         return orderRestMapper.toDto(order)
     }
 
-    @PostMapping("/{orderId}/cancel")
+    @PostMapping("/{orderId}/cancellation")
     fun cancelOrder(@PathVariable orderId: UUID): OrderDto =
         orderRestMapper.toDto(cancelOrderUseCase.execute(orderRestMapper.toOrderId(orderId)))
 

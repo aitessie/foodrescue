@@ -1,4 +1,4 @@
-package com.example.foodrescue.offerservice.configuration.scheduler
+package com.example.foodrescue.offerservice.adapter.`in`.scheduler
 
 import com.example.foodrescue.offerservice.application.usecases.CloseExpiredOffersUseCase
 import com.example.foodrescue.offerservice.configuration.SchedulerProperties

@@ -11,7 +11,6 @@ import com.example.foodrescue.offerservice.domain.`enum`.FoodBagCategory
 import com.example.foodrescue.offerservice.domain.enum.OfferStatus
 import java.time.Clock
 import java.time.Instant
-import java.time.ZoneId
 import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -122,7 +121,6 @@ class GetPublicOfferUseCaseTest {
                 ),
             storeName = "Test store",
             storeAddress = "Test address",
-            storeTimeZone = ZoneId.of("Europe/Moscow"),
             status = OfferStatus.SCHEDULED,
         )
 }

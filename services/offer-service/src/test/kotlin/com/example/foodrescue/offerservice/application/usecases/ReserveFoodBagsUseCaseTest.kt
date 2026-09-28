@@ -27,7 +27,6 @@ import com.example.foodrescue.offerservice.domain.`enum`.ReservationStatus
 import com.example.foodrescue.offerservice.domain.`enum`.StoreStatus
 import java.time.Clock
 import java.time.Instant
-import java.time.ZoneId
 import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -788,7 +787,6 @@ class ReserveFoodBagsUseCaseTest {
             storeStatus = storeStatus,
             name = "Test store",
             address = "Test address",
-            timeZone = ZoneId.of("Europe/Moscow"),
             storeVersion = 1,
             partnerVersion = 1,
         )

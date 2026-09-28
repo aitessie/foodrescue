@@ -1,8 +1,8 @@
-package com.example.foodrescue.orderservice.adapter.`in`.mappers
+package com.example.foodrescue.orderservice.adapter.`in`.rest.mappers
 
-import com.example.foodrescue.orderservice.adapter.`in`.dtos.OrderDto
-import com.example.foodrescue.orderservice.adapter.`in`.dtos.OrderPageDto
-import com.example.foodrescue.orderservice.adapter.`in`.dtos.PickupTokenDto
+import com.example.foodrescue.orderservice.adapter.`in`.rest.dtos.OrderDto
+import com.example.foodrescue.orderservice.adapter.`in`.rest.dtos.OrderPageDto
+import com.example.foodrescue.orderservice.adapter.`in`.rest.dtos.PickupTokenDto
 import com.example.foodrescue.orderservice.domain.entities.OfferId
 import com.example.foodrescue.orderservice.domain.entities.Order
 import com.example.foodrescue.orderservice.domain.entities.OrderId

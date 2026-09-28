@@ -6,7 +6,7 @@ spring:
     name: order-service
 
   datasource:
-    url: "${ORDER_DB_URL:jdbc:postgresql://localhost:5432/order_db}"
+    url: ${ORDER_DB_URL:jdbc:postgresql://localhost:5432/order_db}
     username: ${ORDER_DB_USER:order}
     password: ${ORDER_DB_PASSWORD:order-local-password}
 
@@ -48,12 +48,12 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: "${KEYCLOAK_ISSUER_URI:http://localhost:8081/realms/foodrescue}"
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8081/realms/foodrescue}
 
       client:
         provider:
           keycloak:
-            token-uri: "${KEYCLOAK_TOKEN_URI:http://localhost:8081/realms/foodrescue/protocol/openid-connect/token}"
+            token-uri: ${KEYCLOAK_TOKEN_URI:http://localhost:8081/realms/foodrescue/protocol/openid-connect/token}
 
         registration:
           offer-service:
@@ -121,7 +121,7 @@ food-rescue:
     initial-delay: ${ORDER_OUTBOX_INITIAL_DELAY:10s}
 
   scheduler:
-    no-show-cron: "${ORDER_NO_SHOW_CRON:0 */1 * * * *}"
+    no-show-cron: ${ORDER_NO_SHOW_CRON:0 */1 * * * *}
     no-show-zone: ${ORDER_NO_SHOW_ZONE:UTC}
     no-show-batch-size: ${ORDER_NO_SHOW_BATCH_SIZE:100}
     no-show-payment-action: ${ORDER_NO_SHOW_PAYMENT_ACTION:CAPTURE}

@@ -1,4 +1,4 @@
-package com.example.foodrescue.orderservice.adapter.`in`.dtos
+package com.example.foodrescue.orderservice.adapter.`in`.rest.dtos
 
 import com.example.foodrescue.orderservice.domain.enum.OrderStatus
 import java.time.Instant
